@@ -16,6 +16,7 @@ Add `express-mysql-session` to your project's `package.json` file:
 }
 ```
 *It is recommended that you specify a hard-coded version number instead of `latest`*
+
 *See https://npmjs.org/package/express-mysql-session for the latest release version*
 
 
