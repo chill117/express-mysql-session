@@ -64,10 +64,19 @@ app.configure(function() {
 
 ## How to Run Tests
 
+First, you must create a test MySQL database in which to run the tests, with the following connection information:
+```
+	db_host: 'localhost',
+	db_port: 3306,
+	db_name: 'session_test',
+	db_user: 'session_test',
+	db_pass: 'password'
+```
+*These database credentials are located at `test/config/db.js`*
+
+
 From your project's base directory:
 ```
 mocha
 ```
-
-*NOTE:*
-You may need to run `npm install` locally to get the dev dependencies.
+*You may need to run `npm install` locally to get the dev dependencies.*
