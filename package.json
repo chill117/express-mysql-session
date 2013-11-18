@@ -1,12 +1,12 @@
 {
   "name": "express-mysql-session",
   "description": "A MySQL session store for express.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "index.js",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git://github.com/sequelize/sequelize-mysql.git"
+    "url": "git://github.com/chill117/express-mysql-session"
   },
   "author": {
     "name": "Charles Hill",
