@@ -75,7 +75,7 @@ First, you must create a test MySQL database in which to run the tests, with the
 		database: 'session_test'
 }
 ```
-*These database credentials are located at `test/config/db.js`*
+*These database credentials are located at `test/config/database.js`*
 
 From your project's base directory, to run all the tests:
 ```
