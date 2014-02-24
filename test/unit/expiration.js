@@ -7,7 +7,7 @@ var TestManager = require('../test-manager.js')
 
 var connection = SessionStore.connection
 
-describe('SessionStore#clearExpiredSessions()', function() {
+describe('SessionStore#clearExpiredSessions(cb)', function() {
 
 	before(TestManager.tearDown)
 	before(TestManager.setUp)
