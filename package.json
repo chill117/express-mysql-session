@@ -1,7 +1,7 @@
 {
   "name": "express-mysql-session",
   "description": "A MySQL session store for express.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.js",
   "scripts": {},
   "repository": {
@@ -17,8 +17,9 @@
     "node": ">=0.6.0"
   },
   "dependencies": {
-    "underscore": "1.5.2",
-    "sequelize-mysql": "~2.0.0"
+    "async": "0.2.10",
+    "mysql": "2.0.1",
+    "underscore": "1.6.0"
   },
   "devDependencies": {
     "express": "3.3.1",

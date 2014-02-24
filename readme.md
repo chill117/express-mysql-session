@@ -3,10 +3,14 @@
 A MySQL session store for express.js
 
 
-
 ## Installation
 
-Add `express-mysql-session` to your project's `package.json` file:
+The quick way:
+```
+npm install express-mysql-session
+```
+
+The other, slower way is to add `express-mysql-session` to your project's `package.json` file:
 ```
 {
   "name": "Your App",
@@ -19,35 +23,29 @@ Add `express-mysql-session` to your project's `package.json` file:
 
 *See https://npmjs.org/package/express-mysql-session for the latest release version*
 
-
-Then install it by running the following:
+Then install it by running the following, from your project's directory:
 ```
 npm install
 ```
 
 
-
 ## Usage
 
-```
+```js
 var express = require('express')
 var app = module.exports = express()
 
+var SessionStore = require('express-mysql-session')
+
 app.configure(function() {
 
-	var options = {}
-
-	options.db = {}
-	options.db.name = 'database_name'
-	options.db.user = 'database_user'
-	options.db.pass = 'database_pass'
-	options.db.options = {}
-	options.db.options.host = 'database_host'
-	options.db.options.port = 'database_port'
-	options.db.options.logging = false// Disables logging in Sequelize
-	options.debug = false// Disables console log messages in express-mysql-session
-
-	var SessionStore = require('express-mysql-session')(options, express)
+	var options = {
+		host: 'localhost',
+		port: 3306,
+		user: 'session_test',
+		password: 'password',
+		database: 'session_test'
+	}
 
 	app.use(express.logger())
 	app.use(express.cookieParser())
@@ -57,7 +55,7 @@ app.configure(function() {
 
 		key: 'session_cookie_name',
 		secret: 'session_cookie_secret',
-		store: SessionStore
+		store: new SessionStore(options)
 
 	}))
 
@@ -65,22 +63,31 @@ app.configure(function() {
 ```
 
 
-
 ## How to Run Tests
 
 First, you must create a test MySQL database in which to run the tests, with the following connection information:
-```
-	db_host: 'localhost',
-	db_port: 3306,
-	db_name: 'session_test',
-	db_user: 'session_test',
-	db_pass: 'password'
+```js
+{
+		host: 'localhost',
+		port: 3306,
+		user: 'session_test',
+		password: 'password',
+		database: 'session_test'
+}
 ```
 *These database credentials are located at `test/config/db.js`*
 
-
-From your project's base directory:
+From your project's base directory, to run all the tests:
 ```
 mocha
 ```
 *You may need to run `npm install` locally to get the dev dependencies.*
+
+To run only the unit tests:
+```
+mocha test/unit
+```
+To run only the integration tests:
+```
+mocha test/integration
+```

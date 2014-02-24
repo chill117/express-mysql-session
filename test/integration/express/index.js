@@ -1,45 +1,17 @@
-var app = require('./lib/app.js')
-var config = require('./config/config.js')
-var db_config = require('./config/db.js')
+var app = require('./app')
+var express = require('express')
+var TestManager = require('../../test-manager')
 
 var chai = require('chai')
 var expect = chai.expect
 var http = require('http')
 var querystring = require('querystring')
 
-var cookies = require('./lib/cookies.js').init()
-
 describe('', function() {
 
-	var SessionStore = require('./lib/session_store.js')
-	
-	before(function(done) {
-
-		// Clear any existing sessions.
-		SessionStore.clear(function(error) {
-
-			if (error)
-				return done(new Error(error))
-
-			done()
-
-		})
-
-	})
-
-	after(function(done) {
-
-		// Clear the sessions that were created during the tests.
-		SessionStore.clear(function(error) {
-
-			if (error)
-				return done(new Error(error))
-
-			done()
-
-		})
-
-	})
+	before(TestManager.tearDown)
+	before(TestManager.setUp)
+	after(TestManager.tearDown)
 
 	describe('Sessions for a single client', function() {
 
@@ -49,8 +21,8 @@ describe('', function() {
 
 			var req = http.get({
 
-				hostname: config.host,
-				port: config.port,
+				hostname: app.get('host'),
+				port: app.get('port'),
 				path: '/test'
 
 			}, function(res) {
@@ -60,16 +32,16 @@ describe('', function() {
 				expect(res.headers['set-cookie']).to.be.an('array')
 
 				var cookieJar = res.headers['set-cookie']
-				var sessionCookie = cookies.getSessionCookie(cookieJar)
+				var sessionCookie = getSessionCookie(cookieJar)
 
 				expect(sessionCookie).to.not.equal(false)
 
-				var sessionId = cookies.getSessionId(sessionCookie)
+				var sessionId = getSessionId(sessionCookie)
 
 				var req2 = http.get({
 
-					hostname: config.host,
-					port: config.port,
+					hostname: app.get('host'),
+					port: app.get('port'),
 					path: '/test',
 					headers: {
 						'Cookie': cookieJar
@@ -110,8 +82,8 @@ describe('', function() {
 
 			var req = http.get({
 
-				hostname: config.host,
-				port: config.port,
+				hostname: app.get('host'),
+				port: app.get('port'),
 				path: '/test'
 
 			}, function(res) {
@@ -121,16 +93,16 @@ describe('', function() {
 				expect(res.headers['set-cookie']).to.be.an('array')
 
 				var cookieJar = res.headers['set-cookie']
-				var sessionCookie = cookies.getSessionCookie(cookieJar)
+				var sessionCookie = getSessionCookie(cookieJar)
 
 				expect(sessionCookie).to.not.equal(false)
 
-				var sessionId = cookies.getSessionId(sessionCookie)
+				var sessionId = getSessionId(sessionCookie)
 
 				var req2 = http.get({
 
-					hostname: config.host,
-					port: config.port,
+					hostname: app.get('host'),
+					port: app.get('port'),
 					path: '/test'
 
 					// Don't pass the cookie jar this time.
@@ -163,3 +135,51 @@ describe('', function() {
 	})
 
 })
+
+function getSessionCookie(cookies) {
+
+	var sessionCookie = false
+
+	for (var i in cookies)
+	{
+		var parts = cookies[i].split(';')
+
+		for (var n = 0; n < parts.length; n++)
+		{
+			parts[n] = parts[n].split('=')
+			parts[n][0] = unescape(parts[n][0].trim().toLowerCase())
+		}
+
+		var name = parts[0][0]
+
+		if (name == app.get('session_cookie_name'))
+			return cookies[i]
+	}
+
+	return sessionCookie
+
+}
+
+function getSessionId(cookieHeader) {
+
+	var cookieParser = express.cookieParser(app.get('session_cookie_secret'))
+
+	var req = {
+		headers: {
+			cookie: cookieHeader
+		}
+	}
+
+	var result
+
+	cookieParser(req, {}, function(err) {
+
+		if (err) throw err;
+
+		result = req.signedCookies;
+
+	})
+
+	return result[app.get('session_cookie_name')]
+
+}

@@ -1,1 +1,1 @@
-module.exports = require('./lib/express-mysql-session.js')
+module.exports = require('./lib/index.js')

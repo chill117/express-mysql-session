@@ -1,0 +1,5 @@
+require('./clear')
+require('./destroy')
+require('./get')
+require('./length')
+require('./set')
