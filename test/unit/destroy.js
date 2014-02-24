@@ -1,8 +1,6 @@
-var _ = require('underscore')
 var async = require('async')
 var chai = require('chai')
 var expect = chai.expect
-var mysql = require('mysql')
 
 var SessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')

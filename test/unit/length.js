@@ -1,8 +1,6 @@
-var _ = require('underscore')
 var async = require('async')
 var chai = require('chai')
 var expect = chai.expect
-var mysql = require('mysql')
 
 var SessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
@@ -11,7 +9,6 @@ describe('SessionStore#length(cb)', function() {
 
 	before(TestManager.tearDown)
 	before(TestManager.setUp)
-	after(TestManager.clearSessions)
 	after(TestManager.tearDown)
 
 	var fixtures = require('../fixtures/sessions')
