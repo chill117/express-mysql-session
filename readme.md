@@ -44,7 +44,8 @@ app.configure(function() {
 		port: 3306,
 		user: 'session_test',
 		password: 'password',
-		database: 'session_test'
+		database: 'session_test',
+		reconnectDelay: 1000
 	}
 
 	app.use(express.logger())
