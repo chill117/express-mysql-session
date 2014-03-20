@@ -81,7 +81,7 @@ From your project's base directory, to run all the tests:
 ```
 mocha
 ```
-*You may need to run `npm install && npm install -g mocha` locally to get the dev dependencies and optionally install mocha globally if you don't already have it installed.*
+*You may need to run `npm install && npm install -g mocha` locally to get the dev dependencies and to optionally install mocha globally if you don't already have it installed.*
 
 To run only the unit tests:
 ```
