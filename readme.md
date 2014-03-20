@@ -44,7 +44,8 @@ app.configure(function() {
 		port: 3306,
 		user: 'session_test',
 		password: 'password',
-		database: 'session_test'
+		database: 'session_test',
+		reconnectDelay: 1000
 	}
 
 	app.use(express.logger())
@@ -81,7 +82,7 @@ From your project's base directory, to run all the tests:
 ```
 mocha
 ```
-*You may need to run `npm install` locally to get the dev dependencies.*
+*You may need to run `npm install && npm install -g mocha` locally to get the dev dependencies and to optionally install mocha globally if you don't already have it installed.*
 
 To run only the unit tests:
 ```
