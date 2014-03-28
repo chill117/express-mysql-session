@@ -1,4 +1,3 @@
-var _ = require('underscore')
 var async = require('async')
 var chai = require('chai')
 var expect = chai.expect
@@ -21,7 +20,7 @@ describe('SessionStore#clearExpiredSessions(cb)', function() {
 		var num_expired = (fixtures.length - 2)
 
 		before(TestManager.populateSessions)
-		before(_.bind(setSomeSessionsAsExpired, undefined, num_expired))
+		before(function(done) { setSomeSessionsAsExpired(num_expired, done) })
 		after(TestManager.clearSessions)
 
 		it('should clear only the expired sessions', function(done) {

@@ -1,4 +1,3 @@
-var _ = require('underscore')
 var async = require('async')
 var chai = require('chai')
 var expect = chai.expect
@@ -58,7 +57,10 @@ describe('SessionStore#set(session_id, data, cb)', function() {
 			async.each(fixtures, function(fixture, nextFixture) {
 
 				var session_id = fixture.session_id
-				var data = _.clone(fixture.data)
+				var data = {}
+
+				for (var key in fixture.data)
+					data[key] = fixture.data[key]
 
 				data.new_attr = 'A new attribute!'
 				data.and_another = 'And another attribute..'
