@@ -30,13 +30,10 @@ app.configure(function() {
 		database: 'session_test'
 	}
 
-	// The session store runs as connect/express middleware.
 	app.use(express.session({
-
 		key: 'session_cookie_name',
 		secret: 'session_cookie_secret',
 		store: new SessionStore(options)
-
 	}))
 
 })
