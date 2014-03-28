@@ -1,7 +1,7 @@
 {
   "name": "express-mysql-session",
   "description": "A MySQL session store for express.js",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -19,13 +19,13 @@
     "node": ">=0.6.0"
   },
   "dependencies": {
-    "mysql": "2.0.1"
+    "mysql": "2.1.1"
   },
   "devDependencies": {
-    "async": "0.2.10",
-    "express": "3.3.1",
-    "mocha": "1.14.0",
-    "chai": "1.8.1"
+    "async": "0.4.0",
+    "express": "3.5.1",
+    "mocha": "1.18.2",
+    "chai": "1.9.1"
   },
   "readmeFilename": "readme.md",
   "bugs": {
