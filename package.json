@@ -3,7 +3,9 @@
   "description": "A MySQL session store for express.js",
   "version": "0.0.7",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "mocha"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/chill117/express-mysql-session"
