@@ -14,6 +14,7 @@ This will install `express-mysql-session` and add it to your application's `pack
 
 ## Usage
 
+To use `express-mysql-session`, simply use it with your express session middleware, like this:
 ```js
 var express = require('express')
 var app = module.exports = express()
