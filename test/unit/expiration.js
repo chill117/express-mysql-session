@@ -48,7 +48,7 @@ describe('SessionStore#clearExpiredSessions(cb)', function() {
 
 		it('should be called at regular intervals automatically', function(done) {
 
-			var intervalTimes = [50, 100, 200, 500]
+			var intervalTimes = [100, 200]
 
 			var expectedTestDuration = 250
 
@@ -93,7 +93,7 @@ describe('SessionStore#clearExpiredSessions(cb)', function() {
 
 						}, intervalTime)
 
-					}, 15)
+					}, 50)
 
 				})
 
