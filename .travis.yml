@@ -1,5 +1,5 @@
 before_script:
-  - "mysql -e 'create database session_test;'"
+  - "mysql -e 'create database if not exists session_test; create user \'session_test\'@\'localhost\' identified by \'password\'; grant all on session_test.* to \'session_test\'@\'localhost\' identified by \'password\';'"
 
 language: node_js
 node_js:
