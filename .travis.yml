@@ -2,11 +2,7 @@ before_script:
   - "mysql -e 'create database if not exists session_test;'"
 
 env:
-  - DB_HOST="127.0.0.1"
-  - DB_PORT=3306
-  - DB_USER="session_test"
-  - DB_PASS=""
-  - DB_NAME="session_test"
+  - DB_HOST="127.0.0.1" DB_PORT=3306 DB_USER="session_test" DB_PASS="" DB_NAME="session_test"
 
 language: node_js
 node_js:
