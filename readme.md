@@ -22,23 +22,38 @@ var app = module.exports = express()
 var session = require('express-session')
 var SessionStore = require('express-mysql-session')
 
-app.configure(function() {
+var options = {
+	host: 'localhost',
+	port: 3306,
+	user: 'session_test',
+	password: 'password',
+	database: 'session_test'
+}
 
-	var options = {
-		host: 'localhost',
-		port: 3306,
-		user: 'session_test',
-		password: 'password',
-		database: 'session_test'
-	}
+app.use(session({
+	key: 'session_cookie_name',
+	secret: 'session_cookie_secret',
+	store: new SessionStore(options)
+}))
+```
 
-	app.use(session({
-		key: 'session_cookie_name',
-		secret: 'session_cookie_secret',
-		store: new SessionStore(options)
-	}))
+### Options
 
-})
+Here is a list of all available options:
+```js
+var options = {
+	host: 'localhost',// Host name for database connection.
+	port: 3306,// Port number for database connection.
+	user: 'session_test',// Database user.
+	password: 'password',// Password for the above database user.
+	database: 'session_test',// Database name.
+	debug: false,// Whether or not to output debug messages to the console.
+	checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
+	expiration: 86400000,// The maximum age of a valid session; milliseconds.
+	autoReconnect: true,// Whether or not to re-establish a database connection after a disconnect.
+	reconnectDelay: 200,// Time between reconnection attempts; milliseconds
+	maxReconnectAttempts: 25// Maximum number of reconnection attempts. Set to 0 for unlimited.
+}
 ```
 
 
