@@ -1,5 +1,6 @@
 var app = require('./app')
 var express = require('express')
+var cookieParser = require('cookie-parser')
 var TestManager = require('../../test-manager')
 
 var chai = require('chai')
@@ -162,7 +163,7 @@ function getSessionCookie(cookies) {
 
 function getSessionId(cookieHeader) {
 
-	var cookieParser = express.cookieParser(app.get('session_cookie_secret'))
+	var _cookieParser = cookieParser(app.get('session_cookie_secret'))
 
 	var req = {
 		headers: {
@@ -172,7 +173,7 @@ function getSessionId(cookieHeader) {
 
 	var result
 
-	cookieParser(req, {}, function(err) {
+	_cookieParser(req, {}, function(err) {
 
 		if (err) throw err;
 

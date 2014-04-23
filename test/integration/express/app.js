@@ -1,6 +1,10 @@
 var express = require('express')
 var app = module.exports = express()
 
+var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser')
+var session = require('express-session')
+
 var SessionStore = require('../../session-store')
 
 var session_cookie_name = 'express.sid'
@@ -11,21 +15,16 @@ app.set('port', 3000)
 app.set('session_cookie_name', session_cookie_name)
 app.set('session_cookie_secret', session_cookie_secret)
 
-app.configure(function() {
+app.use(cookieParser())
+app.use(bodyParser())
 
-	app.use(express.logger())
-	app.use(express.cookieParser())
-	app.use(express.bodyParser())
+app.use(session({
 
-	app.use(express.session({
+	key: session_cookie_name,
+	secret: session_cookie_secret,
+	store: SessionStore
 
-		key: session_cookie_name,
-		secret: session_cookie_secret,
-		store: SessionStore
-
-	}))
-
-})
+}))
 
 app.listen(app.get('port'))
 
