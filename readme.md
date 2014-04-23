@@ -19,6 +19,7 @@ To use `express-mysql-session`, simply use it with your express session middlewa
 var express = require('express')
 var app = module.exports = express()
 
+var session = require('express-session')
 var SessionStore = require('express-mysql-session')
 
 app.configure(function() {
@@ -31,7 +32,7 @@ app.configure(function() {
 		database: 'session_test'
 	}
 
-	app.use(express.session({
+	app.use(session({
 		key: 'session_cookie_name',
 		secret: 'session_cookie_secret',
 		store: new SessionStore(options)
