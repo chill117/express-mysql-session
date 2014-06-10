@@ -7,9 +7,23 @@ describe('SessionStore#', function() {
 
 	describe('setKeepAliveInterval(interval)', function() {
 
+		var originalKeepAliveMethod
+
+		before(function() {
+
+			originalKeepAliveMethod = SessionStore.keepAlive
+
+		})
+
 		after(function() {
 
 			SessionStore.clearKeepAliveInterval()
+
+		})
+
+		after(function() {
+
+			SessionStore.keepAlive = originalKeepAliveMethod
 
 		})
 
