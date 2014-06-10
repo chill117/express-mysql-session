@@ -13,7 +13,7 @@ describe('SessionStore#', function() {
 
 		})
 
-		it('should correclty set the keep-alive interval time', function(done) {
+		it('should correctly set the keep-alive interval time', function(done) {
 
 			var numCalls = 0, intervalTime = 24
 
