@@ -51,9 +51,11 @@ var options = {
 	checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
 	expiration: 86400000,// The maximum age of a valid session; milliseconds.
 	autoReconnect: true,// Whether or not to re-establish a database connection after a disconnect.
-	reconnectDelay: 200,// Time between reconnection attempts; milliseconds
+	reconnectDelay: 200,// Time between reconnection attempts; milliseconds.
 	maxReconnectAttempts: 25,// Maximum number of reconnection attempts. Set to 0 for unlimited.
-	useConnectionPooling: false// Sets whether session should use connection pooling or not.
+	useConnectionPooling: false,// Whether or not to use connection pooling.
+	keepAlive: false,// Whether or not to send keep-alive pings on the database connection.
+	keepAliveInterval: 30000,// How frequently keep-alive pings will be sent; milliseconds.
 }
 ```
 
