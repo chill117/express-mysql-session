@@ -52,7 +52,8 @@ var options = {
 	expiration: 86400000,// The maximum age of a valid session; milliseconds.
 	autoReconnect: true,// Whether or not to re-establish a database connection after a disconnect.
 	reconnectDelay: 200,// Time between reconnection attempts; milliseconds
-	maxReconnectAttempts: 25// Maximum number of reconnection attempts. Set to 0 for unlimited.
+	maxReconnectAttempts: 25,// Maximum number of reconnection attempts. Set to 0 for unlimited.
+	useConnectionPooling: false// Sets whether session should use connection pooling or not.
 }
 ```
 
