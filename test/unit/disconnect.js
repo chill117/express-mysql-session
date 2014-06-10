@@ -11,7 +11,7 @@ describe('SessionStore#Disconnects', function() {
 		SessionStore.connection.destroy()
 		SessionStore.connection.emit('error', {code: 'PROTOCOL_CONNECTION_LOST'})
 
-		var elapsedTime = 0, intervalTime = 100
+		var elapsedTime = 0, intervalTime = 50
 
 		var interval = setInterval(function() {
 
