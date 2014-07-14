@@ -12,7 +12,7 @@ npm install express-mysql-session --save
 This will install `express-mysql-session` and add it to your application's `package.json` file.
 
 
-## Usage
+## How to Use
 
 To use `express-mysql-session`, simply use it with your express session middleware, like this:
 ```js
@@ -64,6 +64,43 @@ var options = {
 	keepAliveInterval: 30000,// How frequently keep-alive pings will be sent; milliseconds.
 }
 ```
+
+#### Reconnect Delays
+
+The reconnect-related options may require a bit of additional explanation. With the default options shown above, the reconnect attempts will have the following delay pattern:
+
+* Attempts __#1__ through __#5__ will have a delay of __500 milliseconds__ each.
+* Attempts __#6__ through __#10__ will have a delay of __1 second__ each.
+* Attempts __#11__ through __#15__ will have a delay of __5 seconds__ each.
+* Attempts __#16__ through __#20__ will have a delay of __30 seconds__ each.
+* Attempts __#21__ through __#25__ will have a delay of __5 minutes__ each.
+
+If the `reconnectDelayGroupSize` was 3:
+
+* Attempts __#1__ through __#3__ will have a delay of __500 milliseconds__ each.
+* Attempts __#4__ through __#6__ will have a delay of __1 second__ each.
+* Attempts __#7__ through __#9__ will have a delay of __5 seconds__ each.
+* Attempts __#10__ through __#12__ will have a delay of __30 seconds__ each.
+* Attempts __#13__ through __#25__ will have a delay of __5 minutes__ each.
+
+Any reconnect attempts beyond the last value in the `reconnectDelay` array will simply use the last value from the `reconnectDelay` array.
+
+Alternatively you may supply a single integer value to the `reconnectDelay` option to have one delay time between all reconnect attempts, like this:
+```js
+var options = {
+	reconnectDelay: 500
+}
+```
+
+
+### Debugging
+
+`express-mysql-session` uses the [debug module](https://github.com/visionmedia/debug) to output debug messages to the console. To output all debug messages, run your node app with the `DEBUG` environment variable:
+```
+DEBUG=express-mysql-session* node your-app.js
+```
+This will output log messages as well as error messages from `express-mysql-session`.
+
 
 
 ## Contributing
