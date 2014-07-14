@@ -111,3 +111,4 @@ With your local environment configured, running tests is as simple as:
 ```
 npm test
 ```
+This module supports node.js `0.8.x` and `0.10.x`. If you are planning to contribute, please test your changes against all supported versions of node. If you need help setting up multiple versions of node in your development environment, [this article](https://degreesofzero.com/article/how-to-install-multiple-versions-of-nodejs.html) can guide you through the process.
