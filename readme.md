@@ -1,6 +1,6 @@
 # express-mysql-session [![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session)
 
-A MySQL session store for express.js
+A MySQL session store for [express.js](http://expressjs.com/)
 
 
 ## Installation
