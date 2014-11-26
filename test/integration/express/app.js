@@ -16,20 +16,27 @@ app.set('session_cookie_name', session_cookie_name)
 app.set('session_cookie_secret', session_cookie_secret)
 
 app.use(cookieParser())
-app.use(bodyParser())
+
+app.use(bodyParser.json())
+
+app.use(bodyParser.urlencoded({
+	extended: true
+}))
 
 app.use(session({
 
 	key: session_cookie_name,
 	secret: session_cookie_secret,
-	store: SessionStore
+	store: SessionStore,
+	resave: true,
+	saveUninitialized: true
 
 }))
 
-app.listen(app.get('port'))
+app.listen(app.get('port'), app.get('host'))
 
 app.get('/test', function(req, res) {
 
-	res.json(200, 'hi!')
+	res.status(200).json('hi!')
 
 })
