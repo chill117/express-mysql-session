@@ -107,7 +107,7 @@ This will output log messages as well as error messages from `express-mysql-sess
 
 If you also might need MySQL-related debug and error messages, include `mysql-connection-manager` as well:
 ```
-DEBUG=express-mysql-session*,mysql-connection-manager* node your-app.js
+DEBUG=express-mysql-session*,mysql-connection-manager node your-app.js
 ```
 
 
