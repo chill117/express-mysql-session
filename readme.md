@@ -66,6 +66,7 @@ var options = {
 	useConnectionPooling: false,// Whether or not to use connection pooling.
 	keepAlive: true,// Whether or not to send keep-alive pings on the database connection.
 	keepAliveInterval: 30000,// How frequently keep-alive pings will be sent; milliseconds.
+	createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
 }
 ```
 
