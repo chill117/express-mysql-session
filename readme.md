@@ -32,15 +32,15 @@ var options = {
 	database: 'session_test'
 }
 
-var sessionStore = session({
+var sessionStore = new SessionStore(options)
+
+app.use(session({
 	key: 'session_cookie_name',
 	secret: 'session_cookie_secret',
-	store: new SessionStore(options),
+	store: sessionStore,
 	resave: true,
 	saveUninitialized: true
-})
-
-app.use(sessionStore)
+}))
 ```
 
 To cleanly close the session store:
