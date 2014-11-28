@@ -10,7 +10,7 @@ describe('SessionStore#clear(cb)', function() {
 	before(TestManager.setUp)
 	after(TestManager.tearDown)
 
-	describe(', when sessions exist,', function() {
+	describe('when sessions exist,', function() {
 
 		before(TestManager.populateSessions)
 

@@ -13,7 +13,7 @@ describe('SessionStore#destroy(session_id, cb)', function() {
 
 	var fixtures = require('../fixtures/sessions')
 
-	describe(', when the session exists,', function() {
+	describe('when the session exists,', function() {
 
 		before(TestManager.populateSessions)
 
@@ -47,7 +47,7 @@ describe('SessionStore#destroy(session_id, cb)', function() {
 
 	})
 
-	describe(', when the session does not exist,', function() {
+	describe('when the session does not exist,', function() {
 
 		before(TestManager.clearSessions)
 

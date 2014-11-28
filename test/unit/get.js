@@ -13,7 +13,7 @@ describe('SessionStore#get(session_id, cb)', function() {
 
 	var fixtures = require('../fixtures/sessions')
 
-	describe(', when a session exists,', function() {
+	describe('when a session exists,', function() {
 
 		before(TestManager.populateSessions)
 
@@ -39,7 +39,7 @@ describe('SessionStore#get(session_id, cb)', function() {
 
 	})
 
-	describe(', when a session does not exist,', function() {
+	describe('when a session does not exist,', function() {
 
 		before(TestManager.clearSessions)
 
