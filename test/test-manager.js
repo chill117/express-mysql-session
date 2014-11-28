@@ -7,7 +7,7 @@ module.exports = {
 
 	setUp: function(done) {
 
-		SessionStore.sync(function(error) {
+		SessionStore.createDatabaseTable(function(error) {
 
 			if (error)
 				return done(new Error(error))

@@ -1,12 +1,8 @@
-var async = require('async')
-var chai = require('chai')
-var expect = chai.expect
-
 var SessionStore = require('../../index.js')
 var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
 
-describe('SessionStore#sync(cb)', function() {
+describe('SessionStore#createDatabaseTable(cb)', function() {
 
 	before(TestManager.tearDown)
 
@@ -16,7 +12,7 @@ describe('SessionStore#sync(cb)', function() {
 
 		it('should create it', function(done) {
 
-			sessionStore.sync(function(error) {
+			sessionStore.createDatabaseTable(function(error) {
 
 				if (error)
 					return done(new Error(error))
@@ -45,7 +41,7 @@ describe('SessionStore#sync(cb)', function() {
 
 		it('should do nothing', function(done) {
 
-			sessionStore.sync(function(error) {
+			sessionStore.createDatabaseTable(function(error) {
 
 				if (error)
 					return done(new Error(error))
@@ -58,19 +54,19 @@ describe('SessionStore#sync(cb)', function() {
 
 	})
 
-	describe('when \'options.sync\' is set to FALSE', function() {
+	describe('when \'options.createDatabaseTable\' is set to FALSE', function() {
 
 		var originalSync
 
 		before(function() {
 
-			originalSync = SessionStore.prototype.sync
+			originalSync = SessionStore.prototype.createDatabaseTable
 
 		})
 
 		after(function() {
 
-			SessionStore.prototype.sync = originalSync
+			SessionStore.prototype.createDatabaseTable = originalSync
 
 		})
 
@@ -78,7 +74,7 @@ describe('SessionStore#sync(cb)', function() {
 
 			var called = false
 
-			SessionStore.prototype.sync = function() {
+			SessionStore.prototype.createDatabaseTable = function() {
 
 				called = true
 
@@ -88,7 +84,7 @@ describe('SessionStore#sync(cb)', function() {
 
 			var options = require('../config/database.js')
 
-			options.sync = false
+			options.createDatabaseTable = false
 
 			new SessionStore(options, function(error) {
 
@@ -106,19 +102,19 @@ describe('SessionStore#sync(cb)', function() {
 
 	})
 
-	describe('when \'options.sync\' is set to TRUE', function() {
+	describe('when \'options.createDatabaseTable\' is set to TRUE', function() {
 
 		var originalSync
 
 		before(function() {
 
-			originalSync = SessionStore.prototype.sync
+			originalSync = SessionStore.prototype.createDatabaseTable
 
 		})
 
 		after(function() {
 
-			SessionStore.prototype.sync = originalSync
+			SessionStore.prototype.createDatabaseTable = originalSync
 
 		})
 
@@ -126,7 +122,7 @@ describe('SessionStore#sync(cb)', function() {
 
 			var called = false
 
-			SessionStore.prototype.sync = function(cb) {
+			SessionStore.prototype.createDatabaseTable = function(cb) {
 
 				called = true
 
@@ -136,7 +132,7 @@ describe('SessionStore#sync(cb)', function() {
 
 			var options = require('../config/database.js')
 
-			options.sync = true
+			options.createDatabaseTable = true
 
 			new SessionStore(options, function(error) {
 
