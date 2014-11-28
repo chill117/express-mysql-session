@@ -2,7 +2,7 @@ var async = require('async')
 var chai = require('chai')
 var expect = chai.expect
 
-var SessionStore = require('../session-store.js')
+var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
 
 describe('SessionStore#get(session_id, cb)', function() {
@@ -24,7 +24,7 @@ describe('SessionStore#get(session_id, cb)', function() {
 				var session_id = fixture.session_id
 				var data = fixture.data
 
-				SessionStore.get(session_id, function(error, session) {
+				sessionStore.get(session_id, function(error, session) {
 
 					expect(error).to.equal(null)
 					expect(JSON.stringify(session)).to.equal(JSON.stringify(data))
@@ -50,7 +50,7 @@ describe('SessionStore#get(session_id, cb)', function() {
 				var session_id = fixture.session_id
 				var data = fixture.data
 
-				SessionStore.get(session_id, function(error, session) {
+				sessionStore.get(session_id, function(error, session) {
 
 					expect(error).to.equal(null)
 					expect(session).to.equal(null)

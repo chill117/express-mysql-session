@@ -5,7 +5,7 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser')
 var session = require('express-session')
 
-var SessionStore = require('../../session-store')
+var sessionStore = require('../../session-store')
 
 var session_cookie_name = 'express.sid'
 var session_cookie_secret = 'some_secret'
@@ -27,7 +27,7 @@ app.use(session({
 
 	key: session_cookie_name,
 	secret: session_cookie_secret,
-	store: SessionStore,
+	store: sessionStore,
 	resave: true,
 	saveUninitialized: true
 

@@ -1,7 +1,7 @@
 var chai = require('chai')
 var expect = chai.expect
 
-var SessionStore = require('../session-store.js')
+var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
 
 describe('SessionStore#', function() {
@@ -21,13 +21,13 @@ describe('SessionStore#', function() {
 
 			// Change some of the sessions' expires time.
 
-			var expiration = SessionStore.options.expiration
+			var expiration = sessionStore.options.expiration
 
 			var sql = 'UPDATE `sessions` SET expires = ? LIMIT ' + num_expired
 			var expires = ( new Date( Date.now() - (expiration + 15000) ) ) / 1000
 			var params = [ expires ]
 
-			SessionStore.connection.query(sql, params, function(error) {
+			sessionStore.connection.query(sql, params, function(error) {
 
 				if (error)
 					return done(new Error(error))
@@ -42,12 +42,12 @@ describe('SessionStore#', function() {
 
 		it('should clear expired sessions', function(done) {
 
-			SessionStore.clearExpiredSessions(function(error) {
+			sessionStore.clearExpiredSessions(function(error) {
 
 				if (error)
 					return done(new Error(error))
 
-				SessionStore.length(function(error, count) {
+				sessionStore.length(function(error, count) {
 
 					if (error)
 						return done(new Error(error))
@@ -70,19 +70,19 @@ describe('SessionStore#', function() {
 
 		before(function() {
 
-			originalClearExpiredSessionsMethod = SessionStore.clearExpiredSessions
+			originalClearExpiredSessionsMethod = sessionStore.clearExpiredSessions
 
 		})
 
 		after(function() {
 
-			SessionStore.clearExpirationInterval()
+			sessionStore.clearExpirationInterval()
 
 		})
 
 		after(function() {
 
-			SessionStore.clearExpiredSessions = originalClearExpiredSessionsMethod
+			sessionStore.clearExpiredSessions = originalClearExpiredSessionsMethod
 
 		})
 
@@ -91,13 +91,13 @@ describe('SessionStore#', function() {
 			var numCalls = 0, intervalTime = 24
 
 			// Override the clearExpiredSessions method.
-			SessionStore.clearExpiredSessions = function() {
+			sessionStore.clearExpiredSessions = function() {
 
 				numCalls++
 
 			}
 
-			SessionStore.setExpirationInterval(intervalTime)
+			sessionStore.setExpirationInterval(intervalTime)
 
 			var testTime = (intervalTime * 5) + 10
 

@@ -2,7 +2,7 @@ var async = require('async')
 var chai = require('chai')
 var expect = chai.expect
 
-var SessionStore = require('../session-store.js')
+var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
 
 describe('SessionStore#length(cb)', function() {
@@ -22,14 +22,14 @@ describe('SessionStore#length(cb)', function() {
 			var session_id = fixture.session_id
 			var data = fixture.data
 
-			SessionStore.set(session_id, data, function(error) {
+			sessionStore.set(session_id, data, function(error) {
 
 				if (error)
 					return nextFixture(new Error(error))
 
 				num_sessions++
 
-				SessionStore.length(function(error, count) {
+				sessionStore.length(function(error, count) {
 
 					expect(error).to.equal(null)
 					expect(count).to.equal(num_sessions)

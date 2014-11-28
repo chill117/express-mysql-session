@@ -1,7 +1,7 @@
 var chai = require('chai')
 var expect = chai.expect
 
-var SessionStore = require('../session-store.js')
+var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
 
 describe('SessionStore#clear(cb)', function() {
@@ -16,11 +16,11 @@ describe('SessionStore#clear(cb)', function() {
 
 		it('should delete all existing sessions', function(done) {
 
-			SessionStore.clear(function(error) {
+			sessionStore.clear(function(error) {
 
 				expect(error).to.equal(undefined)
 
-				SessionStore.length(function(error, count) {
+				sessionStore.length(function(error, count) {
 
 					expect(error).to.equal(null)
 					expect(count).to.equal(0)

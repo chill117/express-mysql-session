@@ -2,7 +2,7 @@ var async = require('async')
 var chai = require('chai')
 var expect = chai.expect
 
-var SessionStore = require('../session-store.js')
+var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
 
 describe('SessionStore#destroy(session_id, cb)', function() {
@@ -24,11 +24,11 @@ describe('SessionStore#destroy(session_id, cb)', function() {
 				var session_id = fixture.session_id
 				var data = fixture.data
 
-				SessionStore.destroy(session_id, function(error) {
+				sessionStore.destroy(session_id, function(error) {
 
 					expect(error).to.equal(undefined)
 
-					SessionStore.get(session_id, function(error, session) {
+					sessionStore.get(session_id, function(error, session) {
 
 						if (error)
 							return nextFixture(new Error(error))
@@ -58,7 +58,7 @@ describe('SessionStore#destroy(session_id, cb)', function() {
 				var session_id = fixture.session_id
 				var data = fixture.data
 
-				SessionStore.destroy(session_id, function(error) {
+				sessionStore.destroy(session_id, function(error) {
 
 					expect(error).to.equal(undefined)
 
