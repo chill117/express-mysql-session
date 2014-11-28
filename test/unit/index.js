@@ -1,6 +1,0 @@
-require('./clear')
-require('./destroy')
-require('./expiration')
-require('./get')
-require('./length')
-require('./set')
