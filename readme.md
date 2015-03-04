@@ -49,6 +49,23 @@ To cleanly close the session store:
 sessionStore.closeStore()
 ```
 
+To pass in an existing MySQL database connection, you would do something like this:
+```js
+var mysql = require('mysql')
+var SessionStore = require('express-mysql-session')
+
+var options = {
+    host: 'localhost',
+    port: 3306,
+    user: 'db_user',
+    password: 'password',
+    database: 'db_name'
+}
+
+var connection = mysql.createConnection(options)
+var sessionStore = new SessionStore({}/* session store options */, connection)
+```
+
 
 ### Options
 
