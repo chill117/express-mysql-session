@@ -88,7 +88,11 @@ describe('SessionStore#', function() {
 
 		it('should correctly set the check expiration interval time', function(done) {
 
-			var numCalls = 0, intervalTime = 24
+			var numCalls = 0,
+				numCallsExpected = 5,
+				intervalTime = 14
+
+			var paddingTime = (intervalTime * 1.5)
 
 			// Override the clearExpiredSessions method.
 			sessionStore.clearExpiredSessions = function() {
@@ -99,17 +103,15 @@ describe('SessionStore#', function() {
 
 			sessionStore.setExpirationInterval(intervalTime)
 
-			var testTime = (intervalTime * 5) + 10
-
+			// Timeouts will never execute before the time given.
+			// But they are not 100% guaranteed to execute exactly when you would expect.
 			setTimeout(function() {
 
-				var numCallsExpected = Math.floor(testTime / intervalTime)
-
-				expect(numCalls).to.equal(numCallsExpected)
+				expect(numCalls >= numCallsExpected).to.equal(true)
 
 				done()
 
-			}, testTime)
+			}, (intervalTime * numCallsExpected) + paddingTime)
 
 		})
 		
