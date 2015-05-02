@@ -1,4 +1,10 @@
-var options = require('./config/database.js')
-var SessionStore = require('../index.js')
+var SessionStore = require('../index')
+var databaseConfig = require('./config/database')
 
-module.exports = new SessionStore(options)
+var sessionStore = module.exports = new SessionStore({
+	host: databaseConfig.host,
+	port: databaseConfig.port,
+	user: databaseConfig.user,
+	password: databaseConfig.password,
+	database: databaseConfig.database
+})

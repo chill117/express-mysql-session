@@ -7,7 +7,9 @@ module.exports = {
 
 	setUp: function(done) {
 
-		SessionStore.createDatabaseTable(function(error) {
+		var sql = fs.readFileSync(__dirname + '/../schema.sql', 'utf-8')
+
+		SessionStore.connection.query(sql, function(error) {
 
 			if (error)
 				return done(new Error(error))
@@ -15,12 +17,12 @@ module.exports = {
 			done()
 
 		})
-		
+
 	},
 
 	tearDown: function(done) {
 
-		var sql = fs.readFileSync(__dirname + '/tear-down.sql', 'utf-8')
+		var sql = 'DROP TABLE IF EXISTS `sessions`'
 
 		SessionStore.connection.query(sql, function(error) {
 
