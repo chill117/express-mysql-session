@@ -8,7 +8,7 @@ var expect = chai.expect
 var http = require('http')
 var querystring = require('querystring')
 
-describe('', function() {
+describe('Express Integration', function() {
 
 	before(TestManager.tearDown)
 	before(TestManager.setUp)
