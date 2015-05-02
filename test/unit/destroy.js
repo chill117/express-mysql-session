@@ -47,7 +47,7 @@ describe('SessionStore#destroy(session_id, cb)', function() {
 
 	})
 
-	describe('when the session does not exist,', function() {
+	describe('when the session does not exist', function() {
 
 		before(TestManager.clearSessions)
 
