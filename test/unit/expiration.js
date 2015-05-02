@@ -3,6 +3,8 @@ var expect = chai.expect
 
 var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')
+var SessionStore = require('../../index')
+var databaseConfig = require('../config/database')
 
 describe('SessionStore#', function() {
 
@@ -66,23 +68,56 @@ describe('SessionStore#', function() {
 
 	describe('setExpirationInterval(interval)', function() {
 
-		var originalClearExpiredSessionsMethod
+		var originalMethods = {}
 
 		before(function() {
 
-			originalClearExpiredSessionsMethod = sessionStore.clearExpiredSessions
+			originalMethods['clearExpiredSessions'] = sessionStore.clearExpiredSessions
 
 		})
 
-		after(function() {
+		afterEach(function() {
+
+			// Restore original methods on the sessionStore object.
+			for (var name in originalMethods)
+				sessionStore[name] = originalMethods[name]
 
 			sessionStore.clearExpirationInterval()
 
 		})
 
-		after(function() {
+		it('should be called when \'createDatabaseTable\' option is set to FALSE', function(done) {
 
-			sessionStore.clearExpiredSessions = originalClearExpiredSessionsMethod
+			var checkExpirationInterval = 45
+
+			var sessionStore = new SessionStore({
+
+				host: databaseConfig.host,
+				port: databaseConfig.port,
+				user: databaseConfig.user,
+				password: databaseConfig.password,
+				database: databaseConfig.database,
+				checkExpirationInterval: checkExpirationInterval,
+				createDatabaseTable: false
+
+			})
+
+			var called = false
+
+			// Override the clearExpiredSessions method.
+			sessionStore.clearExpiredSessions = function() {
+
+				called = true
+
+			}
+
+			setTimeout(function() {
+
+				expect(called).to.equal(true)
+
+				done()
+
+			}, checkExpirationInterval + 30)
 
 		})
 
