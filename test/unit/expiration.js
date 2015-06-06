@@ -1,10 +1,9 @@
 'use strict';
 
-var chai = require('chai')
-var expect = chai.expect
+var expect = require('chai').expect
 
-var sessionStore = require('../session-store.js')
-var TestManager = require('../test-manager.js')
+var sessionStore = require('../session-store')
+var TestManager = require('../test-manager')
 var SessionStore = require('../../index')
 var databaseConfig = require('../config/database')
 

@@ -1,11 +1,10 @@
 'use strict';
 
 var async = require('async')
-var chai = require('chai')
-var expect = chai.expect
+var expect = require('chai').expect
 
-var sessionStore = require('../session-store.js')
-var TestManager = require('../test-manager.js')
+var sessionStore = require('../session-store')
+var TestManager = require('../test-manager')
 
 describe('SessionStore#length(cb)', function() {
 

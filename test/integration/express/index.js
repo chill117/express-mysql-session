@@ -1,14 +1,13 @@
 'use strict';
 
-var app = require('./app')
-var express = require('express')
 var cookieParser = require('cookie-parser')
-var TestManager = require('../../test-manager')
-
-var chai = require('chai')
-var expect = chai.expect
+var expect = require('chai').expect
+var express = require('express')
 var http = require('http')
 var querystring = require('querystring')
+
+var app = require('./app')
+var TestManager = require('../../test-manager')
 
 describe('Express Integration', function() {
 
