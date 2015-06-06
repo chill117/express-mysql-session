@@ -1,5 +1,7 @@
 'use strict';
 
+var expect = require('chai').expect;
+
 var SessionStore = require('../../index');
 var sessionStore = require('../session-store');
 var TestManager = require('../test-manager');
@@ -61,7 +63,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 			originalSync = SessionStore.prototype.createDatabaseTable;
 		});
 
-		after(function() {
+		afterEach(function() {
 
 			SessionStore.prototype.createDatabaseTable = originalSync;
 		});
@@ -98,14 +100,18 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 	describe('when \'options.createDatabaseTable\' is set to TRUE', function() {
 
+		var options;
 		var originalSync;
 
 		before(function() {
 
+			options = require('../config/database');
+			options.createDatabaseTable = true;
+
 			originalSync = SessionStore.prototype.createDatabaseTable;
 		});
 
-		after(function() {
+		afterEach(function() {
 
 			SessionStore.prototype.createDatabaseTable = originalSync;
 		});
@@ -121,10 +127,6 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 				cb && cb();
 			}
 
-			var options = require('../config/database');
-
-			options.createDatabaseTable = true;
-
 			new SessionStore(options, function(error) {
 
 				if (error) {
@@ -136,6 +138,46 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 				}
 
 				done();
+			});
+		});
+
+		describe('\'options.schema\'', function() {
+
+			it('should create a database table with the correct name and columns', function(done) {
+
+				options.schema = {
+					tableName: 'testSessionTable',
+					columnNames: {
+						session_id: 'testColumnSessionId',
+						expires: 'testColumnExpires',
+						data: 'testColumnData'
+					}
+				};
+
+				var sessionStore = new SessionStore(options, function(error) {
+
+					if (error) {
+						return done(new Error(error));
+					}
+
+					var sql = 'SHOW COLUMNS FROM ??';
+					var params = [options.schema.tableName];
+
+					sessionStore.connection.query(sql, params, function(error, rows) {
+
+						if (error) {
+							return done(new Error(error));
+						}
+
+						expect(rows).to.be.an('array');
+						expect(rows).to.have.length(3);
+						expect(rows[0].Field).to.equal(options.schema.columnNames.session_id);
+						expect(rows[1].Field).to.equal(options.schema.columnNames.expires);
+						expect(rows[2].Field).to.equal(options.schema.columnNames.data);
+
+						done();
+					});
+				});
 			});
 		});
 	});
