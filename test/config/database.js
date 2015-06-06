@@ -6,4 +6,4 @@ module.exports = {
 	user: process.env.DB_USER !== undefined ? process.env.DB_USER : 'session_test',
 	password: process.env.DB_PASS !== undefined ? process.env.DB_PASS : 'password',
 	database: process.env.DB_NAME !== undefined ? process.env.DB_NAME : 'session_test'
-}
+};

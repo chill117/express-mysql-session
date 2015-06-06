@@ -1,48 +1,45 @@
 'use strict';
 
-var async = require('async')
-var expect = require('chai').expect
+var async = require('async');
+var expect = require('chai').expect;
 
-var sessionStore = require('../session-store')
-var TestManager = require('../test-manager')
+var sessionStore = require('../session-store');
+var TestManager = require('../test-manager');
 
 describe('SessionStore#length(cb)', function() {
 
-	before(TestManager.tearDown)
-	before(TestManager.setUp)
-	after(TestManager.tearDown)
+	before(TestManager.tearDown);
+	before(TestManager.setUp);
+	after(TestManager.tearDown);
 
-	var fixtures = require('../fixtures/sessions')
+	var fixtures = require('../fixtures/sessions');
 
 	it('should give an accurate count of the total number of sessions', function(done) {
 
-		var num_sessions = 0
+		var num_sessions = 0;
 
 		async.eachSeries(fixtures, function(fixture, nextFixture) {
 
-			var session_id = fixture.session_id
-			var data = fixture.data
+			var session_id = fixture.session_id;
+			var data = fixture.data;
 
 			sessionStore.set(session_id, data, function(error) {
 
-				if (error)
-					return nextFixture(new Error(error))
+				if (error) {
+					return nextFixture(new Error(error));
+				}
 
-				num_sessions++
+				num_sessions++;
 
 				sessionStore.length(function(error, count) {
 
-					expect(error).to.equal(null)
-					expect(count).to.equal(num_sessions)
+					expect(error).to.equal(null);
+					expect(count).to.equal(num_sessions);
 
-					nextFixture()
+					nextFixture();
+				});
+			});
 
-				})
-
-			})
-
-		}, done)
-
-	})
-
-})
+		}, done);
+	});
+});
