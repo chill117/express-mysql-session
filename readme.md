@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session)
 
+[![Status of Dependencies](https://david-dm.org/chill117/express-mysql-session.svg](https://david-dm.org/chill117/express-mysql-session)
+
 A MySQL session store for [express.js](http://expressjs.com/). Support for both [node.js](http://nodejs.org/) and [io.js](https://iojs.org/).
 
 
