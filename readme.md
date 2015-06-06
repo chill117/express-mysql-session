@@ -19,11 +19,11 @@ This will install `express-mysql-session` and add it to your application's `pack
 
 To use `express-mysql-session`, simply use it with your express session middleware, like this:
 ```js
-var express = require('express')
-var app = module.exports = express()
+var express = require('express');
+var app = module.exports = express();
 
-var session = require('express-session')
-var SessionStore = require('express-mysql-session')
+var session = require('express-session');
+var SessionStore = require('express-mysql-session');
 
 var options = {
 	host: 'localhost',
@@ -31,9 +31,9 @@ var options = {
 	user: 'session_test',
 	password: 'password',
 	database: 'session_test'
-}
+};
 
-var sessionStore = new SessionStore(options)
+var sessionStore = new SessionStore(options);
 
 app.use(session({
 	key: 'session_cookie_name',
@@ -41,18 +41,18 @@ app.use(session({
 	store: sessionStore,
 	resave: true,
 	saveUninitialized: true
-}))
+}));
 ```
 
 To cleanly close the session store:
 ```js
-sessionStore.closeStore()
+sessionStore.closeStore();
 ```
 
 To pass in an existing MySQL database connection, you would do something like this:
 ```js
-var mysql = require('mysql')
-var SessionStore = require('express-mysql-session')
+var mysql = require('mysql');
+var SessionStore = require('express-mysql-session');
 
 var options = {
     host: 'localhost',
@@ -60,10 +60,10 @@ var options = {
     user: 'db_user',
     password: 'password',
     database: 'db_name'
-}
+};
 
-var connection = mysql.createConnection(options)
-var sessionStore = new SessionStore({}/* session store options */, connection)
+var connection = mysql.createConnection(options);
+var sessionStore = new SessionStore({}/* session store options */, connection);
 ```
 
 
@@ -93,8 +93,44 @@ var options = {
 	keepAlive: true,// Whether or not to send keep-alive pings on the database connection.
 	keepAliveInterval: 30000,// How frequently keep-alive pings will be sent; milliseconds.
 	createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
-}
+	schema: {
+		tableName: 'sessions',
+		columnNames: {
+			session_id: 'session_id',
+			expires: 'expires',
+			data: 'data'
+		}
+	},
+};
 ```
+
+
+#### Configurable Sessions Table and Column Names
+
+You can override the default sessions database table name and column names via the 'schema' option:
+
+```js
+var SessionStore = require('express-mysql-session');
+
+var options = {
+	host: 'localhost',
+	port: 3306,
+	user: 'session_test',
+	password: 'password',
+	database: 'session_test',
+	schema: {
+		tableName: 'custom_sessions_table_name',
+		columnNames: {
+			session_id: 'custom_session_id',
+			expires: 'custom_expires_column_name',
+			data: 'custom_data_column_name'
+		}
+	}
+};
+
+var sessionStore = new SessionStore(options);
+```
+
 
 #### Reconnect Delays
 
@@ -120,7 +156,7 @@ Alternatively you may supply a single integer value to the `reconnectDelay` opti
 ```js
 var options = {
 	reconnectDelay: 500
-}
+};
 ```
 
 
@@ -178,7 +214,7 @@ Now, you'll need to set up a local test database:
 	user: 'session_test',
 	password: 'password',
 	database: 'session_test'
-}
+};
 ```
 *These database credentials are located at `test/config/database.js`*
 
