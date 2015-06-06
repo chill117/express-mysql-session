@@ -1,3 +1,5 @@
+'use strict';
+
 var async = require('async')
 var chai = require('chai')
 var expect = chai.expect

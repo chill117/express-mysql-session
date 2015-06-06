@@ -1,3 +1,5 @@
+'use strict';
+
 var SessionStore = require('../../index.js')
 var sessionStore = require('../session-store.js')
 var TestManager = require('../test-manager.js')

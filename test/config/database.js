@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
 	host: process.env.DB_HOST !== undefined ? process.env.DB_HOST : 'localhost',
 	port: process.env.DB_PORT !== undefined ? process.env.DB_PORT : 3306,

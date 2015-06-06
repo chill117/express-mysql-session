@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = [
 	{
 		session_id: 'x8_4i3md4GT-YSO5u41ROgZD',

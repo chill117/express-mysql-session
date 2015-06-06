@@ -1,3 +1,5 @@
+'use strict';
+
 var SessionStore = require('../index')
 var databaseConfig = require('./config/database')
 
