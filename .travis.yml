@@ -1,11 +1,11 @@
 before_script:
-	- "mysql -e 'drop database if exists session_test; create database session_test;'"
+  - "mysql -e 'drop database if exists session_test; create database session_test;'"
 
 env:
-	- DB_HOST="127.0.0.1" DB_PORT=3306 DB_USER="root" DB_PASS="" DB_NAME="session_test"
+  - DB_HOST="127.0.0.1" DB_PORT=3306 DB_USER="root" DB_PASS="" DB_NAME="session_test"
 
 language: node_js
 node_js:
-	- "iojs"
-	- "0.12"
-	- "0.10"
+  - "iojs"
+  - "0.12"
+  - "0.10"
