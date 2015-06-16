@@ -19,7 +19,7 @@
 		"node": ">=0.10.0"
 	},
 	"dependencies": {
-		"express-session": "1.11.2",
+		"express-session": "1.11.3",
 		"debug": "2.2.0",
 		"mysql-connection-manager": "0.0.9"
 	},
