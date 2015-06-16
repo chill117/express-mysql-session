@@ -77,7 +77,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 				called = true;
 
 				done(new Error('Sync method should not have been called'));
-			}
+			};
 
 			var options = require('../config/database');
 
@@ -125,7 +125,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 				called = true;
 
 				cb && cb();
-			}
+			};
 
 			new SessionStore(options, function(error) {
 

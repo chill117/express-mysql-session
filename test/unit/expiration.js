@@ -116,10 +116,9 @@ describe('SessionStore#', function() {
 
 		it('should correctly set the check expiration interval time', function(done) {
 
-			var numCalls = 0,
-				numCallsExpected = 5,
-				intervalTime = 14;
-
+			var numCalls = 0;
+			var numCallsExpected = 5;
+			var intervalTime = 14;
 			var paddingTime = (intervalTime * 1.5);
 
 			// Override the clearExpiredSessions method.
