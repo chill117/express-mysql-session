@@ -1,9 +1,8 @@
 # express-mysql-session
 
-[![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session) [![Status of Dependencies](https://david-dm.org/chill117/express-mysql-session.svg)](https://david-dm.org/chill117/express-mysql-session)
-
 A MySQL session store for [express.js](http://expressjs.com/). Support for both [node.js](http://nodejs.org/) and [io.js](https://iojs.org/).
 
+[![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session) [![Status of Dependencies](https://david-dm.org/chill117/express-mysql-session.svg)](https://david-dm.org/chill117/express-mysql-session)
 
 
 ## Installation
@@ -225,4 +224,3 @@ With your local environment configured, running tests is as simple as:
 ```
 npm test
 ```
-This module supports node.js (versions `0.10.x`, `0.12.x`) and io.js (latest version). If you are planning to contribute, please test your changes against all supported versions of node.js and io.js. If you need help setting up multiple versions of node.js and io.js in your development environment, [this article](https://degreesofzero.com/article/how-to-install-multiple-versions-of-nodejs.html) can guide you through the process.
