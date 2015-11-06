@@ -37,7 +37,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 		});
 	});
 
-	describe('when the session database table does not yet exist', function() {
+	describe('when the session database table already exists', function() {
 
 		before(TestManager.setUp);
 
