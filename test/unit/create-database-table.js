@@ -143,6 +143,18 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 		describe('\'options.schema\'', function() {
 
+			var sessionStore;
+
+			before(function(done) {
+
+				sessionStore = new SessionStore(options, done);
+			});
+
+			after(function() {
+
+				sessionStore.closeStore();
+			});
+
 			it('should create a database table with the correct name and columns', function(done) {
 
 				options.schema = {
@@ -154,30 +166,56 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 					}
 				};
 
-				var sessionStore = new SessionStore(options, function(error) {
+				var sql = 'SHOW COLUMNS FROM ??';
+				var params = [options.schema.tableName];
+
+				sessionStore.connection.query(sql, params, function(error, rows) {
 
 					if (error) {
-						return done(new Error(error));
+						return done(error);
 					}
 
-					var sql = 'SHOW COLUMNS FROM ??';
-					var params = [options.schema.tableName];
-
-					sessionStore.connection.query(sql, params, function(error, rows) {
-
-						if (error) {
-							return done(new Error(error));
-						}
-
-						expect(rows).to.be.an('array');
-						expect(rows).to.have.length(3);
-						expect(rows[0].Field).to.equal(options.schema.columnNames.session_id);
-						expect(rows[1].Field).to.equal(options.schema.columnNames.expires);
-						expect(rows[2].Field).to.equal(options.schema.columnNames.data);
-
-						done();
-					});
+					expect(rows).to.be.an('array');
+					expect(rows).to.have.length(3);
+					expect(rows[0].Field).to.equal(options.schema.columnNames.session_id);
+					expect(rows[1].Field).to.equal(options.schema.columnNames.expires);
+					expect(rows[2].Field).to.equal(options.schema.columnNames.data);
+					done();
 				});
+			});
+
+			it('set() should work', function(done) {
+
+				sessionStore.set('some-session-id', { some: 'data' }, done);
+			});
+
+			it('get(session_id, cb) should work', function(done) {
+
+				var session_id = 'some-session-id';
+
+				sessionStore.set(session_id, { some: 'data' }, function(error) {
+
+					if (error) {
+						return done(error);
+					}
+
+					sessionStore.get(session_id, done);
+				});
+			});
+
+			it('destroy() should work', function(done) {
+
+				sessionStore.destroy('some-session-id', done);
+			});
+
+			it('length() should work', function(done) {
+
+				sessionStore.length(done);
+			});
+
+			it('clear() should work', function(done) {
+
+				sessionStore.clear(done);
 			});
 		});
 	});
