@@ -103,7 +103,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 		var options;
 		var originalSync;
 
-		before(function() {
+		beforeEach(function() {
 
 			options = require('../config/database');
 			options.createDatabaseTable = true;
@@ -145,17 +145,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 			var sessionStore;
 
-			before(function(done) {
-
-				sessionStore = new SessionStore(options, done);
-			});
-
-			after(function() {
-
-				sessionStore.closeStore();
-			});
-
-			it('should create a database table with the correct name and columns', function(done) {
+			beforeEach(function(done) {
 
 				options.schema = {
 					tableName: 'testSessionTable',
@@ -165,6 +155,16 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 						data: 'testColumnData'
 					}
 				};
+
+				sessionStore = new SessionStore(options, done);
+			});
+
+			afterEach(function() {
+
+				sessionStore.closeStore();
+			});
+
+			it('should create a database table with the correct name and columns', function(done) {
 
 				var sql = 'SHOW COLUMNS FROM ??';
 				var params = [options.schema.tableName];
