@@ -3,15 +3,14 @@
 var async = require('async');
 var expect = require('chai').expect;
 
-var sessionStore = require('../session-store');
 var manager = require('../manager');
+var fixtures = manager.fixtures.sessions;
+var sessionStore = manager.sessionStore;
 
 describe('SessionStore#length(cb)', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
-
-	var fixtures = require('../fixtures/sessions');
 
 	it('should give an accurate count of the total number of sessions', function(done) {
 
@@ -25,7 +24,7 @@ describe('SessionStore#length(cb)', function() {
 			sessionStore.set(session_id, data, function(error) {
 
 				if (error) {
-					return nextFixture(new Error(error));
+					return nextFixture(error);
 				}
 
 				num_sessions++;

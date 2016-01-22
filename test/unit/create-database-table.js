@@ -2,12 +2,11 @@
 
 var expect = require('chai').expect;
 
-var SessionStore = require('../../index');
-var sessionStore = require('../session-store');
 var manager = require('../manager');
+var sessionStore = manager.sessionStore;
+var SessionStore = manager.SessionStore;
 
 describe('SessionStore#createDatabaseTable(cb)', function() {
-
 
 	describe('when the session database table does not yet exist', function() {
 
@@ -18,20 +17,13 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 			sessionStore.createDatabaseTable(function(error) {
 
 				if (error) {
-					return done(new Error(error));
+					return done(error);
 				}
 
 				var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions`';
 				var params = [];
 
-				sessionStore.connection.query(sql, params, function(error, result) {
-
-					if (error) {
-						return done(new Error(error));
-					}
-
-					done();
-				});
+				sessionStore.connection.query(sql, params, done);
 			});
 		});
 	});
@@ -42,14 +34,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 		it('should do nothing', function(done) {
 
-			sessionStore.createDatabaseTable(function(error) {
-
-				if (error) {
-					return done(new Error(error));
-				}
-
-				done();
-			});
+			sessionStore.createDatabaseTable(done);
 		});
 	});
 
@@ -78,7 +63,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 				done(new Error('Sync method should not have been called'));
 			};
 
-			var options = require('../config/database');
+			var options = manager.config;
 
 			options.createDatabaseTable = false;
 
@@ -89,7 +74,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 				}
 
 				if (error) {
-					return done(new Error(error));
+					return done(error);
 				}
 
 				done();
@@ -104,7 +89,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 		beforeEach(function() {
 
-			options = require('../config/database');
+			options = manager.config;
 			options.createDatabaseTable = true;
 
 			originalSync = SessionStore.prototype.createDatabaseTable;
@@ -129,7 +114,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 			new SessionStore(options, function(error) {
 
 				if (error) {
-					return done(new Error(error));
+					return done(error);
 				}
 
 				if (!called) {

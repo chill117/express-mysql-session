@@ -6,7 +6,9 @@ var app = module.exports = express();
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var sessionStore = require('../../session-store');
+
+var manager = require('../../manager');
+var sessionStore = manager.sessionStore;
 
 var session_cookie_name = 'express.sid';
 var session_cookie_secret = 'some_secret';

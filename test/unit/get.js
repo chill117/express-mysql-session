@@ -3,15 +3,14 @@
 var async = require('async');
 var expect = require('chai').expect;
 
-var sessionStore = require('../session-store');
 var manager = require('../manager');
+var fixtures = manager.fixtures.sessions;
+var sessionStore = manager.sessionStore;
 
 describe('SessionStore#get(session_id, cb)', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
-
-	var fixtures = require('../fixtures/sessions');
 
 	describe('when a session exists', function() {
 

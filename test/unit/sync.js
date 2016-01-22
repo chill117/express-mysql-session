@@ -2,8 +2,8 @@
 
 var expect = require('chai').expect;
 
-var sessionStore = require('../session-store');
 var manager = require('../manager');
+var sessionStore = manager.sessionStore;
 
 describe('SessionStore#sync(cb)', function() {
 

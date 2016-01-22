@@ -3,15 +3,14 @@
 var async = require('async');
 var expect = require('chai').expect;
 
-var sessionStore = require('../session-store');
 var manager = require('../manager');
+var fixtures = manager.fixtures.sessions;
+var sessionStore = manager.sessionStore;
 
 describe('SessionStore#set(session_id, data, cb)', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
-
-	var fixtures = require('../fixtures/sessions');
 
 	describe('when the session does not exist yet', function() {
 
@@ -31,7 +30,7 @@ describe('SessionStore#set(session_id, data, cb)', function() {
 					sessionStore.get(session_id, function(error, session) {
 
 						if (error) {
-							return nextFixture(new Error(error));
+							return nextFixture(error);
 						}
 
 						expect(error).to.equal(null);
@@ -72,7 +71,7 @@ describe('SessionStore#set(session_id, data, cb)', function() {
 					sessionStore.get(session_id, function(error, session) {
 
 						if (error) {
-							return nextFixture(new Error(error));
+							return nextFixture(error);
 						}
 
 						expect(error).to.equal(null);

@@ -2,10 +2,11 @@
 
 var expect = require('chai').expect;
 
-var sessionStore = require('../session-store');
 var manager = require('../manager');
-var SessionStore = require('../../index');
-var databaseConfig = require('../config/database');
+var config = manager.config;
+var fixtures = manager.fixtures.sessions;
+var sessionStore = manager.sessionStore;
+var SessionStore = manager.SessionStore;
 
 describe('SessionStore#', function() {
 
@@ -14,7 +15,6 @@ describe('SessionStore#', function() {
 
 	describe('clearExpiredSessions(cb)', function() {
 
-		var fixtures = require('../fixtures/sessions');
 		var num_expired = fixtures.length - 2;
 
 		before(manager.populateSessions);
@@ -29,14 +29,7 @@ describe('SessionStore#', function() {
 			var expires = ( new Date( Date.now() - (expiration + 15000) ) ) / 1000;
 			var params = [ expires ];
 
-			sessionStore.connection.query(sql, params, function(error) {
-
-				if (error) {
-					return done(new Error(error));
-				}
-
-				done();
-			});
+			sessionStore.connection.query(sql, params, done);
 		});
 
 		after(manager.clearSessions);
@@ -46,17 +39,16 @@ describe('SessionStore#', function() {
 			sessionStore.clearExpiredSessions(function(error) {
 
 				if (error) {
-					return done(new Error(error));
+					return done(error);
 				}
 
 				sessionStore.length(function(error, count) {
 
 					if (error) {
-						return done(new Error(error));
+						return done(error);
 					}
 
 					expect(count).to.equal(fixtures.length - num_expired);
-
 					done();
 				});
 			});
@@ -87,11 +79,11 @@ describe('SessionStore#', function() {
 			var checkExpirationInterval = 45;
 
 			var sessionStore = new SessionStore({
-				host: databaseConfig.host,
-				port: databaseConfig.port,
-				user: databaseConfig.user,
-				password: databaseConfig.password,
-				database: databaseConfig.database,
+				host: config.host,
+				port: config.port,
+				user: config.user,
+				password: config.password,
+				database: config.database,
 				checkExpirationInterval: checkExpirationInterval,
 				createDatabaseTable: false
 			});
