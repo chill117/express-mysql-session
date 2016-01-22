@@ -4,19 +4,18 @@ var async = require('async');
 var expect = require('chai').expect;
 
 var sessionStore = require('../session-store');
-var TestManager = require('../test-manager');
+var manager = require('../manager');
 
 describe('SessionStore#set(session_id, data, cb)', function() {
 
-	before(TestManager.tearDown);
-	before(TestManager.setUp);
-	after(TestManager.tearDown);
+	before(manager.setUp);
+	after(manager.tearDown);
 
 	var fixtures = require('../fixtures/sessions');
 
 	describe('when the session does not exist yet', function() {
 
-		after(TestManager.clearSessions);
+		after(manager.clearSessions);
 
 		it('should create a new session', function(done) {
 
@@ -48,7 +47,7 @@ describe('SessionStore#set(session_id, data, cb)', function() {
 
 	describe('when the session already exists', function() {
 
-		before(TestManager.populateSessions);
+		before(manager.populateSessions);
 
 		it('should update the existing session with the new data', function(done) {
 

@@ -4,19 +4,18 @@ var async = require('async');
 var expect = require('chai').expect;
 
 var sessionStore = require('../session-store');
-var TestManager = require('../test-manager');
+var manager = require('../manager');
 
 describe('SessionStore#get(session_id, cb)', function() {
 
-	before(TestManager.tearDown);
-	before(TestManager.setUp);
-	after(TestManager.tearDown);
+	before(manager.setUp);
+	after(manager.tearDown);
 
 	var fixtures = require('../fixtures/sessions');
 
 	describe('when a session exists', function() {
 
-		before(TestManager.populateSessions);
+		before(manager.populateSessions);
 
 		it('should return its session data', function(done) {
 
@@ -39,7 +38,7 @@ describe('SessionStore#get(session_id, cb)', function() {
 
 	describe('when a session does not exist', function() {
 
-		before(TestManager.clearSessions);
+		before(manager.clearSessions);
 
 		it('should return null', function(done) {
 

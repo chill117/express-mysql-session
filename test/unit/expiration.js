@@ -3,22 +3,21 @@
 var expect = require('chai').expect;
 
 var sessionStore = require('../session-store');
-var TestManager = require('../test-manager');
+var manager = require('../manager');
 var SessionStore = require('../../index');
 var databaseConfig = require('../config/database');
 
 describe('SessionStore#', function() {
 
-	before(TestManager.tearDown);
-	before(TestManager.setUp);
-	after(TestManager.tearDown);
+	before(manager.setUp);
+	after(manager.tearDown);
 
 	describe('clearExpiredSessions(cb)', function() {
 
 		var fixtures = require('../fixtures/sessions');
 		var num_expired = fixtures.length - 2;
 
-		before(TestManager.populateSessions);
+		before(manager.populateSessions);
 
 		before(function(done) {
 
@@ -40,7 +39,7 @@ describe('SessionStore#', function() {
 			});
 		});
 
-		after(TestManager.clearSessions);
+		after(manager.clearSessions);
 
 		it('should clear expired sessions', function(done) {
 

@@ -6,13 +6,12 @@ var http = require('http');
 var querystring = require('querystring');
 
 var app = require('./app');
-var TestManager = require('../../test-manager');
+var manager = require('../../manager');
 
 describe('Express Integration', function() {
 
-	before(TestManager.tearDown);
-	before(TestManager.setUp);
-	after(TestManager.tearDown);
+	before(manager.setUp);
+	after(manager.tearDown);
 
 	describe('Sessions for a single client', function() {
 

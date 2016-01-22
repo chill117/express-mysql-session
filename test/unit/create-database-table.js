@@ -4,15 +4,14 @@ var expect = require('chai').expect;
 
 var SessionStore = require('../../index');
 var sessionStore = require('../session-store');
-var TestManager = require('../test-manager');
+var manager = require('../manager');
 
 describe('SessionStore#createDatabaseTable(cb)', function() {
 
-	before(TestManager.tearDown);
 
 	describe('when the session database table does not yet exist', function() {
 
-		after(TestManager.tearDown);
+		after(manager.tearDown);
 
 		it('should create it', function(done) {
 
@@ -39,7 +38,7 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 	describe('when the session database table already exists', function() {
 
-		before(TestManager.setUp);
+		before(manager.setUp);
 
 		it('should do nothing', function(done) {
 

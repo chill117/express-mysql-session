@@ -4,13 +4,12 @@ var async = require('async');
 var expect = require('chai').expect;
 
 var sessionStore = require('../session-store');
-var TestManager = require('../test-manager');
+var manager = require('../manager');
 
 describe('SessionStore#length(cb)', function() {
 
-	before(TestManager.tearDown);
-	before(TestManager.setUp);
-	after(TestManager.tearDown);
+	before(manager.setUp);
+	after(manager.tearDown);
 
 	var fixtures = require('../fixtures/sessions');
 
