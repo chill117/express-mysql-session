@@ -5,7 +5,7 @@ var expect = require('chai').expect;
 var manager = require('../manager');
 var sessionStore = manager.sessionStore;
 
-describe('SessionStore#clear(cb)', function() {
+describe('clear(cb)', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);

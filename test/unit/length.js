@@ -7,7 +7,7 @@ var manager = require('../manager');
 var fixtures = manager.fixtures.sessions;
 var sessionStore = manager.sessionStore;
 
-describe('SessionStore#length(cb)', function() {
+describe('length(cb)', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);

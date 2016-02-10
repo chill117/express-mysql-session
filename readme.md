@@ -22,7 +22,7 @@ var express = require('express');
 var app = module.exports = express();
 
 var session = require('express-session');
-var SessionStore = require('express-mysql-session');
+var MysqlStore = require('express-mysql-session');
 
 var options = {
 	host: 'localhost',
@@ -32,7 +32,7 @@ var options = {
 	database: 'session_test'
 };
 
-var sessionStore = new SessionStore(options);
+var sessionStore = new MysqlStore(options);
 
 app.use(session({
 	key: 'session_cookie_name',
@@ -51,7 +51,8 @@ sessionStore.closeStore();
 To pass in an existing MySQL database connection, you would do something like this:
 ```js
 var mysql = require('mysql');
-var SessionStore = require('express-mysql-session');
+var session = require('express-session');
+var MysqlStore = require('express-mysql-session')(session);
 
 var options = {
     host: 'localhost',
@@ -62,7 +63,7 @@ var options = {
 };
 
 var connection = mysql.createConnection(options);
-var sessionStore = new SessionStore({}/* session store options */, connection);
+var sessionStore = new MysqlStore({}/* session store options */, connection);
 ```
 
 
@@ -78,19 +79,6 @@ var options = {
 	database: 'session_test',// Database name.
 	checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
 	expiration: 86400000,// The maximum age of a valid session; milliseconds.
-	autoReconnect: true,// Whether or not to re-establish a database connection after a disconnect.
-	reconnectDelay: [
-		500,// Time between each attempt in the first group of reconnection attempts; milliseconds.
-		1000,// Time between each attempt in the second group of reconnection attempts; milliseconds.
-		5000,// Time between each attempt in the third group of reconnection attempts; milliseconds.
-		30000,// Time between each attempt in the fourth group of reconnection attempts; milliseconds.
-		300000// Time between each attempt in the fifth group of reconnection attempts; milliseconds.
-	],
-	reconnectDelayGroupSize: 5,// Number of reconnection attempts per reconnect delay value.
-	maxReconnectAttempts: 25,// Maximum number of reconnection attempts. Set to 0 for unlimited.
-	useConnectionPooling: false,// Whether or not to use connection pooling.
-	keepAlive: true,// Whether or not to send keep-alive pings on the database connection.
-	keepAliveInterval: 30000,// How frequently keep-alive pings will be sent; milliseconds.
 	createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
 	schema: {
 		tableName: 'sessions',
@@ -99,9 +87,10 @@ var options = {
 			expires: 'expires',
 			data: 'data'
 		}
-	},
+	}
 };
 ```
+There are additional options you can provide, which will be passed to an instance of [mysql-connection-manager](https://github.com/chill117/mysql-connection-manager#options).
 
 
 #### Configurable Sessions Table and Column Names
@@ -109,7 +98,8 @@ var options = {
 You can override the default sessions database table name and column names via the 'schema' option:
 
 ```js
-var SessionStore = require('express-mysql-session');
+var session = require('express-session');
+var MysqlStore = require('express-mysql-session')(session);
 
 var options = {
 	host: 'localhost',
@@ -127,35 +117,7 @@ var options = {
 	}
 };
 
-var sessionStore = new SessionStore(options);
-```
-
-
-#### Reconnect Delays
-
-The reconnect-related options may require a bit of additional explanation. With the default options shown above, the reconnect attempts will have the following delay pattern:
-
-* Attempts __#1__ through __#5__ will have a delay of __500 milliseconds__ each.
-* Attempts __#6__ through __#10__ will have a delay of __1 second__ each.
-* Attempts __#11__ through __#15__ will have a delay of __5 seconds__ each.
-* Attempts __#16__ through __#20__ will have a delay of __30 seconds__ each.
-* Attempts __#21__ through __#25__ will have a delay of __5 minutes__ each.
-
-If the `reconnectDelayGroupSize` was 3:
-
-* Attempts __#1__ through __#3__ will have a delay of __500 milliseconds__ each.
-* Attempts __#4__ through __#6__ will have a delay of __1 second__ each.
-* Attempts __#7__ through __#9__ will have a delay of __5 seconds__ each.
-* Attempts __#10__ through __#12__ will have a delay of __30 seconds__ each.
-* Attempts __#13__ through __#25__ will have a delay of __5 minutes__ each.
-
-Any reconnect attempts beyond the last value in the `reconnectDelay` array will simply use the last value from the `reconnectDelay` array.
-
-Alternatively you may supply a single integer value to the `reconnectDelay` option to have one delay time between all reconnect attempts, like this:
-```js
-var options = {
-	reconnectDelay: 500
-};
+var sessionStore = new MysqlStore(options);
 ```
 
 
@@ -193,7 +155,7 @@ Now if you're still interested, you'll need to get your local environment config
 
 First, you'll need to pull down the code from GitHub:
 ```
-git clone git@github.com:chill117/express-mysql-session.git
+git clone https://github.com/chill117/express-mysql-session.git
 ```
 
 #### Step 2: Install Dependencies
@@ -215,7 +177,16 @@ Now, you'll need to set up a local test database:
 	database: 'session_test'
 };
 ```
-*These database credentials are located at `test/config/database.js`*
+*The test database settings are located in [test/config.js](https://github.com/chill117/express-mysql-session/blob/master/test/config.js)*
+
+Alternatively, you can provide custom database configurations via environment variables:
+```
+DB_HOST="localhost"
+DB_PORT="3306"
+DB_USER="session_test"
+DB_PASS="password"
+DB_NAME="session_test"
+```
 
 
 ### Running Tests

@@ -1,16 +1,26 @@
 'use strict';
 
+var _ = require('underscore');
 var expect = require('chai').expect;
 
 var manager = require('../manager');
 var sessionStore = manager.sessionStore;
-var SessionStore = manager.SessionStore;
+var MysqlStore = manager.MysqlStore;
 
-describe('SessionStore#createDatabaseTable(cb)', function() {
+describe('createDatabaseTable(cb)', function() {
+
+	before(manager.tearDown);
+
+	afterEach(function() {
+
+		MysqlStore = manager.loadConstructor();
+	});
+
+	after(manager.tearDown);
 
 	describe('when the session database table does not yet exist', function() {
 
-		after(manager.tearDown);
+		afterEach(manager.tearDown);
 
 		it('should create it', function(done) {
 
@@ -40,34 +50,21 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 	describe('when \'options.createDatabaseTable\' is set to FALSE', function() {
 
-		var originalSync;
-
-		before(function() {
-
-			originalSync = SessionStore.prototype.createDatabaseTable;
-		});
-
-		afterEach(function() {
-
-			SessionStore.prototype.createDatabaseTable = originalSync;
-		});
-
 		it('should not be called when a new sessionStore object is created', function(done) {
 
 			var called = false;
 
-			SessionStore.prototype.createDatabaseTable = function() {
+			MysqlStore.prototype.createDatabaseTable = function() {
 
 				called = true;
-
-				done(new Error('Sync method should not have been called'));
+				done(new Error('createDatabaseTable method should not have been called'));
 			};
 
-			var options = manager.config;
+			var options = _.extend({}, manager.config, {
+				createDatabaseTable: false
+			});
 
-			options.createDatabaseTable = false;
-
-			new SessionStore(options, function(error) {
+			new MysqlStore(options, function(error) {
 
 				if (called) {
 					return;
@@ -85,40 +82,32 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 	describe('when \'options.createDatabaseTable\' is set to TRUE', function() {
 
 		var options;
-		var originalSync;
 
 		beforeEach(function() {
 
-			options = manager.config;
-			options.createDatabaseTable = true;
-
-			originalSync = SessionStore.prototype.createDatabaseTable;
-		});
-
-		afterEach(function() {
-
-			SessionStore.prototype.createDatabaseTable = originalSync;
+			options = _.extend({}, manager.config, {
+				createDatabaseTable: true
+			});
 		});
 
 		it('should be called when a new sessionStore object is created', function(done) {
 
 			var called = false;
 
-			SessionStore.prototype.createDatabaseTable = function(cb) {
+			MysqlStore.prototype.createDatabaseTable = function(cb) {
 
 				called = true;
-
 				cb && cb();
 			};
 
-			new SessionStore(options, function(error) {
+			new MysqlStore(options, function(error) {
 
 				if (error) {
 					return done(error);
 				}
 
 				if (!called) {
-					return done(new Error('Sync method should have been called'));
+					return done(new Error('createDatabaseTable method should have been called'));
 				}
 
 				done();
@@ -131,16 +120,18 @@ describe('SessionStore#createDatabaseTable(cb)', function() {
 
 			beforeEach(function(done) {
 
-				options.schema = {
-					tableName: 'testSessionTable',
-					columnNames: {
-						session_id: 'testColumnSessionId',
-						expires: 'testColumnExpires',
-						data: 'testColumnData'
+				options = _.extend(options, {
+					schema: {
+						tableName: 'testSessionTable',
+						columnNames: {
+							session_id: 'testColumnSessionId',
+							expires: 'testColumnExpires',
+							data: 'testColumnData'
+						}
 					}
-				};
+				});
 
-				sessionStore = new SessionStore(options, done);
+				sessionStore = new MysqlStore(options, done);
 			});
 
 			afterEach(function() {

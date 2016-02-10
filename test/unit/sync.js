@@ -5,11 +5,14 @@ var expect = require('chai').expect;
 var manager = require('../manager');
 var sessionStore = manager.sessionStore;
 
-describe('SessionStore#sync(cb)', function() {
+describe('sync(cb)', function() {
+
+	before(manager.tearDown);
+	after(manager.tearDown);
 
 	describe('when the session database table does not yet exist', function() {
 
-		after(manager.tearDown);
+		afterEach(manager.tearDown);
 
 		it('should create it', function(done) {
 

@@ -6,9 +6,17 @@ var app = module.exports = express();
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var MysqlStore = require('../../..')(session);
 
-var manager = require('../../manager');
-var sessionStore = manager.sessionStore;
+var config = require('../../config');
+
+var sessionStore = new MysqlStore({
+	host: config.host,
+	port: config.port,
+	user: config.user,
+	password: config.password,
+	database: config.database
+});
 
 var session_cookie_name = 'express.sid';
 var session_cookie_secret = 'some_secret';
