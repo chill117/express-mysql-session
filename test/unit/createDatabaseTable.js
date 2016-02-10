@@ -13,7 +13,7 @@ describe('createDatabaseTable(cb)', function() {
 
 	afterEach(function() {
 
-		MySQLStore = manager.loadConstructor();
+		MySQLStore = manager.loadConstructor(true);
 	});
 
 	after(manager.tearDown);
