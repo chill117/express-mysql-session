@@ -7,7 +7,7 @@ var manager = require('../manager');
 
 describe('constructor', function() {
 
-	var MysqlStore;
+	var MySQLStore;
 
 	beforeEach(manager.setUp);
 
@@ -17,12 +17,12 @@ describe('constructor', function() {
 			delete require.cache[require.resolve('../..')];
 		}
 
-		manager.MysqlStore = null;
+		manager.MySQLStore = null;
 	});
 
 	afterEach(function() {
 
-		manager.MysqlStore = require('../../');
+		manager.MySQLStore = require('../../');
 	});
 
 	afterEach(manager.tearDown);
@@ -38,13 +38,13 @@ describe('constructor', function() {
 
 		beforeEach(function() {
 
-			MysqlStore = require('../..')(session);
+			MySQLStore = require('../..')(session);
 		});
 
-		it('MysqlStore(options, cb)', function(done) {
+		it('MySQLStore(options, cb)', function(done) {
 
 			var options = manager.config;
-			var sessionStore = new MysqlStore(options, function(error) {
+			var sessionStore = new MySQLStore(options, function(error) {
 
 				try {
 
@@ -60,11 +60,11 @@ describe('constructor', function() {
 			});
 		});
 
-		it('MysqlStore(options, connection, cb)', function(done) {
+		it('MySQLStore(options, connection, cb)', function(done) {
 
 			var options = {};
 			var connection = mysql.createConnection(manager.config);
-			var sessionStore = new MysqlStore(options, connection, function(error) {
+			var sessionStore = new MySQLStore(options, connection, function(error) {
 
 				try {
 
@@ -85,13 +85,13 @@ describe('constructor', function() {
 
 		beforeEach(function() {
 
-			MysqlStore = require('../..');
+			MySQLStore = require('../..');
 		});
 
-		it('MysqlStore(options, cb)', function(done) {
+		it('MySQLStore(options, cb)', function(done) {
 
 			var options = manager.config;
-			var sessionStore = new MysqlStore(options, function(error) {
+			var sessionStore = new MySQLStore(options, function(error) {
 
 				try {
 
@@ -107,11 +107,11 @@ describe('constructor', function() {
 			});
 		});
 
-		it('MysqlStore(options, connection, cb)', function(done) {
+		it('MySQLStore(options, connection, cb)', function(done) {
 
 			var options = {};
 			var connection = mysql.createConnection(manager.config);
-			var sessionStore = new MysqlStore(options, connection, function(error) {
+			var sessionStore = new MySQLStore(options, connection, function(error) {
 
 				try {
 

@@ -6,11 +6,11 @@ var app = module.exports = express();
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var MysqlStore = require('../../..')(session);
+var MySQLStore = require('../../..')(session);
 
 var config = require('../../config');
 
-var sessionStore = new MysqlStore({
+var sessionStore = new MySQLStore({
 	host: config.host,
 	port: config.port,
 	user: config.user,

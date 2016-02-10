@@ -5,7 +5,7 @@ var expect = require('chai').expect;
 var manager = require('../manager');
 var config = manager.config;
 var sessionStore = manager.sessionStore;
-var MysqlStore = manager.MysqlStore;
+var MySQLStore = manager.MySQLStore;
 
 describe('setExpirationInterval(interval)', function() {
 
@@ -33,7 +33,7 @@ describe('setExpirationInterval(interval)', function() {
 
 		var checkExpirationInterval = 45;
 
-		var sessionStore = new MysqlStore({
+		var sessionStore = new MySQLStore({
 			host: config.host,
 			port: config.port,
 			user: config.user,

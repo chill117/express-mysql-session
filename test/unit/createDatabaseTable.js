@@ -5,7 +5,7 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 var sessionStore = manager.sessionStore;
-var MysqlStore = manager.MysqlStore;
+var MySQLStore = manager.MySQLStore;
 
 describe('createDatabaseTable(cb)', function() {
 
@@ -13,7 +13,7 @@ describe('createDatabaseTable(cb)', function() {
 
 	afterEach(function() {
 
-		MysqlStore = manager.loadConstructor();
+		MySQLStore = manager.loadConstructor();
 	});
 
 	after(manager.tearDown);
@@ -54,7 +54,7 @@ describe('createDatabaseTable(cb)', function() {
 
 			var called = false;
 
-			MysqlStore.prototype.createDatabaseTable = function() {
+			MySQLStore.prototype.createDatabaseTable = function() {
 
 				called = true;
 				done(new Error('createDatabaseTable method should not have been called'));
@@ -64,7 +64,7 @@ describe('createDatabaseTable(cb)', function() {
 				createDatabaseTable: false
 			});
 
-			new MysqlStore(options, function(error) {
+			new MySQLStore(options, function(error) {
 
 				if (called) {
 					return;
@@ -94,13 +94,13 @@ describe('createDatabaseTable(cb)', function() {
 
 			var called = false;
 
-			MysqlStore.prototype.createDatabaseTable = function(cb) {
+			MySQLStore.prototype.createDatabaseTable = function(cb) {
 
 				called = true;
 				cb && cb();
 			};
 
-			new MysqlStore(options, function(error) {
+			new MySQLStore(options, function(error) {
 
 				if (error) {
 					return done(error);
@@ -131,7 +131,7 @@ describe('createDatabaseTable(cb)', function() {
 					}
 				});
 
-				sessionStore = new MysqlStore(options, done);
+				sessionStore = new MySQLStore(options, done);
 			});
 
 			afterEach(function() {

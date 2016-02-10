@@ -66,19 +66,19 @@ var manager = module.exports = {
 			delete require.cache[require.resolve('..')];
 		}
 
-		MysqlStore = manager.MysqlStore = require('..')(session);
+		MySQLStore = manager.MySQLStore = require('..')(session);
 		sessionStore = manager.sessionStore = manager.createInstance();
 
-		return MysqlStore;
+		return MySQLStore;
 	},
 
 	createInstance: function(options) {
 
 		options = _.defaults(options || {}, config);
 
-		return new MysqlStore(options);
+		return new MySQLStore(options);
 	}
 };
 
-var MysqlStore = manager.MysqlStore = manager.loadConstructor();
+var MySQLStore = manager.MySQLStore = manager.loadConstructor();
 var sessionStore = manager.sessionStore = manager.createInstance();

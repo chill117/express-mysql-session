@@ -16,13 +16,12 @@ This will install `express-mysql-session` and add it to your application's `pack
 
 ## How to Use
 
-To use `express-mysql-session`, simply use it with your express session middleware, like this:
+Use with your express session middleware, like this:
 ```js
 var express = require('express');
 var app = module.exports = express();
-
 var session = require('express-session');
-var MysqlStore = require('express-mysql-session');
+var MySQLStore = require('express-mysql-session')(session);
 
 var options = {
 	host: 'localhost',
@@ -32,7 +31,7 @@ var options = {
 	database: 'session_test'
 };
 
-var sessionStore = new MysqlStore(options);
+var sessionStore = new MySQLStore(options);
 
 app.use(session({
 	key: 'session_cookie_name',
@@ -43,16 +42,13 @@ app.use(session({
 }));
 ```
 
-To cleanly close the session store:
-```js
-sessionStore.closeStore();
-```
+### With an existing MySQL connection
 
 To pass in an existing MySQL database connection, you would do something like this:
 ```js
 var mysql = require('mysql');
 var session = require('express-session');
-var MysqlStore = require('express-mysql-session')(session);
+var MySQLStore = require('express-mysql-session')(session);
 
 var options = {
     host: 'localhost',
@@ -63,7 +59,14 @@ var options = {
 };
 
 var connection = mysql.createConnection(options);
-var sessionStore = new MysqlStore({}/* session store options */, connection);
+var sessionStore = new MySQLStore({}/* session store options */, connection);
+```
+
+### Closing the session store
+
+To cleanly close the session store:
+```js
+sessionStore.closeStore();
 ```
 
 
@@ -93,13 +96,13 @@ var options = {
 There are additional options you can provide, which will be passed to an instance of [mysql-connection-manager](https://github.com/chill117/mysql-connection-manager#options).
 
 
-#### Configurable Sessions Table and Column Names
+#### Configurable sessions table and column names
 
 You can override the default sessions database table name and column names via the 'schema' option:
 
 ```js
 var session = require('express-session');
-var MysqlStore = require('express-mysql-session')(session);
+var MySQLStore = require('express-mysql-session')(session);
 
 var options = {
 	host: 'localhost',
@@ -117,7 +120,7 @@ var options = {
 	}
 };
 
-var sessionStore = new MysqlStore(options);
+var sessionStore = new MySQLStore(options);
 ```
 
 
