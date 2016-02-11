@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(grunt) {
 
 	var config = {
@@ -35,5 +37,5 @@ module.exports = function(grunt) {
 
 	grunt.initConfig(config);
 
-	grunt.registerTask('test', [ 'jscs', 'mochaTest' ]);
+	grunt.registerTask('test', [ 'mochaTest', 'jscs' ]);
 };
