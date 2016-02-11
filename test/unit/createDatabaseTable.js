@@ -116,55 +116,16 @@ describe('createDatabaseTable(cb)', function() {
 
 		describe('\'options.schema\'', function() {
 
+			beforeEach(manager.tearDown);
+
 			var sessionStore;
 
-			beforeEach(function(done) {
-
-				options = _.extend(options, {
-					schema: {
-						tableName: 'testSessionTable',
-						columnNames: {
-							session_id: 'testColumnSessionId',
-							expires: 'testColumnExpires',
-							data: 'testColumnData'
-						}
-					}
-				});
-
-				sessionStore = new MySQLStore(options, done);
-			});
-
-			afterEach(function() {
-
-				sessionStore.closeStore();
-			});
-
-			it('should create a database table with the correct name and columns', function(done) {
-
-				var sql = 'SHOW COLUMNS FROM ??';
-				var params = [options.schema.tableName];
-
-				sessionStore.connection.query(sql, params, function(error, rows) {
-
-					if (error) {
-						return done(error);
-					}
-
-					expect(rows).to.be.an('array');
-					expect(rows).to.have.length(3);
-					expect(rows[0].Field).to.equal(options.schema.columnNames.session_id);
-					expect(rows[1].Field).to.equal(options.schema.columnNames.expires);
-					expect(rows[2].Field).to.equal(options.schema.columnNames.data);
-					done();
-				});
-			});
-
-			it('set() should work', function(done) {
+			afterEach(function(done) {
 
 				sessionStore.set('some-session-id', { some: 'data' }, done);
 			});
 
-			it('get(session_id, cb) should work', function(done) {
+			afterEach(function(done) {
 
 				var session_id = 'some-session-id';
 
@@ -178,19 +139,111 @@ describe('createDatabaseTable(cb)', function() {
 				});
 			});
 
-			it('destroy() should work', function(done) {
+			afterEach(function(done) {
 
 				sessionStore.destroy('some-session-id', done);
 			});
 
-			it('length() should work', function(done) {
+			afterEach(function(done) {
 
 				sessionStore.length(done);
 			});
 
-			it('clear() should work', function(done) {
+			afterEach(function(done) {
 
 				sessionStore.clear(done);
+			});
+
+			afterEach(function() {
+
+				sessionStore.closeStore();
+			});
+
+			var customSchemas = [
+				{
+					tableName: 'testSessionTable',
+					columnNames: {
+						session_id: 'testColumnSessionId',
+						expires: 'testColumnExpires',
+						data: 'testColumnData'
+					}
+				},
+				{
+					tableName: 'testSessionTable',
+					columnNames: {
+						session_id: 'testColumnSessionId'
+					}
+				},
+				{
+					tableName: 'testSessionTable'
+				},
+				{
+					columnNames: {
+						session_id: 'testColumnSessionId'
+					}
+				}
+			];
+
+			var defaultSchema = {
+				tableName: 'sessions',
+				columnNames: {
+					session_id: 'session_id',
+					expires: 'expires',
+					data: 'data'
+				}
+			};
+
+			_.each(customSchemas, function(customSchema) {
+
+				it(JSON.stringify(customSchema), function(done) {
+
+					var storeOptions = _.extend({}, options, {
+						schema: customSchema
+					});
+
+					var expectedSchema = _.defaults(customSchema, defaultSchema);
+
+					expectedSchema.columnNames = _.defaults(expectedSchema.columnNames, defaultSchema.columnNames);
+
+					sessionStore = new MySQLStore(storeOptions, function(error) {
+
+						if (error) {
+							return done(error);
+						}
+
+						var sql = 'SHOW COLUMNS FROM ??';
+						var params = [expectedSchema.tableName];
+
+						sessionStore.connection.query(sql, params, function(error, rows) {
+
+							if (error) {
+								return done(error);
+							}
+
+							try {
+
+								expect(rows).to.be.an('array');
+								expect(rows).to.have.length(_.size(expectedSchema.columnNames));
+
+								var columnExists = _.object(_.map(rows, function(row) {
+									return [row.Field, true];
+								}));
+
+								_.each(expectedSchema.columnNames, function(columnName) {
+
+									if (!columnExists[columnName]) {
+										throw new Error('Missing column: "' + columnName + '"');
+									}
+								});
+
+							} catch (error) {
+								return done(error);
+							}
+
+							done();
+						});
+					});
+				});
 			});
 		});
 	});
