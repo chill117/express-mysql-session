@@ -4,30 +4,26 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 var config = manager.config;
-var sessionStore = manager.sessionStore;
 var MySQLStore = manager.MySQLStore;
 
 describe('setExpirationInterval(interval)', function() {
 
-	before(manager.setUp);
+	var sessionStore;
+
+	before(function(done) {
+
+		manager.setUp(function(error, store) {
+
+			if (error) {
+				return done(error);
+			}
+
+			sessionStore = store;
+			done();
+		});
+	});
+
 	after(manager.tearDown);
-
-	var originalMethods = {};
-
-	before(function() {
-
-		originalMethods['clearExpiredSessions'] = sessionStore.clearExpiredSessions;
-	});
-
-	afterEach(function() {
-
-		// Restore original methods on the sessionStore object.
-		for (var name in originalMethods) {
-			sessionStore[name] = originalMethods[name];
-		}
-
-		sessionStore.clearExpirationInterval();
-	});
 
 	it('should be called when \'createDatabaseTable\' option is set to FALSE', function(done) {
 

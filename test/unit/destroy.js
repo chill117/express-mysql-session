@@ -5,11 +5,24 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 var fixtures = manager.fixtures.sessions;
-var sessionStore = manager.sessionStore;
 
 describe('destroy(session_id, cb)', function() {
 
-	before(manager.setUp);
+	var sessionStore;
+
+	before(function(done) {
+
+		manager.setUp(function(error, store) {
+
+			if (error) {
+				return done(error);
+			}
+
+			sessionStore = store;
+			done();
+		});
+	});
+
 	after(manager.tearDown);
 
 	describe('when the session exists', function() {
@@ -34,7 +47,6 @@ describe('destroy(session_id, cb)', function() {
 						}
 
 						expect(session).to.equal(null);
-
 						nextFixture();
 					});
 				});
@@ -58,12 +70,10 @@ describe('destroy(session_id, cb)', function() {
 				sessionStore.destroy(session_id, function(error) {
 
 					expect(error).to.equal(undefined);
-
 					nextFixture();
 				});
 
 			}, done);
-
 		});
 	});
 });

@@ -4,15 +4,27 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 var fixtures = manager.fixtures.sessions;
-var sessionStore = manager.sessionStore;
 
 describe('clearExpiredSessions(cb)', function() {
 
-	var numExpired = fixtures.length - 2;
+	var sessionStore;
 
-	before(manager.setUp);
+	before(function(done) {
+
+		manager.setUp(function(error, store) {
+
+			if (error) {
+				return done(error);
+			}
+
+			sessionStore = store;
+			done();
+		});
+	});
 
 	before(manager.populateSessions);
+
+	var numExpired = fixtures.length - 2;
 
 	before(function(done) {
 

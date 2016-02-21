@@ -5,11 +5,24 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 var fixtures = manager.fixtures.sessions;
-var sessionStore = manager.sessionStore;
 
 describe('length(cb)', function() {
 
-	before(manager.setUp);
+	var sessionStore;
+
+	before(function(done) {
+
+		manager.setUp(function(error, store) {
+
+			if (error) {
+				return done(error);
+			}
+
+			sessionStore = store;
+			done();
+		});
+	});
+
 	after(manager.tearDown);
 
 	it('should give an accurate count of the total number of sessions', function(done) {
@@ -33,7 +46,6 @@ describe('length(cb)', function() {
 
 					expect(error).to.equal(null);
 					expect(count).to.equal(num_sessions);
-
 					nextFixture();
 				});
 			});

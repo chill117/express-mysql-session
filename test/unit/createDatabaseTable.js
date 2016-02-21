@@ -4,12 +4,9 @@ var _ = require('underscore');
 var expect = require('chai').expect;
 
 var manager = require('../manager');
-var sessionStore = manager.sessionStore;
 var MySQLStore = manager.MySQLStore;
 
 describe('createDatabaseTable(cb)', function() {
-
-	before(manager.tearDown);
 
 	afterEach(function() {
 
@@ -20,7 +17,15 @@ describe('createDatabaseTable(cb)', function() {
 
 	describe('when the session database table does not yet exist', function() {
 
-		afterEach(manager.tearDown);
+		var sessionStore;
+
+		before(function(done) {
+
+			sessionStore = manager.createInstance(done);
+		});
+
+		before(manager.tearDown);
+		after(manager.tearDown);
 
 		it('should create it', function(done) {
 
@@ -40,7 +45,15 @@ describe('createDatabaseTable(cb)', function() {
 
 	describe('when the session database table already exists', function() {
 
+		var sessionStore;
+
+		before(function(done) {
+
+			sessionStore = manager.createInstance(done);
+		});
+
 		before(manager.setUp);
+		after(manager.tearDown);
 
 		it('should do nothing', function(done) {
 

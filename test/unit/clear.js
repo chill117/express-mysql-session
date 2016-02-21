@@ -3,16 +3,29 @@
 var expect = require('chai').expect;
 
 var manager = require('../manager');
-var sessionStore = manager.sessionStore;
 
 describe('clear(cb)', function() {
 
-	before(manager.setUp);
+	var sessionStore;
+
+	before(function(done) {
+
+		manager.setUp(function(error, store) {
+
+			if (error) {
+				return done(error);
+			}
+
+			sessionStore = store;
+			done();
+		});
+	});
+
 	after(manager.tearDown);
 
 	describe('when sessions exist', function() {
 
-		before(manager.populateSessions);
+		beforeEach(manager.populateSessions);
 
 		it('should delete all existing sessions', function(done) {
 

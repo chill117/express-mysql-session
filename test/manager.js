@@ -4,10 +4,13 @@ var _ = require('underscore');
 var async = require('async');
 var fs = require('fs');
 var session = require('express-session');
+var mysql = require('mysql');
 
 var config = require('./config');
 var fixtures = require('./fixtures');
 var schemaSql = fs.readFileSync(__dirname + '/../schema.sql', 'utf-8');
+
+var connection = mysql.createConnection(config);
 
 var manager = module.exports = {
 
@@ -16,10 +19,17 @@ var manager = module.exports = {
 
 	setUp: function(cb) {
 
-		async.series([
-			manager.tearDown,
-			manager.createDatabaseTables
-		], cb);
+		async.series({
+			tearDown: manager.tearDown,
+			store: manager.createInstance
+		}, function(error, results) {
+
+			if (error) {
+				return cb(error);
+			}
+
+			cb(null, results.store);
+		});
 	},
 
 	tearDown: function(cb) {
@@ -29,14 +39,9 @@ var manager = module.exports = {
 		], cb);
 	},
 
-	createDatabaseTables: function(cb) {
-
-		sessionStore.connection.query(schemaSql, cb);
-	},
-
 	dropDatabaseTables: function(cb) {
 
-		sessionStore.connection.query('SHOW TABLES', function(error, rows) {
+		connection.query('SHOW TABLES', function(error, rows) {
 
 			async.each(rows, function(row, next) {
 
@@ -44,7 +49,7 @@ var manager = module.exports = {
 				var sql = 'DROP TABLE IF EXISTS ??';
 				var params = [tableName];
 
-				sessionStore.connection.query(sql, params, next);
+				connection.query(sql, params, next);
 
 			}, cb);
 		});
@@ -75,19 +80,28 @@ var manager = module.exports = {
 			delete require.cache[require.resolve('..')];
 		}
 
-		MySQLStore = manager.MySQLStore = require('..')(session);
-		sessionStore = manager.sessionStore = manager.createInstance();
-
-		return MySQLStore;
+		return MySQLStore = manager.MySQLStore = require('..')(session);
 	},
 
-	createInstance: function(options) {
+	createInstance: function(options, cb) {
+
+		if (typeof options === 'function') {
+			cb = options;
+			options = null;
+		}
 
 		options = _.defaults(options || {}, config);
 
-		return new MySQLStore(options);
+		return sessionStore = new MySQLStore(options, function(error) {
+
+			if (error) {
+				return cb(error);
+			}
+
+			cb(null, sessionStore);
+		});
 	}
 };
 
 var MySQLStore = manager.MySQLStore = manager.loadConstructor();
-var sessionStore = manager.sessionStore = manager.createInstance();
+var sessionStore;
