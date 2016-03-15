@@ -14,6 +14,12 @@ npm install express-mysql-session --save
 This will install `express-mysql-session` and add it to your application's `package.json` file.
 
 
+## Note for Older Versions
+
+For users who are still using express-mysql-session `0.x`. Changes have been made to the constructor, which are backwards compatible, but you could run into troubles if using an older version of this module with the latest documentation. You can find the documentation for the older version [here](https://github.com/chill117/express-mysql-session/tree/9fbcf51416a00a7a525c1e6e431033125a2945b0).
+
+
+
 ## How to Use
 
 Use with your express session middleware, like this:
