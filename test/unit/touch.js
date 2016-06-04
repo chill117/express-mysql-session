@@ -58,6 +58,7 @@ describe('touch(session_id, data, cb)', function() {
 	});
 
 	describe('when the session exists', function() {
+
 		var oldExpiresValue = Math.round((Date.now() / 1000)) - 10;
 
 		before(function(done) {
@@ -71,7 +72,8 @@ describe('touch(session_id, data, cb)', function() {
 			});
 		});
 
-		it('Field expires should be updated, other fields should not be updated', function(done) {
+		it('"expires" field should be updated, other fields should not be updated', function(done) {
+
 			async.each(fixtures, function(fixture, nextFixture) {
 
 				var session_id = fixture.session_id;
