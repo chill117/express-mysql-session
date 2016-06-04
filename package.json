@@ -25,15 +25,15 @@
     "mysql-connection-manager": "0.0.13"
   },
   "devDependencies": {
-    "async": "1.5.2",
-    "body-parser": "1.15.0",
+    "async": "2.0.0-rc.5",
+    "body-parser": "1.15.1",
     "chai": "3.5.0",
-    "cookie-parser": "1.4.1",
+    "cookie-parser": "1.4.3",
     "express": "4.13.4",
     "grunt": "1.0.1",
-    "grunt-jscs": "2.8.0",
+    "grunt-jscs": "3.0.0",
     "grunt-mocha-test": "0.12.7",
-    "mocha": "2.4.5",
+    "mocha": "2.5.3",
     "mysql": "2.10.2",
     "underscore": "1.8.3"
   },
