@@ -72,7 +72,7 @@ var sessionStore = new MySQLStore({}/* session store options */, connection);
 
 To cleanly close the session store:
 ```js
-sessionStore.closeStore();
+sessionStore.close();
 ```
 
 
@@ -210,6 +210,7 @@ npm test
 
 * TBD:
   * Added [touch](https://github.com/expressjs/session#storetouchsid-session-callback) method.
+  * Deprecated `MySQLStore.closeStore` - should use `MySQLStore.close` instead.
 * v1.0.0:
   * Changed constructor interface. Must now pass session module to get `MySQLStore` constructor object. See [How to Use](https://github.com/chill117/express-mysql-session#how-to-use) for more information.
   * Fixes for issues: [#28](https://github.com/chill117/express-mysql-session/issues/28), [#33](https://github.com/chill117/express-mysql-session/issues/33).

@@ -43,17 +43,13 @@ describe('setExpirationInterval(interval)', function() {
 
 		// Override the clearExpiredSessions method.
 		sessionStore.clearExpiredSessions = function() {
-
 			called = true;
 		};
 
 		setTimeout(function() {
-
 			expect(called).to.equal(true);
-
 			done();
-
-		}, checkExpirationInterval + 30);
+		}, checkExpirationInterval + 40);
 	});
 
 	it('should correctly set the check expiration interval time', function(done) {
@@ -74,12 +70,8 @@ describe('setExpirationInterval(interval)', function() {
 		// Timeouts will never execute before the time given.
 		// But they are not 100% guaranteed to execute exactly when you would expect.
 		setTimeout(function() {
-
 			expect(numCalls >= numCallsExpected).to.equal(true);
-
 			done();
-
 		}, (intervalTime * numCallsExpected) + paddingTime);
-
 	});
 });

@@ -169,7 +169,7 @@ describe('createDatabaseTable(cb)', function() {
 
 			afterEach(function() {
 
-				sessionStore.closeStore();
+				sessionStore.close();
 			});
 
 			var customSchemas = [
