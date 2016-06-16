@@ -38,8 +38,13 @@ app.use(session({
 	key: session_cookie_name,
 	secret: session_cookie_secret,
 	store: sessionStore,
-	resave: true,
-	saveUninitialized: true
+	saveUninitialized: true,
+	// With "resave" equal to FALSE, the session store will use the touch() method.
+	resave: false,
+	cookie: {
+		httpOnly: true,
+		maxAge: 60000
+	}
 }));
 
 app.listen(app.get('port'), app.get('host'));
