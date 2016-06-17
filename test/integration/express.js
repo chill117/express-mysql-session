@@ -30,15 +30,19 @@ describe('Express Integration', function() {
 		{
 			description: '"resave" = FALSE',
 			options: {
-				// With "resave" equal to FALSE, the session store will use the touch() method.
-				resave: false
+				session: {
+					// With "resave" equal to FALSE, the session store will use the touch() method.
+					resave: false
+				}
 			}
 		},
 		{
 			description: '"cookie.maxAge" = NULL',
 			options: {
-				cookie: {
-					maxAge: null
+				session: {
+					cookie: {
+						maxAge: null
+					}
 				}
 			}
 		}
@@ -231,13 +235,14 @@ function createAppServer(options) {
 
 	options = _.defaults(options || {}, {
 		host: 'localhost',
-		port: appServerPort++,
-		session: {
-			key: 'express.sid',
-			secret: 'some_secret',
-			saveUninitialized: true,
-			resave: true
-		}
+		port: appServerPort++
+	});
+
+	options.session = _.defaults(options.session || {}, {
+		key: 'express.sid',
+		secret: 'some_secret',
+		saveUninitialized: true,
+		resave: true
 	});
 
 	var app = express();
