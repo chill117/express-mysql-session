@@ -2,13 +2,11 @@
 
 var _ = require('underscore');
 var async = require('async');
-var fs = require('fs');
 var session = require('express-session');
 var mysql = require('mysql');
 
 var config = require('./config');
 var fixtures = require('./fixtures');
-var schemaSql = fs.readFileSync(__dirname + '/../schema.sql', 'utf-8');
 
 var connection = mysql.createConnection(config);
 

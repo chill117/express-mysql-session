@@ -6,7 +6,6 @@ var cookieParser = require('cookie-parser');
 var expect = require('chai').expect;
 var express = require('express');
 var http = require('http');
-var querystring = require('querystring');
 
 var session = require('express-session');
 var MySQLStore = require('../..')(session);
@@ -66,8 +65,6 @@ describe('Express Integration', function() {
 
 				it('should persist between requests', function(done) {
 
-					var cookieJar;
-
 					var req = http.get({
 
 						hostname: app.options.host,
@@ -84,12 +81,6 @@ describe('Express Integration', function() {
 						var sessionCookie = getSessionCookie(cookieJar, app.options.session.key);
 
 						expect(sessionCookie).to.not.equal(false);
-
-						var sessionId = getSessionId(
-							sessionCookie,
-							app.options.session.key,
-							app.options.session.secret
-						);
 
 						var req2 = http.get({
 
@@ -125,8 +116,6 @@ describe('Express Integration', function() {
 
 				it('should not persist between requests', function(done) {
 
-					var cookieJar;
-
 					var req = http.get({
 
 						hostname: app.options.host,
@@ -143,12 +132,6 @@ describe('Express Integration', function() {
 						var sessionCookie = getSessionCookie(cookieJar, app.options.session.key);
 
 						expect(sessionCookie).to.not.equal(false);
-
-						var sessionId = getSessionId(
-							sessionCookie,
-							app.options.session.key,
-							app.options.session.secret
-						);
 
 						var req2 = http.get({
 
@@ -203,30 +186,6 @@ function getSessionCookie(cookies, cookieName) {
 	}
 
 	return sessionCookie;
-}
-
-function getSessionId(cookieHeader, cookieName, cookieSecret) {
-
-	var _cookieParser = cookieParser(cookieSecret);
-
-	var req = {
-		headers: {
-			cookie: cookieHeader
-		}
-	};
-
-	var result;
-
-	_cookieParser(req, {}, function(err) {
-
-		if (err) {
-			throw err;
-		}
-
-		result = req.signedCookies;
-	});
-
-	return result[cookieName];
 }
 
 var appServerPort = 3000;

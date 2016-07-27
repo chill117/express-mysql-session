@@ -1,7 +1,5 @@
 'use strict';
 
-var expect = require('chai').expect;
-
 var manager = require('../manager');
 
 describe('sync(cb)', function() {

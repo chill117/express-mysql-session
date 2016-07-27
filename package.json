@@ -15,26 +15,25 @@
     "email": "chill@degreesofzero.com"
   },
   "license": "MIT",
-  "engines": {
-    "node": ">=0.10.0"
-  },
   "dependencies": {
     "debug": "2.2.0",
     "depd": "1.1.0",
-    "express-session": "1.13.0",
+    "express-session": "1.14.0",
     "mysql-connection-manager": "0.0.13"
   },
   "devDependencies": {
-    "async": "2.0.0-rc.6",
-    "body-parser": "1.15.1",
+    "async": "2.0.1",
+    "body-parser": "1.15.2",
     "chai": "3.5.0",
     "cookie-parser": "1.4.3",
     "express": "4.14.0",
     "grunt": "1.0.1",
-    "grunt-jscs": "3.0.0",
+    "grunt-eslint": "19.0.0",
     "grunt-mocha-test": "0.12.7",
+    "load-grunt-config": "0.19.2",
     "mocha": "2.5.3",
     "mysql": "2.11.1",
+    "time-grunt": "1.4.0",
     "underscore": "1.8.3"
   },
   "readmeFilename": "readme.md",

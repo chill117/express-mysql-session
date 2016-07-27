@@ -34,7 +34,6 @@ describe('destroy(session_id, cb)', function() {
 			async.each(fixtures, function(fixture, nextFixture) {
 
 				var session_id = fixture.session_id;
-				var data = fixture.data;
 
 				sessionStore.destroy(session_id, function(error) {
 
@@ -65,7 +64,6 @@ describe('destroy(session_id, cb)', function() {
 			async.each(fixtures, function(fixture, nextFixture) {
 
 				var session_id = fixture.session_id;
-				var data = fixture.data;
 
 				sessionStore.destroy(session_id, function(error) {
 

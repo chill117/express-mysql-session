@@ -56,7 +56,6 @@ describe('get(session_id, cb)', function() {
 			async.each(fixtures, function(fixture, nextFixture) {
 
 				var session_id = fixture.session_id;
-				var data = fixture.data;
 
 				sessionStore.get(session_id, function(error, session) {
 
