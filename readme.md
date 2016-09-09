@@ -48,9 +48,11 @@ app.use(session({
 }));
 ```
 
-### With an existing MySQL connection
+The session store will internally create a `mysql` [connection pool](https://github.com/mysqljs/mysql#pooling-connections) which handles the (re)connection to the database. By default, the pool consists of 1 connection, but you can override this using the `connectionLimit` option. There are additional [pool options](https://github.com/mysqljs/mysql#pool-options) you can provide, which will be passed to the constructor of the `mysql` connection pool.
 
-To pass in an existing MySQL database connection, you would do something like this:
+### With an existing MySQL connection or pool
+
+To pass in an existing MySQL database connection or pool, you would do something like this:
 ```js
 var mysql = require('mysql');
 var session = require('express-session');
@@ -64,7 +66,7 @@ var options = {
     database: 'db_name'
 };
 
-var connection = mysql.createConnection(options);
+var connection = mysql.createConnection(options); // or mysql.createPool(options);
 var sessionStore = new MySQLStore({}/* session store options */, connection);
 ```
 
@@ -89,6 +91,7 @@ var options = {
 	checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
 	expiration: 86400000,// The maximum age of a valid session; milliseconds.
 	createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
+	connectionLimit: 1,// Number of connections when creating a connection pool
 	schema: {
 		tableName: 'sessions',
 		columnNames: {
@@ -99,7 +102,6 @@ var options = {
 	}
 };
 ```
-There are additional options you can provide, which will be passed to an instance of [mysql-connection-manager](https://github.com/chill117/mysql-connection-manager#options).
 
 
 #### Configurable sessions table and column names

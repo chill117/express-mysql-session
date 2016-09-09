@@ -49,8 +49,7 @@ describe('constructor', function() {
 				try {
 
 					expect(error).to.equal(undefined);
-					expect(sessionStore.manager).to.not.equal(undefined);
-					expect(sessionStore.manager.connection).to.not.equal(undefined);
+					expect(sessionStore.connection).to.not.equal(undefined);
 
 				} catch (error) {
 					return done(error);
@@ -63,14 +62,13 @@ describe('constructor', function() {
 		it('MySQLStore(options, connection, cb)', function(done) {
 
 			var options = {};
-			var connection = mysql.createConnection(manager.config);
+			var connection = mysql.createPool(manager.config);
 			var sessionStore = new MySQLStore(options, connection, function(error) {
 
 				try {
 
 					expect(error).to.equal(undefined);
-					expect(sessionStore.manager).to.not.equal(undefined);
-					expect(sessionStore.manager.connection).to.deep.equal(connection);
+					expect(sessionStore.connection).to.deep.equal(connection);
 
 				} catch (error) {
 					return done(error);
@@ -96,8 +94,7 @@ describe('constructor', function() {
 				try {
 
 					expect(error).to.equal(undefined);
-					expect(sessionStore.manager).to.not.equal(undefined);
-					expect(sessionStore.manager.connection).to.not.equal(undefined);
+					expect(sessionStore.connection).to.not.equal(undefined);
 
 				} catch (error) {
 					return done(error);
@@ -110,14 +107,13 @@ describe('constructor', function() {
 		it('MySQLStore(options, connection, cb)', function(done) {
 
 			var options = {};
-			var connection = mysql.createConnection(manager.config);
+			var connection = mysql.createPool(manager.config);
 			var sessionStore = new MySQLStore(options, connection, function(error) {
 
 				try {
 
 					expect(error).to.equal(undefined);
-					expect(sessionStore.manager).to.not.equal(undefined);
-					expect(sessionStore.manager.connection).to.deep.equal(connection);
+					expect(sessionStore.connection).to.deep.equal(connection);
 
 				} catch (error) {
 					return done(error);
