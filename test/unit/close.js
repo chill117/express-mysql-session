@@ -37,7 +37,7 @@ var manager = require('../manager');
 
 				// Any queries against the database should now fail.
 				sessionStore.length(function(error, count) {
-					expect(error.code).to.equal('PROTOCOL_ENQUEUE_AFTER_QUIT');
+					expect(error.code).to.equal('POOL_CLOSED');
 					done();
 				});
 			});
