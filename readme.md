@@ -207,7 +207,7 @@ npm test
 
 ## Changelog
 
-* TBD:
+* v1.2.0:
   * Removed dependency on [mysql-connection-manager](https://github.com/chill117/mysql-connection-manager); now using connection pooling from [node-mysql](https://github.com/mysqljs/mysql) module.
   * Fix for issue [#49](https://github.com/chill117/express-mysql-session/issues/46)
 * v1.1.1:
