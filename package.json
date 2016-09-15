@@ -32,7 +32,6 @@
     "grunt-mocha-test": "0.12.7",
     "load-grunt-config": "0.19.2",
     "mocha": "2.5.3",
-    "mysql": "2.11.1",
     "time-grunt": "1.4.0",
     "underscore": "1.8.3"
   },
