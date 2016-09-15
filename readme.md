@@ -140,10 +140,7 @@ DEBUG=express-mysql-session* node your-app.js
 ```
 This will output log messages as well as error messages from `express-mysql-session`.
 
-If you also might need MySQL-related debug and error messages, include `mysql-connection-manager` as well:
-```
-DEBUG=express-mysql-session*,mysql-connection-manager node your-app.js
-```
+If you also might need MySQL-related debug and error messages, see [debugging node-mysql](https://github.com/mysqljs/mysql#debugging-and-reporting-problems).
 
 
 ## Contributing
