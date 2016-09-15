@@ -210,6 +210,8 @@ npm test
 
 ## Changelog
 
+* TBD:
+  * Removed dependency on [mysql-connection-manager](https://github.com/chill117/mysql-connection-manager); now using connection pooling from [node-mysql](https://github.com/mysqljs/mysql) module.
 * v1.1.1:
   * Fix for express-session integration when "cookie.maxAge" is set to NULL.
 * v1.1.0:
