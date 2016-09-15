@@ -66,11 +66,9 @@ describe('set(session_id, data, cb)', function() {
 			async.each(fixtures, function(fixture, nextFixture) {
 
 				var session_id = fixture.session_id;
-				var data = {};
 
-				for (var key in fixture.data) {
-					data[key] = fixture.data[key];
-				}
+				// Clone the fixture data.
+				var data = JSON.parse(JSON.stringify(fixture.data));
 
 				data.new_attr = 'A new attribute!';
 				data.and_another = 'And another attribute..';
@@ -95,6 +93,36 @@ describe('set(session_id, data, cb)', function() {
 				});
 
 			}, done);
+		});
+
+		it('should be able to handle emojis and other utf8 characters in session data', function(done) {
+
+			var session_id = 'some-session-id';
+			var data = {};
+
+			data.text_with_emoji = 'Here is an emoji: 😆.';
+			data.and_more = 'And another one (😉)..'
+
+			sessionStore.set(session_id, data, function(error) {
+
+				try {
+					expect(error).to.equal(undefined);
+				} catch (error) {
+					return done(error);
+				}
+
+				sessionStore.get(session_id, function(error, session) {
+
+					try {
+						expect(error).to.equal(null);
+						expect(session).to.deep.equal(data);
+					} catch (error) {
+						return done(error);
+					}
+
+					done();
+				});
+			});
 		});
 	});
 });
