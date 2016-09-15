@@ -94,34 +94,34 @@ describe('set(session_id, data, cb)', function() {
 
 			}, done);
 		});
+	});
 
-		it('should be able to handle emojis and other utf8 characters in session data', function(done) {
+	it('should be able to handle emojis and other utf8 characters in session data', function(done) {
 
-			var session_id = 'some-session-id';
-			var data = {};
+		var session_id = 'some-session-id';
+		var data = {};
 
-			data.text_with_emoji = 'Here is an emoji: 😆.';
-			data.and_more = 'And another one (😉)..'
+		data.text_with_emoji = 'Here is an emoji: 😆.';
+		data.and_more = 'And another one (😉)..'
 
-			sessionStore.set(session_id, data, function(error) {
+		sessionStore.set(session_id, data, function(error) {
+
+			try {
+				expect(error).to.equal(undefined);
+			} catch (error) {
+				return done(error);
+			}
+
+			sessionStore.get(session_id, function(error, session) {
 
 				try {
-					expect(error).to.equal(undefined);
+					expect(error).to.equal(null);
+					expect(session).to.deep.equal(data);
 				} catch (error) {
 					return done(error);
 				}
 
-				sessionStore.get(session_id, function(error, session) {
-
-					try {
-						expect(error).to.equal(null);
-						expect(session).to.deep.equal(data);
-					} catch (error) {
-						return done(error);
-					}
-
-					done();
-				});
+				done();
 			});
 		});
 	});
