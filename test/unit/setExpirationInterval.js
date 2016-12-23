@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 var config = manager.config;
-var MySQLStore = manager.MySQLStore;
+var oracleDbStore = manager.oracleDbStore;
 
 describe('setExpirationInterval(interval)', function() {
 
@@ -29,7 +29,7 @@ describe('setExpirationInterval(interval)', function() {
 
 		var checkExpirationInterval = 45;
 
-		var sessionStore = new MySQLStore({
+		var sessionStore = new oracleDbStore({
 			host: config.host,
 			port: config.port,
 			user: config.user,

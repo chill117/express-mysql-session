@@ -1,13 +1,13 @@
 'use strict';
 
 var expect = require('chai').expect;
-var mysql = require('mysql');
+var oracledb = require('oracledb');
 
 var manager = require('../manager');
 
 describe('constructor', function() {
 
-	var MySQLStore;
+	var oracleDbStore;
 
 	beforeEach(manager.setUp);
 
@@ -17,12 +17,12 @@ describe('constructor', function() {
 			delete require.cache[require.resolve('../..')];
 		}
 
-		manager.MySQLStore = null;
+		manager.oracleDbStore = null;
 	});
 
 	afterEach(function() {
 
-		manager.MySQLStore = require('../../');
+		manager.oracleDbStore = require('../../');
 	});
 
 	afterEach(manager.tearDown);
@@ -38,13 +38,13 @@ describe('constructor', function() {
 
 		beforeEach(function() {
 
-			MySQLStore = require('../..')(session);
+			oracleDbStore = require('../..')(session);
 		});
 
-		it('MySQLStore(options, cb)', function(done) {
+		it('oracleDbStore(options, cb)', function(done) {
 
 			var options = manager.config;
-			var sessionStore = new MySQLStore(options, function(error) {
+			var sessionStore = new oracleDbStore(options, function(error) {
 
 				try {
 
@@ -59,11 +59,11 @@ describe('constructor', function() {
 			});
 		});
 
-		it('MySQLStore(options, connection, cb)', function(done) {
+		it('oracleDbStore(options, connection, cb)', function(done) {
 
 			var options = {};
-			var connection = mysql.createPool(manager.config);
-			var sessionStore = new MySQLStore(options, connection, function(error) {
+			var connection = oracledb.getConnection(manager.config, function(err, conn){
+			var sessionStore = new oracleDbStore(options, connection, function(error) {
 
 				try {
 
@@ -75,6 +75,7 @@ describe('constructor', function() {
 				}
 
 				done();
+			});
 			});
 		});
 	});
@@ -83,13 +84,13 @@ describe('constructor', function() {
 
 		beforeEach(function() {
 
-			MySQLStore = require('../..');
+			oracleDbStore = require('../..');
 		});
 
-		it('MySQLStore(options, cb)', function(done) {
+		it('oracleDbStore(options, cb)', function(done) {
 
 			var options = manager.config;
-			var sessionStore = new MySQLStore(options, function(error) {
+			var sessionStore = new oracleDbStore(options, function(error) {
 
 				try {
 
@@ -104,22 +105,23 @@ describe('constructor', function() {
 			});
 		});
 
-		it('MySQLStore(options, connection, cb)', function(done) {
+		it('oracleDbStore(options, connection, cb)', function(done) {
 
 			var options = {};
-			var connection = mysql.createPool(manager.config);
-			var sessionStore = new MySQLStore(options, connection, function(error) {
+			var connection = oracledb.getConnection(manager.config, function(err, conn){
+				var sessionStore = new oracleDbStore(options, connection, function(error) {
 
-				try {
+					try {
 
-					expect(error).to.equal(undefined);
-					expect(sessionStore.connection).to.deep.equal(connection);
+						expect(error).to.equal(undefined);
+						expect(sessionStore.connection).to.deep.equal(connection);
 
-				} catch (error) {
-					return done(error);
-				}
+					} catch (error) {
+						return done(error);
+					}
 
-				done();
+					done();
+				});
 			});
 		});
 	});

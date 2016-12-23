@@ -4,13 +4,13 @@ var _ = require('underscore');
 var expect = require('chai').expect;
 
 var manager = require('../manager');
-var MySQLStore = manager.MySQLStore;
+var oracleDbStore = manager.oracleDbStore;
 
 describe('createDatabaseTable(cb)', function() {
 
 	afterEach(function() {
 
-		MySQLStore = manager.loadConstructor(true);
+		oracleDbStore = manager.loadConstructor(true);
 	});
 
 	after(manager.tearDown);
@@ -67,7 +67,7 @@ describe('createDatabaseTable(cb)', function() {
 
 			var called = false;
 
-			MySQLStore.prototype.createDatabaseTable = function() {
+			oracleDbStore.prototype.createDatabaseTable = function() {
 
 				called = true;
 				done(new Error('createDatabaseTable method should not have been called'));
@@ -77,7 +77,7 @@ describe('createDatabaseTable(cb)', function() {
 				createDatabaseTable: false
 			});
 
-			new MySQLStore(options, function(error) {
+			new oracleDbStore(options, function(error) {
 
 				if (called) {
 					return;
@@ -107,13 +107,13 @@ describe('createDatabaseTable(cb)', function() {
 
 			var called = false;
 
-			MySQLStore.prototype.createDatabaseTable = function(cb) {
+			oracleDbStore.prototype.createDatabaseTable = function(cb) {
 
 				called = true;
 				cb && cb();
 			};
 
-			new MySQLStore(options, function(error) {
+			new oracleDbStore(options, function(error) {
 
 				if (error) {
 					return done(error);
@@ -218,7 +218,7 @@ describe('createDatabaseTable(cb)', function() {
 
 					expectedSchema.columnNames = _.defaults(expectedSchema.columnNames, defaultSchema.columnNames);
 
-					sessionStore = new MySQLStore(storeOptions, function(error) {
+					sessionStore = new oracleDbStore(storeOptions, function(error) {
 
 						if (error) {
 							return done(error);

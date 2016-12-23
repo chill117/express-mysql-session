@@ -8,17 +8,11 @@ var express = require('express');
 var http = require('http');
 
 var session = require('express-session');
-var MySQLStore = require('../..')(session);
+var oracleDbStore = require('../..')(session);
 
 var manager = require('../manager');
 
-var sessionStore = new MySQLStore({
-	host: manager.config.host,
-	port: manager.config.port,
-	user: manager.config.user,
-	password: manager.config.password,
-	database: manager.config.database
-});
+var sessionStore = new oracleDbStore(manager.config);
 
 describe('Express Integration', function() {
 

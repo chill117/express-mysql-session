@@ -1,23 +1,14 @@
 # express-mysql-session
 
-A MySQL session store for [express.js](http://expressjs.com/).
-
-[![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session) [![Status of Dependencies](https://david-dm.org/chill117/express-mysql-session.svg)](https://david-dm.org/chill117/express-mysql-session)
-
+A Oracle session store for [express.js](http://expressjs.com/).
 
 ## Installation
 
 Add to your application via `npm`:
 ```
-npm install express-mysql-session --save
+npm install express-oracle-session --save
 ```
-This will install `express-mysql-session` and add it to your application's `package.json` file.
-
-
-## Note for Older Versions
-
-For users who are still using express-mysql-session `0.x`. Changes have been made to the constructor, which are backwards compatible, but you could run into troubles if using an older version of this module with the latest documentation. You can find the documentation for the older version [here](https://github.com/chill117/express-mysql-session/tree/9fbcf51416a00a7a525c1e6e431033125a2945b0).
-
+This will install `express-oracle-session` and add it to your application's `package.json` file.
 
 
 ## How to Use
@@ -27,7 +18,7 @@ Use with your express session middleware, like this:
 var express = require('express');
 var app = module.exports = express();
 var session = require('express-session');
-var MySQLStore = require('express-mysql-session')(session);
+var oracleDbStore = require('express-oracle-session')(session);
 
 var options = {
 	host: 'localhost',
@@ -37,7 +28,7 @@ var options = {
 	database: 'session_test'
 };
 
-var sessionStore = new MySQLStore(options);
+var sessionStore = new oracleDbStore(options);
 
 app.use(session({
 	key: 'session_cookie_name',
@@ -56,7 +47,7 @@ To pass in an existing MySQL database connection or pool, you would do something
 ```js
 var mysql = require('mysql');
 var session = require('express-session');
-var MySQLStore = require('express-mysql-session')(session);
+var oracleDbStore = require('express-mysql-session')(session);
 
 var options = {
     host: 'localhost',
@@ -67,7 +58,7 @@ var options = {
 };
 
 var connection = mysql.createConnection(options); // or mysql.createPool(options);
-var sessionStore = new MySQLStore({}/* session store options */, connection);
+var sessionStore = new oracleDbStore({}/* session store options */, connection);
 ```
 
 ### Closing the session store
@@ -110,7 +101,7 @@ You can override the default sessions database table name and column names via t
 
 ```js
 var session = require('express-session');
-var MySQLStore = require('express-mysql-session')(session);
+var oracleDbStore = require('express-mysql-session')(session);
 
 var options = {
 	host: 'localhost',
@@ -128,7 +119,7 @@ var options = {
 	}
 };
 
-var sessionStore = new MySQLStore(options);
+var sessionStore = new oracleDbStore(options);
 ```
 
 
@@ -206,16 +197,3 @@ npm test
 
 
 ## Changelog
-
-* v1.2.0:
-  * Removed dependency on [mysql-connection-manager](https://github.com/chill117/mysql-connection-manager); now using connection pooling from [node-mysql](https://github.com/mysqljs/mysql) module.
-  * Fix for issue [#49](https://github.com/chill117/express-mysql-session/issues/49)
-* v1.1.1:
-  * Fix for express-session integration when "cookie.maxAge" is set to NULL.
-* v1.1.0:
-  * Added [touch](https://github.com/expressjs/session#storetouchsid-session-callback) method.
-  * Deprecated `MySQLStore.closeStore` - should use `MySQLStore.close` instead.
-  * Fixes for issues: [#46](https://github.com/chill117/express-mysql-session/issues/46)
-* v1.0.0:
-  * Changed constructor interface. Must now pass session module to get `MySQLStore` constructor object. See [How to Use](https://github.com/chill117/express-mysql-session#how-to-use) for more information.
-  * Fixes for issues: [#28](https://github.com/chill117/express-mysql-session/issues/28), [#33](https://github.com/chill117/express-mysql-session/issues/33).

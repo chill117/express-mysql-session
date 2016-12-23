@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect;
 var session = require('express-session');
-var MySQLStore = require('../..')(session);
+var oracleDbStore = require('../..')(session);
 
 describe('clone(object)', function() {
 
@@ -13,7 +13,7 @@ describe('clone(object)', function() {
 			someInt: 100
 		};
 
-		var cloned = MySQLStore.prototype.clone(original);
+		var cloned = oracleDbStore.prototype.clone(original);
 
 		expect(cloned).to.deep.equal(original);
 

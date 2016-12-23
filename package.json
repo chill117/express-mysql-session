@@ -1,25 +1,24 @@
 {
-  "name": "express-mysql-session",
-  "description": "A MySQL session store for express.js",
-  "version": "1.2.0",
+  "name": "express-oracle-session",
+  "description": "A Oracle session store for express.js",
+  "version": "0.1.0",
   "main": "index.js",
   "scripts": {
     "test": "grunt test"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/chill117/express-mysql-session"
+    "url": "git://github.com/Slumber86/express-oracle-session"
   },
   "author": {
-    "name": "Charles Hill",
-    "email": "chill@degreesofzero.com"
+    "name": "Agostino Marzotta"
   },
   "license": "MIT",
   "dependencies": {
     "debug": "2.2.0",
     "depd": "1.1.0",
     "express-session": "1.14.0",
-    "mysql": "2.11.1"
+    "oracledb": "^1.12.2"
   },
   "devDependencies": {
     "async": "2.0.1",
@@ -37,6 +36,6 @@
   },
   "readmeFilename": "readme.md",
   "bugs": {
-    "url": "https://github.com/chill117/express-mysql-session/issues"
+    "url": "https://github.com/Slumber86/express-oracle-session/issues"
   }
 }

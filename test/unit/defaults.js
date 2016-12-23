@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect;
 var session = require('express-session');
-var MySQLStore = require('../..')(session);
+var oracleDbStore = require('../..')(session);
 
 describe('defaults(object, defaultValues[, options])', function() {
 
@@ -16,7 +16,7 @@ describe('defaults(object, defaultValues[, options])', function() {
 			anotherValue: 'some new value'
 		};
 
-		var defaulted = MySQLStore.prototype.defaults(object, defaultValues);
+		var defaulted = oracleDbStore.prototype.defaults(object, defaultValues);
 
 		for (var key in defaultValues) {
 			expect(defaulted[key]).to.equal(defaultValues[key]);
@@ -35,7 +35,7 @@ describe('defaults(object, defaultValues[, options])', function() {
 			}
 		};
 
-		var defaulted = MySQLStore.prototype.defaults(object, defaultValues);
+		var defaulted = oracleDbStore.prototype.defaults(object, defaultValues);
 
 		for (var key in defaultValues) {
 			expect(defaulted[key]).to.deep.equal(defaultValues[key]);

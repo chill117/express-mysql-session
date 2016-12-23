@@ -3,12 +3,14 @@
 var _ = require('underscore');
 var async = require('async');
 var session = require('express-session');
-var mysql = require('mysql');
+var oracledb = require('oracledb');
 
 var config = require('./config');
 var fixtures = require('./fixtures');
 
-var connection = mysql.createConnection(config);
+var connection = {};
+
+
 
 var manager = module.exports = {
 
@@ -16,17 +18,23 @@ var manager = module.exports = {
 	fixtures: fixtures,
 
 	setUp: function(cb) {
-
-		async.series({
-			tearDown: manager.tearDown,
-			store: manager.createInstance
-		}, function(error, results) {
-
-			if (error) {
-				return cb(error);
+		oracledb.getConnection(config,  function(err, conn) {
+			if (err) {
+				console.error(err.message);
+				return;
 			}
+			connection = conn;
+			async.series({
+				tearDown: manager.tearDown,
+				store: manager.createInstance
+			}, function(error, results) {
 
-			cb(null, results.store);
+				if (error) {
+					return cb(error);
+				}
+
+				cb(null, results.store);
+			});
 		});
 	},
 
@@ -39,7 +47,7 @@ var manager = module.exports = {
 
 	dropDatabaseTables: function(cb) {
 
-		connection.query('SHOW TABLES', function(error, rows) {
+		connection.execute('SHOW TABLES', function(error, rows){
 
 			async.each(rows, function(row, next) {
 
@@ -47,7 +55,7 @@ var manager = module.exports = {
 				var sql = 'DROP TABLE IF EXISTS ??';
 				var params = [tableName];
 
-				connection.query(sql, params, next);
+				connection.execute(sql, params, next);
 
 			}, cb);
 		});
@@ -78,7 +86,7 @@ var manager = module.exports = {
 			delete require.cache[require.resolve('..')];
 		}
 
-		return MySQLStore = manager.MySQLStore = require('..')(session);
+		return oracleDbStore = manager.oracleDbStore = require('..')(session);
 	},
 
 	createInstance: function(options, cb) {
@@ -90,7 +98,7 @@ var manager = module.exports = {
 
 		options = _.defaults(options || {}, config);
 
-		return sessionStore = new MySQLStore(options, function(error) {
+		return sessionStore = new oracleDbStore(options, function(error) {
 
 			if (error) {
 				return cb(error);
@@ -101,5 +109,5 @@ var manager = module.exports = {
 	}
 };
 
-var MySQLStore = manager.MySQLStore = manager.loadConstructor();
+var oracleDbStore = manager.oracleDbStore = manager.loadConstructor();
 var sessionStore;
