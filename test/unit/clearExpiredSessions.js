@@ -31,11 +31,11 @@ describe('clearExpiredSessions(cb)', function() {
 		// Change some of the sessions' expires time.
 
 		var expiration = sessionStore.options.expiration;
-		var sql = 'UPDATE `sessions` SET expires = ? LIMIT ' + numExpired;
+		var sql = 'UPDATE `sessions` SET expires = :expires LIMIT ' + numExpired;
 		var expires = ( new Date( Date.now() - (expiration + 15000) ) ) / 1000;
 		var params = [ expires ];
 
-		sessionStore.connection.query(sql, params, done);
+		sessionStore.connection.execute(sql, params, done);
 	});
 
 	after(manager.tearDown);

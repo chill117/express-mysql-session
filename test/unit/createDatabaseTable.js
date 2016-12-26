@@ -38,7 +38,7 @@ describe('createDatabaseTable(cb)', function() {
 				var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions`';
 				var params = [];
 
-				sessionStore.connection.query(sql, params, done);
+				sessionStore.connection.execute(sql, params, done);
 			});
 		});
 	});
@@ -224,10 +224,10 @@ describe('createDatabaseTable(cb)', function() {
 							return done(error);
 						}
 
-						var sql = 'SHOW COLUMNS FROM ??';
+						var sql = 'SHOW COLUMNS FROM :tablename';
 						var params = [expectedSchema.tableName];
 
-						sessionStore.connection.query(sql, params, function(error, rows) {
+						sessionStore.connection.execute(sql, params, function(error, rows) {
 
 							if (error) {
 								return done(error);

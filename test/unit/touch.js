@@ -65,10 +65,10 @@ describe('touch(session_id, data, cb)', function() {
 
 			manager.populateSessions(function() {
 
-				var sql = 'UPDATE `sessions` SET `expires` = ?';
+				var sql = 'UPDATE `sessions` SET `expires` = :oldExpiresValue';
 				var params = [oldExpiresValue];
 
-				sessionStore.connection.query(sql, params, done);
+				sessionStore.connection.execute(sql, params, done);
 			});
 		});
 
@@ -82,13 +82,13 @@ describe('touch(session_id, data, cb)', function() {
 
 					expect(error).to.equal(undefined);
 
-					var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions` WHERE `session_id` = ?';
+					var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions` WHERE `session_id` = :sessid';
 
 					var params = [
 						fixture.session_id
 					];
 
-					sessionStore.connection.query(sql, params, function(error, data) {
+					sessionStore.connection.execute(sql, params, function(error, data) {
 
 						var touchedSession = data[0];
 
