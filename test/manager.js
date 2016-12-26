@@ -46,19 +46,9 @@ var manager = module.exports = {
 	},
 
 	dropDatabaseTables: function(cb) {
-
-		connection.execute('SHOW TABLES', function(error, rows){
-
-			async.each(rows, function(row, next) {
-
-				var tableName = row['Tables_in_' + config.database];
-				var sql = 'DROP TABLE IF EXISTS ??';
-				var params = [tableName];
-
-				connection.execute(sql, params, next);
-
-			}, cb);
-		});
+		//var sql = 'DROP TABLE sessions';
+		//connection.execute(sql, cb);
+		cb();
 	},
 
 	populateSessions: function(cb) {

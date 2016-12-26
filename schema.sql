@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS `sessions` (
-  `session_id` varchar(128) COLLATE utf8mb4_bin NOT NULL,
-  `expires` int(11) unsigned NOT NULL,
-  `data` text COLLATE utf8mb4_bin,
-  PRIMARY KEY (`session_id`)
-) ENGINE=InnoDB
+CREATE TABLE :sessions (
+  :sessionid VARCHAR(128)  NOT NULL,
+  :expires NUMBER(11) NOT NULL,
+  :data CLOB,
+  PRIMARY KEY (:sessionid)
+);
