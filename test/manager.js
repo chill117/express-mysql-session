@@ -24,7 +24,7 @@ var manager = module.exports = {
 				cb(err);
 			}
 			connection = conn;
-			console.log("got connection");
+			//console.log("got connection");
 			async.series({
 				tearDown: manager.tearDown,
 				store: manager.createInstance
@@ -47,7 +47,7 @@ var manager = module.exports = {
 	},
 
 	dropDatabaseTables: function(cb) {
-		console.log("dropDatabaseTables");
+		//console.log("dropDatabaseTables");
 		var sql = `BEGIN
    EXECUTE IMMEDIATE 'DROP TABLE sessions';
 EXCEPTION
@@ -60,7 +60,7 @@ END;`;
 	},
 
 	populateSessions: function(cb) {
-		console.log("populateSessions");
+		//console.log("populateSessions");
 		async.each(fixtures.sessions, function(session, next) {
 
 			var session_id = session.session_id;
@@ -72,7 +72,7 @@ END;`;
 	},
 
 	clearSessions: function(cb) {
-		console.log("clearSessions");
+		//console.log("clearSessions");
 		sessionStore.clear(cb);
 	},
 
@@ -89,7 +89,7 @@ END;`;
 
 	createInstance: function(options, cb) {
 
-		console.log("createInstance");
+		//console.log("createInstance");
 
 		if (typeof options === 'function') {
 			cb = options;
