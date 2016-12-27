@@ -4,7 +4,7 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 
-['close', 'closeStore'].forEach(function(methodName) {
+['close'].forEach(function(methodName) {
 
 	describe(methodName + '(cb)', function() {
 
@@ -25,7 +25,7 @@ var manager = require('../manager');
 
 		after(manager.tearDown);
 
-		it('should close the store and its MySQL conenction(s)', function(done) {
+		it('should close the store and its Oracle conenction(s)', function(done) {
 
 			sessionStore[methodName](function(error) {
 
@@ -37,7 +37,7 @@ var manager = require('../manager');
 
 				// Any queries against the database should now fail.
 				sessionStore.length(function(error, count) {
-					expect(error.code).to.equal('POOL_CLOSED');
+					expect(error.message).to.equal('NJS-003: invalid connection');
 					done();
 				});
 			});

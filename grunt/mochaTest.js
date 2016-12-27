@@ -3,7 +3,8 @@
 module.exports = {
 	unit: {
 		options: {
-			reporter: 'spec'
+			reporter: 'spec',
+			timeout: 30000
 		},
 		src: ['test/unit/**/*.js']
 	},
