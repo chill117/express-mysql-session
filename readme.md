@@ -21,11 +21,9 @@ var session = require('express-session');
 var oracleDbStore = require('express-oracle-session')(session);
 
 var options = {
-	host: 'localhost',
-	port: 3306,
 	user: 'session_test',
 	password: 'password',
-	database: 'session_test'
+	connectString: 'localhost/orcl'
 };
 
 var sessionStore = new oracleDbStore(options);
@@ -41,24 +39,33 @@ app.use(session({
 
 The session store will internally create a `mysql` [connection pool](https://github.com/mysqljs/mysql#pooling-connections) which handles the (re)connection to the database. By default, the pool consists of 1 connection, but you can override this using the `connectionLimit` option. There are additional [pool options](https://github.com/mysqljs/mysql#pool-options) you can provide, which will be passed to the constructor of the `mysql` connection pool.
 
-### With an existing MySQL connection or pool
+### With an existing Oracle connection or pool
 
 To pass in an existing MySQL database connection or pool, you would do something like this:
 ```js
-var mysql = require('mysql');
+var oracledb = require('oracledb');
 var session = require('express-session');
-var oracleDbStore = require('express-mysql-session')(session);
+var oracleDbStore = require('express-oracle-session')(session);
 
 var options = {
-    host: 'localhost',
-    port: 3306,
-    user: 'db_user',
-    password: 'password',
-    database: 'db_name'
+	user: 'session_test',
+	password: 'password',
+	connectString: 'localhost/orcl'
 };
 
-var connection = mysql.createConnection(options); // or mysql.createPool(options);
-var sessionStore = new oracleDbStore({}/* session store options */, connection);
+oracledb.createPool(options, function(err, pool) {
+      if (err) {
+        console.error("createPool() error: " + err.message);
+        return;
+			}
+			pool.getConnection(function(err, connection) {
+	 			if (err) {
+		 			handleError(response, "getConnection() error", err);
+		 			return;
+				}
+				var sessionStore = new oracleDbStore({}/* session store options */, connection);
+			});
+		});
 ```
 
 ### Closing the session store
@@ -74,11 +81,10 @@ sessionStore.close();
 Here is a list of all available options:
 ```js
 var options = {
-	host: 'localhost',// Host name for database connection.
-	port: 3306,// Port number for database connection.
-	user: 'session_test',// Database user.
-	password: 'password',// Password for the above database user.
-	database: 'session_test',// Database name.
+	user: 'session_test',
+	password: 'password',
+	connectString: 'localhost/orcl',
+	externalAuth: true,
 	checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
 	expiration: 86400000,// The maximum age of a valid session; milliseconds.
 	createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
@@ -104,11 +110,9 @@ var session = require('express-session');
 var oracleDbStore = require('express-mysql-session')(session);
 
 var options = {
-	host: 'localhost',
-	port: 3306,
 	user: 'session_test',
 	password: 'password',
-	database: 'session_test',
+	connectString: 'localhost/orcl',
 	schema: {
 		tableName: 'custom_sessions_table_name',
 		columnNames: {
@@ -125,13 +129,11 @@ var sessionStore = new oracleDbStore(options);
 
 ### Debugging
 
-`express-mysql-session` uses the [debug module](https://github.com/visionmedia/debug) to output debug messages to the console. To output all debug messages, run your node app with the `DEBUG` environment variable:
+`express-oracle-session` uses the [debug module](https://github.com/visionmedia/debug) to output debug messages to the console. To output all debug messages, run your node app with the `DEBUG` environment variable:
 ```
-DEBUG=express-mysql-session* node your-app.js
+DEBUG=express-oracle-session* node your-app.js
 ```
-This will output log messages as well as error messages from `express-mysql-session`.
-
-If you also might need MySQL-related debug and error messages, see [debugging node-mysql](https://github.com/mysqljs/mysql#debugging-and-reporting-problems).
+This will output log messages as well as error messages from `express-oracle-session`.
 
 
 ## Contributing
@@ -166,26 +168,7 @@ npm install
 
 #### Step 3: Set Up the Test Database
 
-Now, you'll need to set up a local test database:
-```js
-{
-	host: 'localhost',
-	port: 3306,
-	user: 'session_test',
-	password: 'password',
-	database: 'session_test'
-};
-```
-*The test database settings are located in [test/config.js](https://github.com/chill117/express-mysql-session/blob/master/test/config.js)*
-
-Alternatively, you can provide custom database configurations via environment variables:
-```
-DB_HOST="localhost"
-DB_PORT="3306"
-DB_USER="session_test"
-DB_PASS="password"
-DB_NAME="session_test"
-```
+TBD
 
 
 ### Running Tests
