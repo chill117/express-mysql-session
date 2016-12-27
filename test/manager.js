@@ -21,9 +21,10 @@ var manager = module.exports = {
 		oracledb.getConnection(config,  function(err, conn) {
 			if (err) {
 				console.error(err.message);
-				return;
+				cb(err);
 			}
 			connection = conn;
+			console.log("got connection");
 			async.series({
 				tearDown: manager.tearDown,
 				store: manager.createInstance
@@ -46,13 +47,20 @@ var manager = module.exports = {
 	},
 
 	dropDatabaseTables: function(cb) {
-		//var sql = 'DROP TABLE sessions';
-		//connection.execute(sql, cb);
-		cb();
+		console.log("dropDatabaseTables");
+		var sql = `BEGIN
+   EXECUTE IMMEDIATE 'DROP TABLE sessions';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE != -942 THEN
+         RAISE;
+      END IF;
+END;`;
+		connection.execute(sql, cb);
 	},
 
 	populateSessions: function(cb) {
-
+		console.log("populateSessions");
 		async.each(fixtures.sessions, function(session, next) {
 
 			var session_id = session.session_id;
@@ -64,7 +72,7 @@ var manager = module.exports = {
 	},
 
 	clearSessions: function(cb) {
-
+		console.log("clearSessions");
 		sessionStore.clear(cb);
 	},
 
@@ -80,6 +88,8 @@ var manager = module.exports = {
 	},
 
 	createInstance: function(options, cb) {
+
+		console.log("createInstance");
 
 		if (typeof options === 'function') {
 			cb = options;
