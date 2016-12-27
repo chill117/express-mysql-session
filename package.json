@@ -37,5 +37,8 @@
   "readmeFilename": "readme.md",
   "bugs": {
     "url": "https://github.com/Slumber86/express-oracle-session/issues"
-  }
+  },
+  "engines" : {
+    "node" : ">=6.0"
+  } 
 }
