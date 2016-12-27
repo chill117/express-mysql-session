@@ -5,8 +5,10 @@ var expect = require('chai').expect;
 
 var manager = require('../manager');
 var fixtures = manager.fixtures.sessions;
+var oracledb = require('oracledb');
 
 describe('touch(session_id, data, cb)', function() {
+	this.timeout(30000); // A very long environment setup.
 
 	var sessionStore;
 
@@ -65,7 +67,7 @@ describe('touch(session_id, data, cb)', function() {
 
 			manager.populateSessions(function() {
 
-				var sql = 'UPDATE `sessions` SET `expires` = :oldExpiresValue';
+				var sql = 'UPDATE sessions SET expires = :oldExpiresValue';
 				var params = [oldExpiresValue];
 
 				sessionStore.connection.execute(sql, params, done);
@@ -82,19 +84,21 @@ describe('touch(session_id, data, cb)', function() {
 
 					expect(error).to.equal(undefined);
 
-					var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions` WHERE `session_id` = :sessid';
+					var sql = 'SELECT * FROM sessions WHERE session_id = :sessid';
 
-					var params = [
-						fixture.session_id
-					];
+					var params = {
+						sessid: fixture.session_id
+					};
 
-					sessionStore.connection.execute(sql, params, function(error, data) {
+					sessionStore.connection.execute(sql, params, {fetchInfo: { "ATTRIBUTES": { type: oracledb.STRING} } }, // Fetch as a String instead of a Stream
+					function(error, data) {
 
-						var touchedSession = data[0];
+						var touchedSession = data.rows[0];
+						//console.log('touchedSession: ' + JSON.stringify(data.rows[0]));
 
-						expect(touchedSession.session_id).to.equal(fixture.session_id);
-						expect(touchedSession.data).to.equal(JSON.stringify(fixture.data));
-						expect(touchedSession.expires).to.above(oldExpiresValue);
+						expect(touchedSession[0]).to.equal(fixture.session_id);
+						expect(touchedSession[2]).to.equal(JSON.stringify(fixture.data));
+						expect(touchedSession[1]).to.above(oldExpiresValue);
 
 						nextFixture();
 					});
