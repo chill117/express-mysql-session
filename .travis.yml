@@ -2,9 +2,7 @@ language: node_js
 sudo: required
 dist: xenial
 
-before_script:
-  - .travis/oracle/download.sh
-  - .travis/oracle/install.sh
+# before_script:
 
 env:
   - NODE_ORACLEDB_USER=travis NODE_ORACLEDB_PASSWORD=travis NODE_ORACLEDB_CONNECTIONSTRING=localhost:1521 ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe ORACLE_SID=XE OCI_LIB_DIR=/u01/app/oracle/product/11.2.0/xe/lib LD_LIBRARY_PATH=/u01/app/oracle/product/11.2.0/xe/lib
