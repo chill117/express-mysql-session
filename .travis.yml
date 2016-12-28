@@ -1,5 +1,4 @@
 before_script:
-  - "mysql -e 'drop database if exists session_test; create database session_test;'"
 
 env:
   - DB_HOST="127.0.0.1" DB_PORT=3306 DB_USER="root" DB_PASS="" DB_NAME="session_test"
@@ -7,7 +6,6 @@ env:
 language: node_js
 node_js:
   - "6"
-  - "4"
 
 before_install: npm install -g grunt-cli
 install: npm install
