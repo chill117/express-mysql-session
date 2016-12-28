@@ -1,7 +1,7 @@
 {
   "name": "express-oracle-session",
   "description": "A Oracle session store for express.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "scripts": {
     "test": "grunt test"
@@ -40,5 +40,5 @@
   },
   "engines" : {
     "node" : ">=6.0"
-  } 
+  }
 }
