@@ -49,14 +49,15 @@ var manager = module.exports = {
 
 	dropDatabaseTables: function(cb) {
 		//console.log("dropDatabaseTables");
-		var sql = `BEGIN
-   EXECUTE IMMEDIATE 'DROP TABLE sessions';
-EXCEPTION
-   WHEN OTHERS THEN
-      IF SQLCODE != -942 THEN
-         RAISE;
-      END IF;
-END;`;
+		//var sql = `DELETE FROM sessions`;
+		var sql = `declare
+v_cnt number :=0;
+begin
+select count(*) into v_cnt from user_tables where table_name='SESSIONS' ;
+if v_cnt = 1 then
+execute immediate 'DROP TABLE SESSIONS';
+end if;
+end;`;
 		connection.execute(sql, cb);
 	},
 
