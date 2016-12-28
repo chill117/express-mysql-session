@@ -18,6 +18,7 @@ var manager = module.exports = {
 	fixtures: fixtures,
 
 	setUp: function(cb) {
+		oracledb.autoCommit = true;
 		oracledb.getConnection(config,  function(err, conn) {
 			if (err) {
 				console.error(err.message);
