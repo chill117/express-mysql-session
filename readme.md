@@ -50,6 +50,8 @@ app.use(session({
 
 The session store will internally create a `mysql` [connection pool](https://github.com/mysqljs/mysql#pooling-connections) which handles the (re)connection to the database. By default, the pool consists of 1 connection, but you can override this using the `connectionLimit` option. There are additional [pool options](https://github.com/mysqljs/mysql#pool-options) you can provide, which will be passed to the constructor of the `mysql` connection pool.
 
+The sessions database table should be automatically created, when using default options. If for whatever reason the table is not created, you can find the schema [here](https://github.com/chill117/express-mysql-session/blob/master/schema.sql).
+
 ### With an existing MySQL connection or pool
 
 To pass in an existing MySQL database connection or pool, you would do something like this:
