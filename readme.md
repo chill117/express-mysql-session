@@ -43,8 +43,8 @@ app.use(session({
 	key: 'session_cookie_name',
 	secret: 'session_cookie_secret',
 	store: sessionStore,
-	resave: true,
-	saveUninitialized: true
+	resave: false,
+	saveUninitialized: false
 }));
 ```
 

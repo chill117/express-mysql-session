@@ -200,8 +200,8 @@ function createAppServer(options) {
 	options.session = _.defaults(options.session || {}, {
 		key: 'express.sid',
 		secret: 'some_secret',
-		saveUninitialized: true,
-		resave: true
+		resave: false,
+		saveUninitialized: false
 	});
 
 	var app = express();

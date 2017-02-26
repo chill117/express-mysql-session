@@ -65,6 +65,44 @@ var manager = module.exports = {
 		}, cb);
 	},
 
+	populateManySessions: function(targetNumSessions, prefix, cb) {
+
+		var numSessions = 0;
+		var batchSize = Math.min(50000, targetNumSessions);
+
+		var expires = Math.round((new Date).getTime() / 1000);
+		var dataStr = JSON.stringify({
+			someText: 'some sample text',
+			someInt: 1001,
+			moreText: 'and more sample text..'
+		});
+
+		async.whilst(function() { return numSessions < targetNumSessions; }, function(next) {
+
+			var sql = 'INSERT INTO ?? (??, ??, ??) VALUES (?, ?, ?)';
+			var params = [
+				sessionStore.options.schema.tableName,
+				sessionStore.options.schema.columnNames.session_id,
+				sessionStore.options.schema.columnNames.expires,
+				sessionStore.options.schema.columnNames.data,
+				prefix + '-' + (numSessions),
+				expires,
+				dataStr
+			];
+
+			_.times(batchSize - 1, function(index) {
+				sql += ', (?, ?, ?)';
+				params.push(prefix + '-' + (numSessions + index + 1));
+				params.push(expires);
+				params.push(dataStr);
+			});
+
+			numSessions += batchSize;
+			connection.query(sql, params, next);
+
+		}, cb);
+	},
+
 	clearSessions: function(cb) {
 
 		sessionStore.clear(cb);

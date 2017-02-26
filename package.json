@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "async": "2.1.5",
+    "benchmark": "2.1.3",
     "body-parser": "1.16.1",
     "chai": "3.5.0",
     "cookie-parser": "1.4.3",
