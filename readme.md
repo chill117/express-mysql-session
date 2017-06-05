@@ -18,7 +18,9 @@ This will install `express-mysql-session` and add it to your application's `pack
 
 For users who are still using express-mysql-session `0.x`. Changes have been made to the constructor, which are backwards compatible, but you could run into troubles if using an older version of this module with the latest documentation. You can find the documentation for the older version [here](https://github.com/chill117/express-mysql-session/tree/9fbcf51416a00a7a525c1e6e431033125a2945b0).
 
+## Creating the sessions table
 
+Use the CREATE command in schema.sql to create the sessions table in your MySQL database. Use the options described below to set the appropriate database, user and password.
 
 ## How to Use
 
