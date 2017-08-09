@@ -19,7 +19,7 @@
     "debug": "2.6.8",
     "depd": "1.1.0",
     "express-session": "1.15.3",
-    "mysql": "2.13.0"
+    "mysql": "2.14.*"
   },
   "devDependencies": {
     "async": "2.4.1",
