@@ -16,23 +16,23 @@
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "3.0.0",
+    "debug": "3.1.0",
     "depd": "1.1.1",
-    "express-session": "1.15.5",
-    "mysql": "2.14.*"
+    "express-session": "1.15.6",
+    "mysql": "2.15.*"
   },
   "devDependencies": {
     "async": "2.5.0",
     "benchmark": "2.1.4",
-    "body-parser": "1.17.2",
-    "chai": "4.1.1",
+    "body-parser": "1.18.2",
+    "chai": "4.1.2",
     "cookie-parser": "1.4.3",
-    "express": "4.15.4",
+    "express": "4.16.2",
     "grunt": "1.0.1",
-    "grunt-eslint": "20.0.0",
-    "grunt-mocha-test": "0.13.2",
+    "grunt-eslint": "20.1.0",
+    "grunt-mocha-test": "0.13.3",
     "load-grunt-config": "0.19.2",
-    "mocha": "3.5.0",
+    "mocha": "4.0.1",
     "time-grunt": "1.4.0",
     "underscore": "1.8.3"
   },
