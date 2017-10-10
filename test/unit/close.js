@@ -1,44 +1,135 @@
 'use strict';
 
+var _ = require('underscore');
 var expect = require('chai').expect;
+var mysql = require('mysql');
 
 var manager = require('../manager');
+var MySQLStore = manager.MySQLStore;
 
 ['close', 'closeStore'].forEach(function(methodName) {
 
 	describe(methodName + '(cb)', function() {
 
-		var sessionStore;
+		describe('database connection created internally', function() {
 
-		before(function(done) {
+			describe('default options', function() {
 
-			manager.setUp(function(error, store) {
+				var sessionStore;
 
-				if (error) {
-					return done(error);
-				}
+				beforeEach(function(done) {
+					sessionStore = new MySQLStore(manager.config, done);
+				});
 
-				sessionStore = store;
-				done();
+				it('should close the store and end the database connection', function(done) {
+
+					sessionStore[methodName](function(error) {
+
+						if (error) {
+							return done(error);
+						}
+
+						expect(sessionStore._expirationInterval).to.equal(null);
+
+						sessionStore.connection.query('SHOW TABLES', function(error, result) {
+							expect(error).to.not.equal(null);
+							expect(error.code).to.equal('POOL_CLOSED');
+							done();
+						});
+					});
+				});
+			});
+
+			describe('option.endConnectionOnClose set to FALSE', function() {
+
+				var sessionStore;
+
+				beforeEach(function(done) {
+
+					var options = _.extend({}, manager.config, {
+						endConnectionOnClose: false
+					});
+
+					sessionStore = new MySQLStore(options, done);
+				});
+
+				it('should close the store but not end the database connection', function(done) {
+
+					sessionStore[methodName](function(error) {
+
+						if (error) {
+							return done(error);
+						}
+
+						expect(sessionStore._expirationInterval).to.equal(null);
+
+						sessionStore.connection.query('SHOW TABLES', function(error, result) {
+							expect(error).to.equal(null);
+							done();
+						});
+					});
+				});
 			});
 		});
 
-		after(manager.tearDown);
+		describe('database connection provided to constructor', function() {
 
-		it('should close the store and its MySQL conenction(s)', function(done) {
+			describe('default options', function() {
 
-			sessionStore[methodName](function(error) {
+				var sessionStore;
 
-				if (error) {
-					return done(error);
-				}
+				beforeEach(function(done) {
+					var connection = mysql.createPool(manager.config);
+					sessionStore = new MySQLStore({}/* options */, connection, done);
+				});
 
-				expect(sessionStore._expirationInterval).to.equal(null);
+				it('should close the store but not end the database connection', function(done) {
 
-				// Any queries against the database should now fail.
-				sessionStore.length(function(error, count) {
-					expect(error.code).to.equal('POOL_CLOSED');
-					done();
+					sessionStore[methodName](function(error) {
+
+						if (error) {
+							return done(error);
+						}
+
+						expect(sessionStore._expirationInterval).to.equal(null);
+
+						sessionStore.connection.query('SHOW TABLES', function(error, result) {
+							expect(error).to.equal(null);
+							done();
+						});
+					});
+				});
+			});
+
+			describe('option.endConnectionOnClose set to TRUE', function() {
+
+				var sessionStore;
+
+				beforeEach(function(done) {
+
+					var options = _.extend({}, manager.config, {
+						endConnectionOnClose: true
+					});
+
+					sessionStore = new MySQLStore(options, done);
+				});
+
+				it('should close the store and end the database connection', function(done) {
+
+					sessionStore[methodName](function(error) {
+
+						if (error) {
+							return done(error);
+						}
+
+						expect(sessionStore._expirationInterval).to.equal(null);
+
+						sessionStore.connection.query('SHOW TABLES', function(error, result) {
+							expect(error).to.not.equal(null);
+							expect(error.code).to.equal('POOL_CLOSED');
+							done();
+						});
+					});
 				});
 			});
 		});

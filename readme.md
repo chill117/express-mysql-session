@@ -85,15 +85,27 @@ sessionStore.close();
 Here is a list of all available options:
 ```js
 var options = {
-	host: 'localhost',// Host name for database connection.
-	port: 3306,// Port number for database connection.
-	user: 'session_test',// Database user.
-	password: 'password',// Password for the above database user.
-	database: 'session_test',// Database name.
-	checkExpirationInterval: 900000,// How frequently expired sessions will be cleared; milliseconds.
-	expiration: 86400000,// The maximum age of a valid session; milliseconds.
-	createDatabaseTable: true,// Whether or not to create the sessions database table, if one does not already exist.
-	connectionLimit: 1,// Number of connections when creating a connection pool
+	// Host name for database connection:
+	host: 'localhost',
+	// Port number for database connection:
+	port: 3306,
+	// Database user:
+	user: 'session_test',
+	// Password for the above database user:
+	password: 'password',
+	// Database name:
+	database: 'session_test',
+	// How frequently expired sessions will be cleared; milliseconds:
+	checkExpirationInterval: 900000,
+	// The maximum age of a valid session; milliseconds:
+	expiration: 86400000,
+	// Whether or not to create the sessions database table, if one does not already exist:
+	createDatabaseTable: true,
+	// Number of connections when creating a connection pool:
+	connectionLimit: 1,
+	// Whether or not to end the database connection when the store is closed:
+	endConnectionOnClose: !connection,
+	charset: 'utf8mb4_bin',
 	schema: {
 		tableName: 'sessions',
 		columnNames: {

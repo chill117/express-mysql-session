@@ -21,7 +21,6 @@ describe('constructor', function() {
 	});
 
 	afterEach(function() {
-
 		manager.MySQLStore = require('../../');
 	});
 
@@ -32,12 +31,10 @@ describe('constructor', function() {
 		var session;
 
 		before(function() {
-
 			session = require('express-session');
 		});
 
 		beforeEach(function() {
-
 			MySQLStore = require('../..')(session);
 		});
 
@@ -82,7 +79,6 @@ describe('constructor', function() {
 	describe('require(\'express-mysql-session\')', function() {
 
 		beforeEach(function() {
-
 			MySQLStore = require('../..');
 		});
 
