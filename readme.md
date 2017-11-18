@@ -5,11 +5,6 @@ A MySQL session store for [express.js](http://expressjs.com/).
 [![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session) [![Status of Dependencies](https://david-dm.org/chill117/express-mysql-session.svg)](https://david-dm.org/chill117/express-mysql-session)
 
 
-## Note About Session Table Collation
-
-This module creates a database table to save session data. This data is stored in a MySQL text field with the [utf8mb4](https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html) collation - added in [MySQL 5.5.3](https://dev.mysql.com/doc/relnotes/mysql/5.5/en/news-5-5-3.html). The reason for this is to fully support the utf8 character set. If you absolutely must use an older version of MySQL, create your sessions table before initializing the `MySQLStore`.
-
-
 ## Installation
 
 Add to your application via `npm`:
@@ -19,10 +14,17 @@ npm install express-mysql-session --save
 This will install `express-mysql-session` and add it to your application's `package.json` file.
 
 
-## Note for Older Versions
+## Important Notes
+
+Potential gotchas and other important information goes here.
+
+### Older Versions
 
 For users who are still using express-mysql-session `0.x`. Changes have been made to the constructor, which are backwards compatible, but you could run into troubles if using an older version of this module with the latest documentation. You can find the documentation for the older version [here](https://github.com/chill117/express-mysql-session/tree/9fbcf51416a00a7a525c1e6e431033125a2945b0).
 
+### Session Table Collation
+
+This module creates a database table to save session data. This data is stored in a MySQL text field with the [utf8mb4](https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html) collation - added in [MySQL 5.5.3](https://dev.mysql.com/doc/relnotes/mysql/5.5/en/news-5-5-3.html). The reason for this is to fully support the utf8 character set. If you absolutely must use an older version of MySQL, create your sessions table before initializing the `MySQLStore`.
 
 
 ## How to Use
