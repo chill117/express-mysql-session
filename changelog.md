@@ -1,6 +1,6 @@
 # Changelog
 
-* TBD:
+* v1.2.3:
   * Updated dependencies
   * `MySQLStore.close()` will no longer end the database connection (if provided via constructor). See [https://github.com/chill117/express-mysql-session/issues/70] for more information. A new option has been added (`endConnectionOnClose`) to control this behavior.
 * v1.2.1-2:
