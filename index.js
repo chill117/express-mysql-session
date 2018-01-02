@@ -90,7 +90,7 @@ module.exports = function(session) {
 		var fs = require('fs');
 		var schemaFilePath = path.join(__dirname, 'schema.sql');
 
-		fs.readFile(schemaFilePath, 'utf-8', function(error, sql) {
+		fs.readFile(schemaFilePath, 'utf-8', async function(error, sql) {
 
 			if (error) {
 				debug.error('Failed to read schema file.');
@@ -107,21 +107,13 @@ module.exports = function(session) {
 				this.options.schema.columnNames.session_id
 			];
 
-			this.connection.query(sql, params, function(error) {
-
-				if (error) {
-					debug.error('Failed to create sessions database table.');
-					debug.error(error);
-					return cb && cb(error);
-				}
-
-				cb && cb();
-			});
+			const result = await this.connection.query(sql, params);
+            cb && cb();
 
 		}.bind(this));
 	};
 
-	MySQLStore.prototype.get = function(session_id, cb) {
+	MySQLStore.prototype.get = async function(session_id, cb) {
 
 		debug.log('Getting session:', session_id);
 
@@ -134,26 +126,19 @@ module.exports = function(session) {
 			session_id
 		];
 
-		this.connection.query(sql, params, function(error, rows) {
+		const rows = await this.connection.query(sql, params);
 
-			if (error) {
-				debug.error('Failed to get session:', session_id);
-				debug.error(error);
-				return cb(error, null);
-			}
+        try {
+            var session = rows[0] ? JSON.parse(rows[0][0].data) : null;
+            cb(null, session);
+        } catch (error) {
+            debug.error(error);
+            return cb(new Error('Failed to parse data for session:', session_id));
+        }
 
-			try {
-				var session = rows[0] ? JSON.parse(rows[0].data) : null;
-			} catch (error) {
-				debug.error(error);
-				return cb(new Error('Failed to parse data for session:', session_id));
-			}
-
-			cb(null, session);
-		});
 	};
 
-	MySQLStore.prototype.set = function(session_id, data, cb) {
+	MySQLStore.prototype.set = async function(session_id, data, cb) {
 
 		debug.log('Setting session:', session_id);
 
@@ -195,20 +180,11 @@ module.exports = function(session) {
 			this.options.schema.columnNames.data,
 			this.options.schema.columnNames.data
 		];
-
-		this.connection.query(sql, params, function(error) {
-
-			if (error) {
-				debug.error('Failed to insert session data.');
-				debug.error(error);
-				return cb && cb(error);
-			}
-
-			cb && cb();
-		});
+		var rows = await this.connection.query(sql, params);
+        cb && cb();
 	};
 
-	MySQLStore.prototype.touch = function(session_id, data, cb) {
+	MySQLStore.prototype.touch = async function(session_id, data, cb) {
 
 		debug.log('Touching session:', session_id);
 
@@ -242,20 +218,11 @@ module.exports = function(session) {
 			this.options.schema.columnNames.session_id,
 			session_id
 		];
-
-		this.connection.query(sql, params, function(error) {
-
-			if (error) {
-				debug.error('Failed to touch session:', session_id);
-				debug.error(error);
-				return cb && cb(error);
-			}
-
-			return cb && cb();
-		});
+		var rows = await this.connection.query(sql, params);
+        return cb && cb();
 	};
 
-	MySQLStore.prototype.destroy = function(session_id, cb) {
+	MySQLStore.prototype.destroy = async function(session_id, cb) {
 
 		debug.log('Destroying session:', session_id);
 
@@ -267,19 +234,11 @@ module.exports = function(session) {
 			session_id
 		];
 
-		this.connection.query(sql, params, function(error) {
-
-			if (error) {
-				debug.error('Failed to destroy session:', session_id);
-				debug.error(error);
-				return cb && cb(error);
-			}
-
-			cb && cb();
-		});
+		var rows = await this.connection.query(sql, params);
+        cb && cb();
 	};
 
-	MySQLStore.prototype.length = function(cb) {
+	MySQLStore.prototype.length = async function(cb) {
 
 		debug.log('Getting number of sessions');
 
@@ -289,21 +248,12 @@ module.exports = function(session) {
 			this.options.schema.tableName
 		];
 
-		this.connection.query(sql, params, function(error, rows) {
-
-			if (error) {
-				debug.error('Failed to get number of sessions.');
-				debug.error(error);
-				return cb && cb(error);
-			}
-
-			var count = rows[0] ? rows[0]['COUNT(*)'] : 0;
-
-			cb(null, count);
-		});
+		var rows = await this.connection.query(sql, params);
+        var count = rows[0] ? rows[0]['COUNT(*)'] : 0;
+        cb(null, count);
 	};
 
-	MySQLStore.prototype.clear = function(cb) {
+	MySQLStore.prototype.clear = async function(cb) {
 
 		debug.log('Clearing all sessions');
 
@@ -313,19 +263,11 @@ module.exports = function(session) {
 			this.options.schema.tableName
 		];
 
-		this.connection.query(sql, params, function(error) {
-
-			if (error) {
-				debug.error('Failed to clear all sessions.');
-				debug.error(error);
-				return cb && cb(error);
-			}
-
-			cb && cb();
-		});
+		var rows = await this.connection.query(sql, params);
+        cb && cb();
 	};
 
-	MySQLStore.prototype.clearExpiredSessions = function(cb) {
+	MySQLStore.prototype.clearExpiredSessions = async function(cb) {
 
 		debug.log('Clearing expired sessions');
 
@@ -337,16 +279,8 @@ module.exports = function(session) {
 			Math.round(Date.now() / 1000)
 		];
 
-		this.connection.query(sql, params, function(error) {
-
-			if (error) {
-				debug.error('Failed to clear expired sessions.');
-				debug.error(error);
-				return cb && cb(error);
-			}
-
-			cb && cb();
-		});
+		var rows = await this.connection.query(sql, params);
+        cb && cb();
 	};
 
 	MySQLStore.prototype.setExpirationInterval = function(interval) {
