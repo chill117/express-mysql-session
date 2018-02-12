@@ -303,6 +303,40 @@ module.exports = function(session) {
 		});
 	};
 
+	MySQLStore.prototype.all = function(cb) {
+
+		debug.log('Getting all sessions');
+
+		var sql = 'SELECT * FROM ??';
+
+		var params = [
+			this.options.schema.tableName
+		];
+
+		this.connection.query(sql, params, function(error, rows) {
+
+			if (error) {
+				debug.error('Failed to get all sessions.');
+				debug.error(error);
+				return cb && cb(error);
+			}
+
+			var sessions = _.chain(rows).map(function(row) {
+				var session;
+				try {
+					session = JSON.parse(row.data);
+				} catch (error) {
+					debug.error('Failed to parse data for session: ' + row.session_id);
+					debug.error(error);
+					session = null;
+				}
+				return session;
+			}).compact().value();
+
+			cb && cb(null, sessions);
+		});
+	};
+
 	MySQLStore.prototype.clear = function(cb) {
 
 		debug.log('Clearing all sessions');
