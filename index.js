@@ -322,16 +322,15 @@ module.exports = function(session) {
 			}
 
 			var sessions = _.chain(rows).map(function(row) {
-				var session;
 				try {
-					session = JSON.parse(row.data);
+					var data = JSON.parse(row.data);
 				} catch (error) {
 					debug.error('Failed to parse data for session: ' + row.session_id);
 					debug.error(error);
-					session = null;
+					return null;
 				}
-				return session;
-			}).compact().value();
+				return [row.session_id, data];
+			}).compact().object().value();
 
 			cb && cb(null, sessions);
 		});

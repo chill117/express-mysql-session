@@ -35,15 +35,14 @@ describe('all(cb)', function() {
 
 				try {
 					expect(error).to.equal(null);
-					expect(sessions).to.be.an('array');
-					expect(sessions.length).to.equal(fixtures.length);
-					_.each(sessions, function(session) {
-						expect(session).to.be.an('object');
-						var sessionDataStr = JSON.stringify(session);
-						var found = !!_.find(fixtures, function(fixture) {
-							return JSON.stringify(fixture.data) === sessionDataStr;
-						});
-						expect(found).to.equal(true);
+					expect(sessions).to.be.an('object');
+					expect(_.keys(sessions).length).to.equal(fixtures.length);
+					_.each(sessions, function(data, id) {
+						expect(data).to.be.an('object');
+						expect(id).to.be.a('string');
+						var fixture = _.findWhere(fixtures, { session_id: id });
+						expect(fixture).to.not.be.undefined;
+						expect(JSON.stringify(data)).to.equal(JSON.stringify(fixture.data));
 					});
 				} catch (error) {
 					return done(error);
