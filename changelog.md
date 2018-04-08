@@ -3,6 +3,7 @@
 * TBD:
   * Updated dependencies
   * Fix for [issue #78](https://github.com/chill117/express-mysql-session/issues/78)
+  * Added support for promises in mysql query function
 * v1.2.3:
   * Updated dependencies
   * `MySQLStore.close()` will no longer end the database connection (if provided via constructor). See [issue #70](https://github.com/chill117/express-mysql-session/issues/70) for more information. A new option has been added (`endConnectionOnClose`) to control this behavior.

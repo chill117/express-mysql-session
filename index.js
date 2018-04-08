@@ -107,7 +107,7 @@ module.exports = function(session) {
 				this.options.schema.columnNames.session_id
 			];
 
-			this.connection.query(sql, params, function(error) {
+			this.query(sql, params, function(error) {
 
 				if (error) {
 					debug.error('Failed to create sessions database table.');
@@ -134,7 +134,7 @@ module.exports = function(session) {
 			session_id
 		];
 
-		this.connection.query(sql, params, function(error, rows) {
+		this.query(sql, params, function(error, rows) {
 
 			if (error) {
 				debug.error('Failed to get session:', session_id);
@@ -196,7 +196,7 @@ module.exports = function(session) {
 			this.options.schema.columnNames.data
 		];
 
-		this.connection.query(sql, params, function(error) {
+		this.query(sql, params, function(error) {
 
 			if (error) {
 				debug.error('Failed to insert session data.');
@@ -243,7 +243,7 @@ module.exports = function(session) {
 			session_id
 		];
 
-		this.connection.query(sql, params, function(error) {
+		this.query(sql, params, function(error) {
 
 			if (error) {
 				debug.error('Failed to touch session:', session_id);
@@ -267,7 +267,7 @@ module.exports = function(session) {
 			session_id
 		];
 
-		this.connection.query(sql, params, function(error) {
+		this.query(sql, params, function(error) {
 
 			if (error) {
 				debug.error('Failed to destroy session:', session_id);
@@ -289,7 +289,7 @@ module.exports = function(session) {
 			this.options.schema.tableName
 		];
 
-		this.connection.query(sql, params, function(error, rows) {
+		this.query(sql, params, function(error, rows) {
 
 			if (error) {
 				debug.error('Failed to get number of sessions.');
@@ -313,7 +313,7 @@ module.exports = function(session) {
 			this.options.schema.tableName
 		];
 
-		this.connection.query(sql, params, function(error, rows) {
+		this.query(sql, params, function(error, rows) {
 
 			if (error) {
 				debug.error('Failed to get all sessions.');
@@ -346,7 +346,7 @@ module.exports = function(session) {
 			this.options.schema.tableName
 		];
 
-		this.connection.query(sql, params, function(error) {
+		this.query(sql, params, function(error) {
 
 			if (error) {
 				debug.error('Failed to clear all sessions.');
@@ -370,7 +370,7 @@ module.exports = function(session) {
 			Math.round(Date.now() / 1000)
 		];
 
-		this.connection.query(sql, params, function(error) {
+		this.query(sql, params, function(error) {
 
 			if (error) {
 				debug.error('Failed to clear expired sessions.');
@@ -380,6 +380,23 @@ module.exports = function(session) {
 
 			cb && cb();
 		});
+	};
+
+	MySQLStore.prototype.query = function(sql, params, cb) {
+
+		var done = _.once(cb);
+		var promise = this.connection.query(sql, params, done);
+
+		if (promise && _.isFunction(promise.then) && _.isFunction(promise.catch)) {
+			// Probably a promise.
+			promise.then(function(result) {
+				var rows = result[0];
+				var fields = result[1];
+				done(null, rows, fields);
+			}).catch(function(error) {
+				done(error);
+			});
+		}
 	};
 
 	MySQLStore.prototype.setExpirationInterval = function(interval) {
