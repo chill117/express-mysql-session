@@ -32,37 +32,16 @@ module.exports = function(session) {
 			connection = null;
 		}
 
-		var defaultOptions = {
-			// How frequently expired sessions will be cleared; milliseconds:
-			checkExpirationInterval: 900000,
-			// The maximum age of a valid session; milliseconds:
-			expiration: 86400000,
-			// Whether or not to create the sessions database table, if one does not already exist:
-			createDatabaseTable: true,
-			// Number of connections when creating a connection pool:
-			connectionLimit: 1,
-			// Whether or not to end the database connection when the store is closed:
-			endConnectionOnClose: !connection,
-			charset: 'utf8mb4_bin',
-			schema: {
-				tableName: 'sessions',
-				columnNames: {
-					session_id: 'session_id',
-					expires: 'expires',
-					data: 'data'
-				}
-			}
-		};
-
-		this.options = _.defaults(options || {}, defaultOptions);
-		this.options.schema = _.defaults(this.options.schema, defaultOptions.schema);
-		this.options.schema.columnNames = _.defaults(this.options.schema.columnNames, defaultOptions.schema.columnNames);
-
-		if (this.options.debug) {
+		if (options && options.debug) {
 			deprecate('The \'debug\' option has been removed. This module now uses the debug module to output logs and error messages. Run your app with `DEBUG=express-mysql-session* node your-app.js` to have all logs and errors outputted to the console.');
 		}
 
-		this.connection = connection || mysql.createPool(this.options);
+		this.connection = connection;
+		this.setOptions(options);
+
+		if (!this.connection) {
+			this.connection = mysql.createPool(this.options);
+		}
 
 		var done = function() {
 
@@ -82,6 +61,51 @@ module.exports = function(session) {
 	};
 
 	util.inherits(MySQLStore, Store);
+
+	MySQLStore.prototype.defaultOptions = {
+		// How frequently expired sessions will be cleared; milliseconds:
+		checkExpirationInterval: 900000,
+		// The maximum age of a valid session; milliseconds:
+		expiration: 86400000,
+		// Whether or not to create the sessions database table, if one does not already exist:
+		createDatabaseTable: true,
+		// Number of connections when creating a connection pool:
+		connectionLimit: 1,
+		// Whether or not to end the database connection when the store is closed:
+		endConnectionOnClose: true,
+		charset: 'utf8mb4_bin',
+		schema: {
+			tableName: 'sessions',
+			columnNames: {
+				session_id: 'session_id',
+				expires: 'expires',
+				data: 'data'
+			}
+		}
+	};
+
+	MySQLStore.prototype.setOptions = function(options) {
+
+		this.options = _.defaults({}, options || {}, {
+			// The default value of this option depends on whether or not a connection was passed to the constructor.
+			endConnectionOnClose: !this.connection,
+		}, this.defaultOptions);
+
+		this.options.schema = _.defaults({}, this.options.schema || {}, this.defaultOptions.schema);
+		this.options.schema.columnNames = _.defaults({}, this.options.schema.columnNames || {}, this.defaultOptions.schema.columnNames);
+		this.validateOptions(this.options);
+	};
+
+	MySQLStore.prototype.validateOptions = function(options) {
+
+		var allowedColumnNames = _.keys(this.defaultOptions.schema.columnNames);
+		var userDefineColumnNames = _.keys(options.schema.columnNames);
+		_.each(userDefineColumnNames, function(userDefineColumnName) {
+			if (!_.contains(allowedColumnNames, userDefineColumnName)) {
+				throw new Error('Unknwon column specified ("' + userDefineColumnName + '"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
+			}
+		});
+	};
 
 	MySQLStore.prototype.createDatabaseTable = function(cb) {
 

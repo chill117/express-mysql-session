@@ -1,7 +1,9 @@
 'use strict';
 
+var _ = require('underscore');
 var expect = require('chai').expect;
 var mysql = require('mysql');
+var session = require('express-session');
 
 var manager = require('../manager');
 
@@ -27,12 +29,6 @@ describe('constructor', function() {
 	afterEach(manager.tearDown);
 
 	describe('require(\'express-mysql-session\')(session)', function() {
-
-		var session;
-
-		before(function() {
-			session = require('express-session');
-		});
 
 		beforeEach(function() {
 			MySQLStore = require('../..')(session);
@@ -117,6 +113,35 @@ describe('constructor', function() {
 
 				done();
 			});
+		});
+	});
+
+	describe('invalid schema option', function() {
+
+		var MySQLStore;
+
+		before(function() {
+			MySQLStore = require('../..')(session);
+		});
+
+		it('should throw an error when defining invalid schema option', function() {
+
+			var options = _.extend({
+				schema: {
+					columnNames: {
+						unknownColumn: 'custom_column_name',
+					},
+				},
+			}, manager.config);
+
+			var thrownError;
+			try {
+				new MySQLStore(options);
+			} catch (error) {
+				thrownError = error;
+			}
+			expect(thrownError).to.not.be.undefined;
+			expect(thrownError.message).to.equal('Unknwon column specified ("unknownColumn"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
 		});
 	});
 });
