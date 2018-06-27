@@ -9,139 +9,184 @@ var manager = require('../manager');
 
 describe('constructor', function() {
 
-	var MySQLStore;
-
-	beforeEach(manager.setUp);
-
-	beforeEach(function() {
-
-		if (require.cache[require.resolve('../..')]) {
-			delete require.cache[require.resolve('../..')];
-		}
-
-		manager.MySQLStore = null;
-	});
-
+	var sessionStore;
 	afterEach(function() {
-		manager.MySQLStore = require('../../');
+		if (sessionStore) {
+			sessionStore.close();
+		}
 	});
 
-	afterEach(manager.tearDown);
+	describe('usage', function() {
 
-	describe('require(\'express-mysql-session\')(session)', function() {
+		beforeEach(manager.setUp);
 
 		beforeEach(function() {
-			MySQLStore = require('../..')(session);
+
+			if (require.cache[require.resolve('../..')]) {
+				delete require.cache[require.resolve('../..')];
+			}
+
+			manager.MySQLStore = null;
 		});
 
-		it('MySQLStore(options, cb)', function(done) {
+		afterEach(function() {
+			manager.MySQLStore = require('../../');
+		});
 
-			var options = manager.config;
-			var sessionStore = new MySQLStore(options, function(error) {
+		afterEach(manager.tearDown);
 
-				try {
+		describe('require(\'express-mysql-session\')(session)', function() {
 
-					expect(error).to.equal(undefined);
-					expect(sessionStore.connection).to.not.equal(undefined);
+			var MySQLStore;
+			beforeEach(function() {
+				MySQLStore = require('../..')(session);
+			});
 
-				} catch (error) {
-					return done(error);
-				}
+			it('MySQLStore(options, cb)', function(done) {
 
-				done();
+				var options = manager.config;
+				sessionStore = new MySQLStore(options, function(error) {
+					try {
+						expect(error).to.equal(undefined);
+						expect(sessionStore.connection).to.not.equal(undefined);
+					} catch (error) {
+						return done(error);
+					}
+					done();
+				});
+			});
+
+			it('MySQLStore(options, connection, cb)', function(done) {
+
+				var options = {};
+				var connection = mysql.createPool(manager.config);
+				sessionStore = new MySQLStore(options, connection, function(error) {
+					try {
+						expect(error).to.equal(undefined);
+						expect(sessionStore.connection).to.deep.equal(connection);
+					} catch (error) {
+						return done(error);
+					}
+					done();
+				});
 			});
 		});
 
-		it('MySQLStore(options, connection, cb)', function(done) {
+		describe('require(\'express-mysql-session\')', function() {
 
-			var options = {};
-			var connection = mysql.createPool(manager.config);
-			var sessionStore = new MySQLStore(options, connection, function(error) {
+			var MySQLStore;
+			beforeEach(function() {
+				MySQLStore = require('../..');
+			});
 
-				try {
+			it('MySQLStore(options, cb)', function(done) {
 
-					expect(error).to.equal(undefined);
-					expect(sessionStore.connection).to.deep.equal(connection);
+				var options = manager.config;
+				sessionStore = new MySQLStore(options, function(error) {
+					try {
+						expect(error).to.equal(undefined);
+						expect(sessionStore.connection).to.not.equal(undefined);
+					} catch (error) {
+						return done(error);
+					}
+					done();
+				});
+			});
 
-				} catch (error) {
-					return done(error);
-				}
+			it('MySQLStore(options, connection, cb)', function(done) {
 
-				done();
+				var options = {};
+				var connection = mysql.createPool(manager.config);
+				sessionStore = new MySQLStore(options, connection, function(error) {
+					try {
+						expect(error).to.equal(undefined);
+						expect(sessionStore.connection).to.deep.equal(connection);
+					} catch (error) {
+						return done(error);
+					}
+					done();
+				});
 			});
 		});
 	});
 
-	describe('require(\'express-mysql-session\')', function() {
+	describe('options', function() {
 
-		beforeEach(function() {
-			MySQLStore = require('../..');
-		});
-
-		it('MySQLStore(options, cb)', function(done) {
-
-			var options = manager.config;
-			var sessionStore = new MySQLStore(options, function(error) {
-
-				try {
-
-					expect(error).to.equal(undefined);
-					expect(sessionStore.connection).to.not.equal(undefined);
-
-				} catch (error) {
-					return done(error);
-				}
-
-				done();
-			});
-		});
-
-		it('MySQLStore(options, connection, cb)', function(done) {
-
-			var options = {};
-			var connection = mysql.createPool(manager.config);
-			var sessionStore = new MySQLStore(options, connection, function(error) {
-
-				try {
-
-					expect(error).to.equal(undefined);
-					expect(sessionStore.connection).to.deep.equal(connection);
-
-				} catch (error) {
-					return done(error);
-				}
-
-				done();
-			});
-		});
-	});
-
-	describe('invalid schema option', function() {
+		before(manager.setUp);
 
 		var MySQLStore;
-
 		before(function() {
 			MySQLStore = require('../..')(session);
 		});
 
-		it('should throw an error when defining invalid schema option', function() {
+		after(manager.tearDown);
 
-			var options = _.extend({
-				schema: {
-					columnNames: {
-						unknownColumn: 'custom_column_name',
+		describe('clearExpired', function() {
+
+			describe('TRUE', function() {
+
+				it('should call clearExpiredSessions', function(done) {
+
+					var options = _.extend({}, manager.config, {
+						checkExpirationInterval: 1,
+						clearExpired: true,
+					});
+
+					sessionStore = new MySQLStore(options);
+					done = _.once(done);
+
+					// Override the clearExpiredSessions method.
+					sessionStore.clearExpiredSessions = function() {
+						done();
+					};
+				});
+			});
+
+			describe('FALSE', function() {
+
+				it('should not call clearExpiredSessions', function(done) {
+
+					var options = _.extend({}, manager.config, {
+						checkExpirationInterval: 1,
+						clearExpired: false,
+					});
+
+					sessionStore = new MySQLStore(options);
+					done = _.once(done);
+
+					// Override the clearExpiredSessions method.
+					sessionStore.clearExpiredSessions = function() {
+						done(new Error('clearExpiredSessions method should NOT have been called'));
+					};
+
+					setTimeout(function() {
+						done();
+					}, 30);
+				});
+			});
+		});
+
+		describe('schema', function() {
+
+			it('should throw an error when defining unknown column(s)', function() {
+
+				var options = _.extend({
+					schema: {
+						columnNames: {
+							unknownColumn: 'custom_column_name',
+						},
 					},
-				},
-			}, manager.config);
+				}, manager.config);
 
-			var thrownError;
-			try {
-				new MySQLStore(options);
-			} catch (error) {
-				thrownError = error;
-			}
-			expect(thrownError).to.not.be.undefined;
-			expect(thrownError.message).to.equal('Unknwon column specified ("unknownColumn"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
+				var thrownError;
+				try {
+					new MySQLStore(options);
+				} catch (error) {
+					thrownError = error;
+				}
+				expect(thrownError).to.not.be.undefined;
+				expect(thrownError.message).to.equal('Unknwon column specified ("unknownColumn"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
+			});
 		});
 	});
 });
