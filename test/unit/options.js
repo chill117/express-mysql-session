@@ -1,12 +1,19 @@
 'use strict';
 
-var expect = require('chai').expect;
+var _ = require('underscore');
 
 var manager = require('../manager');
 var config = manager.config;
 var MySQLStore = manager.MySQLStore;
 
 describe('constructor options', function() {
+
+	var sessionStore;
+	afterEach(function() {
+		if (sessionStore) {
+			sessionStore.close();
+		}
+	});
 
 	before(function(done) {
 
@@ -25,58 +32,50 @@ describe('constructor options', function() {
 	describe('clearExpired set to TRUE', function() {
 
 		it('should call clearExpiredSessions', function(done) {
-			var checkExpirationInterval = 45;
 
-			var sessionStore = new MySQLStore({
+			sessionStore = new MySQLStore({
 				host: config.host,
 				port: config.port,
 				user: config.user,
 				password: config.password,
 				database: config.database,
-				checkExpirationInterval: checkExpirationInterval,
+				checkExpirationInterval: 1,
 				clearExpired: true
 			});
 
-			var called = false;
+			done = _.once(done);
 
 			// Override the clearExpiredSessions method.
 			sessionStore.clearExpiredSessions = function() {
-				called = true;
-			};
-
-			setTimeout(function() {
-				expect(called).to.equal(true);
 				done();
-			}, checkExpirationInterval + 40);
+			};
 		});
 	});
 
 	describe('clearExpired set to FALSE', function() {
 
 		it('should not call clearExpiredSessions', function(done) {
-			var checkExpirationInterval = 45;
 
-			var sessionStore = new MySQLStore({
+			sessionStore = new MySQLStore({
 				host: config.host,
 				port: config.port,
 				user: config.user,
 				password: config.password,
 				database: config.database,
-				checkExpirationInterval: checkExpirationInterval,
+				checkExpirationInterval: 1,
 				clearExpired: false
 			});
 
-			var called = false;
+			done = _.once(done);
 
 			// Override the clearExpiredSessions method.
 			sessionStore.clearExpiredSessions = function() {
-				called = true;
+				done(new Error('clearExpiredSessions method should NOT have been called'));
 			};
 
 			setTimeout(function() {
-				expect(called).to.equal(false);
 				done();
-			}, checkExpirationInterval + 40);
+			}, 30);
 		});
 	});
 });
