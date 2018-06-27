@@ -7,128 +7,125 @@ var mysql = require('mysql');
 var manager = require('../manager');
 var MySQLStore = manager.MySQLStore;
 
-['close', 'closeStore'].forEach(function(methodName) {
+describe('close(cb)', function() {
 
-	describe(methodName + '(cb)', function() {
+	describe('database connection created internally', function() {
 
-		describe('database connection created internally', function() {
+		describe('default options', function() {
 
-			describe('default options', function() {
+			var sessionStore;
 
-				var sessionStore;
-
-				beforeEach(function(done) {
-					sessionStore = new MySQLStore(manager.config, done);
-				});
-
-				it('should close the store and end the database connection', function(done) {
-
-					sessionStore[methodName](function(error) {
-
-						if (error) {
-							return done(error);
-						}
-
-						expect(sessionStore._expirationInterval).to.equal(null);
-
-						sessionStore.connection.query('SHOW TABLES', function(error, result) {
-							expect(error).to.not.equal(null);
-							expect(error.code).to.equal('POOL_CLOSED');
-							done();
-						});
-					});
-				});
+			beforeEach(function(done) {
+				sessionStore = new MySQLStore(manager.config, done);
 			});
 
-			describe('option.endConnectionOnClose set to FALSE', function() {
+			it('should close the store and end the database connection', function(done) {
 
-				var sessionStore;
+				sessionStore.close(function(error) {
 
-				beforeEach(function(done) {
+					if (error) {
+						return done(error);
+					}
 
-					var options = _.extend({}, manager.config, {
-						endConnectionOnClose: false
-					});
+					expect(sessionStore._expirationInterval).to.equal(null);
 
-					sessionStore = new MySQLStore(options, done);
-				});
-
-				it('should close the store but not end the database connection', function(done) {
-
-					sessionStore[methodName](function(error) {
-
-						if (error) {
-							return done(error);
-						}
-
-						expect(sessionStore._expirationInterval).to.equal(null);
-
-						sessionStore.connection.query('SHOW TABLES', function(error, result) {
-							expect(error).to.equal(null);
-							done();
-						});
+					sessionStore.connection.query('SHOW TABLES', function(error, result) {
+						expect(error).to.not.equal(null);
+						expect(error.code).to.equal('POOL_CLOSED');
+						done();
 					});
 				});
 			});
 		});
 
-		describe('database connection provided to constructor', function() {
+		describe('option.endConnectionOnClose set to FALSE', function() {
 
-			describe('default options', function() {
+			var sessionStore;
 
-				var sessionStore;
+			beforeEach(function(done) {
 
-				beforeEach(function(done) {
-					var connection = mysql.createPool(manager.config);
-					sessionStore = new MySQLStore({}/* options */, connection, done);
+				var options = _.extend({}, manager.config, {
+					endConnectionOnClose: false
 				});
 
-				it('should close the store but not end the database connection', function(done) {
+				sessionStore = new MySQLStore(options, done);
+			});
 
-					sessionStore[methodName](function(error) {
+			it('should close the store but not end the database connection', function(done) {
 
-						if (error) {
-							return done(error);
-						}
+				sessionStore.close(function(error) {
 
-						expect(sessionStore._expirationInterval).to.equal(null);
+					if (error) {
+						return done(error);
+					}
 
-						sessionStore.connection.query('SHOW TABLES', function(error, result) {
-							expect(error).to.equal(null);
-							done();
-						});
+					expect(sessionStore._expirationInterval).to.equal(null);
+
+					sessionStore.connection.query('SHOW TABLES', function(error, result) {
+						expect(error).to.equal(null);
+						done();
 					});
 				});
 			});
+		});
+	});
 
-			describe('option.endConnectionOnClose set to TRUE', function() {
+	describe('database connection provided to constructor', function() {
 
-				var sessionStore;
+		describe('default options', function() {
 
-				beforeEach(function(done) {
+			var sessionStore;
 
-					var options = _.extend({}, manager.config, {
-						endConnectionOnClose: true
+			beforeEach(function(done) {
+				var connection = mysql.createPool(manager.config);
+				sessionStore = new MySQLStore({}/* options */, connection, done);
+			});
+
+			it('should close the store but not end the database connection', function(done) {
+
+				sessionStore.close(function(error) {
+
+					if (error) {
+						return done(error);
+					}
+
+					expect(sessionStore._expirationInterval).to.equal(null);
+
+					sessionStore.connection.query('SHOW TABLES', function(error, result) {
+						expect(error).to.equal(null);
+						done();
 					});
+				});
+			});
+		});
 
-					sessionStore = new MySQLStore(options, done);
+		describe('option.endConnectionOnClose set to TRUE', function() {
+
+			var sessionStore;
+
+			beforeEach(function(done) {
+
+				var options = _.extend({}, manager.config, {
+					endConnectionOnClose: true
 				});
 
-				it('should close the store and end the database connection', function(done) {
+				sessionStore = new MySQLStore(options, done);
+			});
 
-					sessionStore[methodName](function(error) {
+			it('should close the store and end the database connection', function(done) {
 
-						if (error) {
-							return done(error);
-						}
+				sessionStore.close(function(error) {
 
-						expect(sessionStore._expirationInterval).to.equal(null);
+					if (error) {
+						return done(error);
+					}
 
-						sessionStore.connection.query('SHOW TABLES', function(error, result) {
-							expect(error).to.not.equal(null);
-							expect(error.code).to.equal('POOL_CLOSED');
-							done();
-						});
+					expect(sessionStore._expirationInterval).to.equal(null);
+
+					sessionStore.connection.query('SHOW TABLES', function(error, result) {
+						expect(error).to.not.equal(null);
+						expect(error.code).to.equal('POOL_CLOSED');
+						done();
 					});
 				});
 			});

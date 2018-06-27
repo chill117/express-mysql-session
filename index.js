@@ -10,8 +10,6 @@ var debug = {
 	error: require('debug')('express-mysql-session:error')
 };
 
-var deprecate = require('depd')('express-mysql-session');
-
 module.exports = function(session) {
 
 	var constructorArgs;
@@ -30,10 +28,6 @@ module.exports = function(session) {
 		if (_.isFunction(connection)) {
 			cb = connection;
 			connection = null;
-		}
-
-		if (options && options.debug) {
-			deprecate('The \'debug\' option has been removed. This module now uses the debug module to output logs and error messages. Run your app with `DEBUG=express-mysql-session* node your-app.js` to have all logs and errors outputted to the console.');
 		}
 
 		this.connection = connection;
@@ -460,58 +454,6 @@ module.exports = function(session) {
 			cb && cb(null);
 		}
 	};
-
-	MySQLStore.prototype.closeStore = deprecate.function(
-		MySQLStore.prototype.close,
-		'The closeStore() method has been deprecated. Use close() instead.'
-	);
-
-	MySQLStore.prototype.sync = deprecate.function(
-		MySQLStore.prototype.createDatabaseTable,
-		'The sync() method has been deprecated. Use createDatabaseTable() instead.'
-	);
-
-	MySQLStore.prototype.defaults = deprecate.function(
-		function defaults(object, defaultValues, options) {
-
-			object = _.clone(object);
-
-			if (!_.isObject(object)) {
-				return object;
-			}
-
-			options = options || {};
-
-			_.each(defaultValues, function(value, key) {
-
-				if (_.isUndefined(object[key])) {
-					object[key] = value;
-				}
-
-				if (options.recursive) {
-					object[key] = defaults(object[key], value, options);
-				}
-			});
-
-			return object;
-		},
-		'The defaults() method has been deprecated and will be removed in a future version.'
-	);
-
-	MySQLStore.prototype.clone = deprecate.function(
-		_.clone,
-		'The clone() method has been deprecated and will be removed in a future version.'
-	);
-
-	MySQLStore.prototype.isObject = deprecate.function(
-		_.isObject,
-		'The isObject() method has been deprecated and will be removed in a future version.'
-	);
-
-	MySQLStore.prototype.setDefaultOptions = deprecate.function(
-		_.noop,
-		'The setDefaultOptions() method has been deprecated and will be removed in a future version.'
-	);
 
 	if (constructorArgs) {
 		// For backwards compatibility.
