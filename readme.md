@@ -102,6 +102,8 @@ var options = {
 	password: 'password',
 	// Database name:
 	database: 'session_test',
+	// Whether or not to automatically check for and clear expired sessions:
+	clearExpired: true,
 	// How frequently expired sessions will be cleared; milliseconds:
 	checkExpirationInterval: 900000,
 	// The maximum age of a valid session; milliseconds:
@@ -110,8 +112,10 @@ var options = {
 	createDatabaseTable: true,
 	// Number of connections when creating a connection pool:
 	connectionLimit: 1,
-	// Whether or not to end the database connection when the store is closed:
-	endConnectionOnClose: !connection,
+	// Whether or not to end the database connection when the store is closed.
+	// The default value of this option depends on whether or not a connection was passed to the constructor.
+	// If a connection object is passed to the constructor, the default value for this option is false.
+	endConnectionOnClose: true,
 	charset: 'utf8mb4_bin',
 	schema: {
 		tableName: 'sessions',
