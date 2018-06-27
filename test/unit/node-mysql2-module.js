@@ -18,7 +18,7 @@ describe('node-mysql2-module', function() {
 		var connection = mysql2.createPool(manager.config);
 		var sessionStore = new MySQLStore(options, connection, function(error) {
 			try {
-				expect(error).to.equal(undefined);
+				expect(error).to.be.undefined;
 				expect(sessionStore.connection).to.deep.equal(connection);
 			} catch (error) {
 				return done(error);

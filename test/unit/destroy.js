@@ -37,7 +37,7 @@ describe('destroy(session_id, cb)', function() {
 
 				sessionStore.destroy(session_id, function(error) {
 
-					expect(error).to.equal(undefined);
+					expect(error).to.be.undefined;
 
 					sessionStore.get(session_id, function(error, session) {
 
@@ -67,7 +67,7 @@ describe('destroy(session_id, cb)', function() {
 
 				sessionStore.destroy(session_id, function(error) {
 
-					expect(error).to.equal(undefined);
+					expect(error).to.be.undefined;
 					nextFixture();
 				});
 

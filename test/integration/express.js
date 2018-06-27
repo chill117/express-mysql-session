@@ -94,7 +94,7 @@ describe('Express Integration', function() {
 						}, function(res2) {
 
 							expect(res2.statusCode).to.equal(200);
-							expect(res2.headers['set-cookie']).to.equal(undefined);
+							expect(res2.headers['set-cookie']).to.be.undefined;
 
 							done();
 						});
@@ -144,7 +144,7 @@ describe('Express Integration', function() {
 						}, function(res2) {
 
 							expect(res2.statusCode).to.equal(200);
-							expect(res2.headers['set-cookie']).to.not.equal(undefined);
+							expect(res2.headers['set-cookie']).to.not.be.undefined;
 
 							done();
 						});

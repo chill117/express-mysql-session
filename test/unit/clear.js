@@ -31,7 +31,7 @@ describe('clear(cb)', function() {
 
 			sessionStore.clear(function(error) {
 
-				expect(error).to.equal(undefined);
+				expect(error).to.be.undefined;
 
 				sessionStore.length(function(error, count) {
 

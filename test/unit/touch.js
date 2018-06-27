@@ -38,7 +38,7 @@ describe('touch(session_id, data, cb)', function() {
 
 				sessionStore.touch(session_id, data, function(error) {
 
-					expect(error).to.equal(undefined);
+					expect(error).to.be.undefined;
 
 					sessionStore.get(session_id, function(error, session) {
 
@@ -80,7 +80,7 @@ describe('touch(session_id, data, cb)', function() {
 
 				sessionStore.touch(session_id, fixture.data, function(error) {
 
-					expect(error).to.equal(undefined);
+					expect(error).to.be.undefined;
 
 					var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions` WHERE `session_id` = ?';
 

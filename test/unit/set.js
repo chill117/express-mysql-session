@@ -38,7 +38,7 @@ describe('set(session_id, data, cb)', function() {
 
 				sessionStore.set(session_id, data, function(error) {
 
-					expect(error).to.equal(undefined);
+					expect(error).to.be.undefined;
 
 					sessionStore.get(session_id, function(error, session) {
 
@@ -77,7 +77,7 @@ describe('set(session_id, data, cb)', function() {
 
 				sessionStore.set(session_id, data, function(error) {
 
-					expect(error).to.equal(undefined);
+					expect(error).to.be.undefined;
 
 					sessionStore.get(session_id, function(error, session) {
 
@@ -107,7 +107,7 @@ describe('set(session_id, data, cb)', function() {
 		sessionStore.set(session_id, data, function(error) {
 
 			try {
-				expect(error).to.equal(undefined);
+				expect(error).to.be.undefined;
 			} catch (error) {
 				return done(error);
 			}
