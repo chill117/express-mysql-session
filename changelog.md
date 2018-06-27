@@ -2,8 +2,8 @@
 
 * v2.0.0:
   * Added new flag `clearExpired` which when set to `false` will prevent expired sessions from being deleted automatically. The default value is `true` so the default behavior remains unchanged.
-  * Fix for MySQL warning regarding unnecessary `LIMIT 1` clauses. See [#82](https://github.com/chill117/express-mysql-session/issues/82)) for more details.
-  * Throw error when defining an unknown column in the `schema` option. See [#83](https://github.com/chill117/express-mysql-session/issues/83)) for more details.
+  * Fix for MySQL warning regarding unnecessary `LIMIT 1` clauses. See [#82](https://github.com/chill117/express-mysql-session/issues/82) for more details.
+  * Throw error when defining an unknown column in the `schema` option. See [#83](https://github.com/chill117/express-mysql-session/issues/83) for more details.
   * Removed deprecated methods (`clone`, `closeStore`, `defaults`, `isObject`, `setDefaultOptions`, `sync`)
 * v1.3.0:
   * Updated dependencies
