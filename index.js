@@ -45,7 +45,9 @@ module.exports = function(session) {
 
 		var done = function() {
 
-			this.setExpirationInterval();
+			if (this.options.clearExpired) {
+				this.setExpirationInterval();
+			}
 
 			if (cb) {
 				cb.apply(undefined, arguments);
@@ -63,6 +65,8 @@ module.exports = function(session) {
 	util.inherits(MySQLStore, Store);
 
 	MySQLStore.prototype.defaultOptions = {
+		// Whether or not to automatically check for and clear expired sessions:
+		clearExpired: true,
 		// How frequently expired sessions will be cleared; milliseconds:
 		checkExpirationInterval: 900000,
 		// The maximum age of a valid session; milliseconds:
