@@ -153,7 +153,8 @@ module.exports = function(session) {
 
 		debug.log('Getting session:', session_id);
 
-		var sql = 'SELECT ?? AS data FROM ?? WHERE ?? = ? LIMIT 1';
+		// LIMIT not needed here because the WHERE clause is searching by the table's primary key.
+		var sql = 'SELECT ?? AS data FROM ?? WHERE ?? = ?';
 
 		var params = [
 			this.options.schema.columnNames.data,
@@ -261,7 +262,8 @@ module.exports = function(session) {
 		// Use whole seconds here; not milliseconds.
 		expires = Math.round(expires.getTime() / 1000);
 
-		var sql = 'UPDATE ?? SET ?? = ? WHERE ?? = ? LIMIT 1';
+		// LIMIT not needed here because the WHERE clause is searching by the table's primary key.
+		var sql = 'UPDATE ?? SET ?? = ? WHERE ?? = ?';
 
 		var params = [
 			this.options.schema.tableName,
@@ -287,7 +289,8 @@ module.exports = function(session) {
 
 		debug.log('Destroying session:', session_id);
 
-		var sql = 'DELETE FROM ?? WHERE ?? = ? LIMIT 1';
+		// LIMIT not needed here because the WHERE clause is searching by the table's primary key.
+		var sql = 'DELETE FROM ?? WHERE ?? = ?';
 
 		var params = [
 			this.options.schema.tableName,
