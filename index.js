@@ -116,6 +116,7 @@ module.exports = function(session) {
 
 			if (error) {
 				debug.error('Failed to read schema file.');
+				debug.error(error);
 				return cb && cb(error);
 			}
 
@@ -168,8 +169,9 @@ module.exports = function(session) {
 			try {
 				var session = rows[0] ? JSON.parse(rows[0].data) : null;
 			} catch (error) {
+				debug.error('Failed to parse data for session (' + session_id + ')');
 				debug.error(error);
-				return cb(new Error('Failed to parse data for session:', session_id));
+				return cb(error);
 			}
 
 			cb(null, session);
@@ -270,7 +272,7 @@ module.exports = function(session) {
 		this.query(sql, params, function(error) {
 
 			if (error) {
-				debug.error('Failed to touch session:', session_id);
+				debug.error('Failed to touch session (' + session_id + ')');
 				debug.error(error);
 				return cb && cb(error);
 			}
@@ -295,7 +297,7 @@ module.exports = function(session) {
 		this.query(sql, params, function(error) {
 
 			if (error) {
-				debug.error('Failed to destroy session:', session_id);
+				debug.error('Failed to destroy session (' + session_id + ')');
 				debug.error(error);
 				return cb && cb(error);
 			}
@@ -350,7 +352,7 @@ module.exports = function(session) {
 				try {
 					var data = JSON.parse(row.data);
 				} catch (error) {
-					debug.error('Failed to parse data for session: ' + row.session_id);
+					debug.error('Failed to parse data for session (' + row.session_id + ')');
 					debug.error(error);
 					return null;
 				}
