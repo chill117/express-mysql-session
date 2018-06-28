@@ -185,7 +185,7 @@ describe('constructor', function() {
 					thrownError = error;
 				}
 				expect(thrownError).to.not.be.undefined;
-				expect(thrownError.message).to.equal('Unknwon column specified ("unknownColumn"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
+				expect(thrownError.message).to.equal('Unknown column specified ("unknownColumn"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
 			});
 		});
 	});

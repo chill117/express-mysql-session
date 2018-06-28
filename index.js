@@ -97,10 +97,10 @@ module.exports = function(session) {
 	MySQLStore.prototype.validateOptions = function(options) {
 
 		var allowedColumnNames = _.keys(this.defaultOptions.schema.columnNames);
-		var userDefineColumnNames = _.keys(options.schema.columnNames);
-		_.each(userDefineColumnNames, function(userDefineColumnName) {
-			if (!_.contains(allowedColumnNames, userDefineColumnName)) {
-				throw new Error('Unknwon column specified ("' + userDefineColumnName + '"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
+		var userDefinedColumnNames = _.keys(options.schema.columnNames);
+		_.each(userDefinedColumnNames, function(userDefinedColumnName) {
+			if (!_.contains(allowedColumnNames, userDefinedColumnName)) {
+				throw new Error('Unknown column specified ("' + userDefinedColumnName + '"). Only the following columns are configurable: "session_id", "expires", "data". Please review the documentation to understand how to correctly use this option.');
 			}
 		});
 	};
