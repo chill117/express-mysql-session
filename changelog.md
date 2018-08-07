@@ -1,5 +1,7 @@
 # Changelog
 
+* TBD:
+  * Updated dependencies
 * v2.0.0:
   * Added new flag `clearExpired` which when set to `false` will prevent expired sessions from being deleted automatically. The default value is `true` so the default behavior remains unchanged.
   * Fix for MySQL warning regarding unnecessary `LIMIT 1` clauses. See [#82](https://github.com/chill117/express-mysql-session/issues/82) for more details.
