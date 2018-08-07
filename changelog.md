@@ -1,6 +1,6 @@
 # Changelog
 
-* TBD:
+* v2.0.1:
   * Updated dependencies
 * v2.0.0:
   * Added new flag `clearExpired` which when set to `false` will prevent expired sessions from being deleted automatically. The default value is `true` so the default behavior remains unchanged.
