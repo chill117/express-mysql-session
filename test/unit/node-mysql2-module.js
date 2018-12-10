@@ -9,14 +9,23 @@ describe('node-mysql2-module', function() {
 
 	// Yes, tear-down only.
 	before(manager.tearDown);
+
+	var sessionStore;
+	afterEach(function(done) {
+		if (!sessionStore) return done();
+		sessionStore.close(done);
+	});
+
 	after(manager.tearDown);
 
 	it('support promise', function(done) {
 
 		var mysql2 = require('mysql2/promise');
-		var options = {};
+		var options = {
+			endConnectionOnClose: true,
+		};
 		var connection = mysql2.createPool(manager.config);
-		var sessionStore = new MySQLStore(options, connection, function(error) {
+		sessionStore = new MySQLStore(options, connection, function(error) {
 			try {
 				expect(error).to.be.undefined;
 				expect(sessionStore.connection).to.deep.equal(connection);

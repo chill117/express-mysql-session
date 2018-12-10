@@ -51,6 +51,10 @@ describe('close(cb)', function() {
 				sessionStore = new MySQLStore(options, done);
 			});
 
+			afterEach(function(done) {
+				sessionStore.connection.end(done);
+			});
+
 			it('should close the store but not end the database connection', function(done) {
 
 				sessionStore.close(function(error) {
@@ -79,6 +83,10 @@ describe('close(cb)', function() {
 			beforeEach(function(done) {
 				var connection = mysql.createPool(manager.config);
 				sessionStore = new MySQLStore({}/* options */, connection, done);
+			});
+
+			afterEach(function(done) {
+				sessionStore.connection.end(done);
 			});
 
 			it('should close the store but not end the database connection', function(done) {

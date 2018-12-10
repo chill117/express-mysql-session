@@ -10,10 +10,9 @@ var manager = require('../manager');
 describe('constructor', function() {
 
 	var sessionStore;
-	afterEach(function() {
-		if (sessionStore) {
-			sessionStore.close();
-		}
+	afterEach(function(done) {
+		if (!sessionStore) return done();
+		sessionStore.close(done);
 	});
 
 	describe('usage', function() {
@@ -58,7 +57,9 @@ describe('constructor', function() {
 
 			it('MySQLStore(options, connection, cb)', function(done) {
 
-				var options = {};
+				var options = {
+					endConnectionOnClose: true,
+				};
 				var connection = mysql.createPool(manager.config);
 				sessionStore = new MySQLStore(options, connection, function(error) {
 					try {
@@ -95,7 +96,9 @@ describe('constructor', function() {
 
 			it('MySQLStore(options, connection, cb)', function(done) {
 
-				var options = {};
+				var options = {
+					endConnectionOnClose: true,
+				};
 				var connection = mysql.createPool(manager.config);
 				sessionStore = new MySQLStore(options, connection, function(error) {
 					try {

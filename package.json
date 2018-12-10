@@ -4,7 +4,13 @@
   "version": "2.0.1",
   "main": "index.js",
   "scripts": {
-    "test": "grunt test"
+    "benchmarks": "mocha test/benchmarks/ --recursive --reporter spec --ui bdd",
+    "lint": "eslint --config .eslintrc.js *.js test/**/*.js",
+    "prepublish": "npm run test # runs before `npm publish`",
+    "pretest": "npm run lint # runs before `npm test`",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:integration": "mocha test/integration/ --recursive --reporter spec --ui bdd",
+    "test:unit": "mocha test/unit/ --recursive --reporter spec --ui bdd"
   },
   "repository": {
     "type": "git",
@@ -24,17 +30,10 @@
   "devDependencies": {
     "async": "2.6.1",
     "benchmark": "2.1.4",
-    "body-parser": "1.18.3",
     "chai": "4.1.2",
     "cookie-parser": "1.4.3",
     "express": "4.16.3",
-    "grunt": "1.0.3",
-    "grunt-eslint": "21.0.0",
-    "grunt-mocha-test": "0.13.3",
-    "load-grunt-config": "0.19.2",
-    "mocha": "5.2.0",
-    "mysql2": "1.6.1",
-    "time-grunt": "1.4.0"
+    "mysql2": "1.6.1"
   },
   "readmeFilename": "readme.md",
   "bugs": {

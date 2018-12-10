@@ -450,10 +450,20 @@ module.exports = function(session) {
 
 		this.clearExpirationInterval();
 
+		var done = _.once(cb || _.noop);
+
 		if (this.connection && this.options.endConnectionOnClose) {
-			this.connection.end(cb);
+			var promise = this.connection.end(done);
+			if (promise && _.isFunction(promise.then) && _.isFunction(promise.catch)) {
+				// Probably a promise.
+				promise.then(function() {
+					done(null);
+				}).catch(function(error) {
+					done(error);
+				});
+			}
 		} else {
-			cb && cb(null);
+			done(null);
 		}
 	};
 

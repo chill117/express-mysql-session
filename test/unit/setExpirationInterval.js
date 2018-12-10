@@ -1,23 +1,15 @@
 'use strict';
 
-var expect = require('chai').expect;
+var async = require('async');
 
 var manager = require('../manager');
-var config = manager.config;
-var MySQLStore = manager.MySQLStore;
 
 describe('setExpirationInterval(interval)', function() {
 
 	var sessionStore;
-
-	before(function(done) {
-
+	beforeEach(function(done) {
 		manager.setUp(function(error, store) {
-
-			if (error) {
-				return done(error);
-			}
-
+			if (error) return done(error);
 			sessionStore = store;
 			done();
 		});
@@ -25,43 +17,33 @@ describe('setExpirationInterval(interval)', function() {
 
 	after(manager.tearDown);
 
-	it('should be called when \'createDatabaseTable\' option is set to FALSE', function(done) {
+	describe('constructor option: "createDatabaseTable"', function() {
 
-		var checkExpirationInterval = 45;
+		it('should be called when FALSE', function(done) {
 
-		var sessionStore = new MySQLStore({
-			host: config.host,
-			port: config.port,
-			user: config.user,
-			password: config.password,
-			database: config.database,
-			checkExpirationInterval: checkExpirationInterval,
-			createDatabaseTable: false
+			var intervalTime = 20;
+			var called = false;
+
+			// Override the clearExpiredSessions method.
+			sessionStore.clearExpiredSessions = function() {
+				called = true;
+			};
+
+			sessionStore.setExpirationInterval(intervalTime);
+
+			async.until(function() { return called; }, function(next) {
+				setTimeout(next, 5);
+			}, done);
 		});
-
-		var called = false;
-
-		// Override the clearExpiredSessions method.
-		sessionStore.clearExpiredSessions = function() {
-			called = true;
-		};
-
-		setTimeout(function() {
-			expect(called).to.equal(true);
-			done();
-		}, checkExpirationInterval + 40);
 	});
 
 	it('should correctly set the check expiration interval time', function(done) {
 
 		var numCalls = 0;
-		var numCallsExpected = 5;
 		var intervalTime = 14;
-		var paddingTime = (intervalTime * 1.5);
 
 		// Override the clearExpiredSessions method.
 		sessionStore.clearExpiredSessions = function() {
-
 			numCalls++;
 		};
 
@@ -69,9 +51,14 @@ describe('setExpirationInterval(interval)', function() {
 
 		// Timeouts will never execute before the time given.
 		// But they are not 100% guaranteed to execute exactly when you would expect.
+
+		var startTime = Date.now();
 		setTimeout(function() {
-			expect(numCalls >= numCallsExpected).to.equal(true);
-			done();
-		}, (intervalTime * numCallsExpected) + paddingTime);
+			async.until(function() {
+				return numCalls >= Math.floor((startTime - Date.now()) / intervalTime);
+			}, function(next) {
+				setTimeout(next, 5);
+			}, done);
+		}, intervalTime * 3);
 	});
 });

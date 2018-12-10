@@ -13,7 +13,9 @@ var connection = mysql.createConnection(config);
 var manager = module.exports = {
 
 	config: config,
+	connection: connection,
 	fixtures: fixtures,
+	stores: [],
 
 	setUp: function(cb) {
 
@@ -26,7 +28,9 @@ var manager = module.exports = {
 				return cb(error);
 			}
 
-			cb(null, results.store);
+			var store = results.store;
+			manager.stores.push(store);
+			cb(null, store);
 		});
 	},
 
@@ -141,3 +145,31 @@ var manager = module.exports = {
 
 var MySQLStore = manager.MySQLStore = manager.loadConstructor();
 var sessionStore;
+
+after(function(done) {
+	if (!connection) return done();
+	connection.end(function(error) {
+		if (error) return done(error);
+		connection = null;
+		done();
+	});
+});
+
+after(function(done) {
+	if (!sessionStore) return done();
+	sessionStore.close(function(error) {
+		if (error) return done(error);
+		sessionStore = null;
+		done();
+	});
+});
+
+after(function(done) {
+	async.each(manager.stores, function(store, next) {
+		store.close(next);
+	}, function(error) {
+		if (error) return done(error);
+		manager.stores = [];
+		done();
+	});
+});

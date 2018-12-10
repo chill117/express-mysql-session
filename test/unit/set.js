@@ -9,15 +9,9 @@ var fixtures = manager.fixtures.sessions;
 describe('set(session_id, data, cb)', function() {
 
 	var sessionStore;
-
 	before(function(done) {
-
 		manager.setUp(function(error, store) {
-
-			if (error) {
-				return done(error);
-			}
-
+			if (error) return done(error);
 			sessionStore = store;
 			done();
 		});

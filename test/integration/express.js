@@ -1,24 +1,13 @@
 'use strict';
 
 var _ = require('underscore');
-var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var expect = require('chai').expect;
 var express = require('express');
 var http = require('http');
 
 var session = require('express-session');
-var MySQLStore = require('../..')(session);
-
 var manager = require('../manager');
-
-var sessionStore = new MySQLStore({
-	host: manager.config.host,
-	port: manager.config.port,
-	user: manager.config.user,
-	password: manager.config.password,
-	database: manager.config.database
-});
 
 describe('Express Integration', function() {
 
@@ -51,14 +40,25 @@ describe('Express Integration', function() {
 
 		describe(configuration.description, function() {
 
-			var app;
+			var sessionStore;
+			before(function(done) {
+				sessionStore = manager.createInstance(done);
+			});
 
-			before(function() {
-				app = createAppServer(configuration.options);
+			var app;
+			before(function(done) {
+				var options = _.extend({}, configuration.options, {
+					store: sessionStore,
+				});
+				app = createAppServer(options, done);
 			});
 
 			after(function() {
 				app.server.close();
+			});
+
+			after(function(done) {
+				sessionStore.close(done);
 			});
 
 			describe('Sessions for a single client', function() {
@@ -74,7 +74,6 @@ describe('Express Integration', function() {
 					}, function(res) {
 
 						expect(res.statusCode).to.equal(200);
-
 						expect(res.headers['set-cookie']).to.be.an('array');
 
 						var cookieJar = res.headers['set-cookie'];
@@ -125,7 +124,6 @@ describe('Express Integration', function() {
 					}, function(res) {
 
 						expect(res.statusCode).to.equal(200);
-
 						expect(res.headers['set-cookie']).to.be.an('array');
 
 						var cookieJar = res.headers['set-cookie'];
@@ -190,7 +188,7 @@ function getSessionCookie(cookies, cookieName) {
 
 var appServerPort = 3000;
 
-function createAppServer(options) {
+function createAppServer(options, done) {
 
 	options = _.defaults(options || {}, {
 		host: 'localhost',
@@ -198,27 +196,20 @@ function createAppServer(options) {
 	});
 
 	options.session = _.defaults(options.session || {}, {
-		key: 'express.sid',
+		key: _.uniqueId('express.sid-'),
 		secret: 'some_secret',
 		resave: false,
-		saveUninitialized: false
+		saveUninitialized: true
 	});
 
 	var app = express();
 
 	app.use(cookieParser());
+	app.use(session(options.session));
 
-	app.use(bodyParser.json());
-
-	app.use(bodyParser.urlencoded({
-		extended: true
-	}));
-
-	app.use(session(_.extend(options.session || {}, {
-		store: sessionStore
-	})));
-
-	app.server = app.listen(options.port, options.host);
+	app.server = app.listen(options.port, options.host, function() {
+		done();
+	});
 
 	app.get('/test', function(req, res) {
 

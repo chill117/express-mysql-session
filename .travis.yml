@@ -1,6 +1,3 @@
-before_script:
-  - "mysql -e 'drop database if exists session_test; create database session_test;'"
-
 env:
   - DB_HOST="127.0.0.1" DB_PORT=3306 DB_USER="root" DB_PASS="" DB_NAME="session_test"
 
@@ -10,5 +7,9 @@ node_js:
   - "8"
   - "6"
 
-before_install: npm install -g grunt-cli
+before_install:
+  - "mysql -e 'drop database if exists session_test; create database session_test;'"
+  - npm install -g mocha
+  - npm install -g eslint
+
 install: npm install

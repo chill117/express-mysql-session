@@ -1,6 +1,4 @@
-grunt/
 test/
 .eslintrc.js
 .npmignore
 .travis.yml
-gruntFile.js

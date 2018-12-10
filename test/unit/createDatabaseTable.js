@@ -9,23 +9,24 @@ var MySQLStore = manager.MySQLStore;
 describe('createDatabaseTable(cb)', function() {
 
 	afterEach(function() {
-
 		MySQLStore = manager.loadConstructor(true);
 	});
 
-	after(manager.tearDown);
+	afterEach(manager.tearDown);
 
 	describe('when the session database table does not yet exist', function() {
 
 		var sessionStore;
+		afterEach(function(done) {
+			if (!sessionStore) return done();
+			sessionStore.close(done);
+		});
 
-		before(function(done) {
-
+		beforeEach(function(done) {
 			sessionStore = manager.createInstance(done);
 		});
 
-		before(manager.tearDown);
-		after(manager.tearDown);
+		beforeEach(manager.tearDown);
 
 		it('should create it', function(done) {
 
@@ -46,22 +47,31 @@ describe('createDatabaseTable(cb)', function() {
 	describe('when the session database table already exists', function() {
 
 		var sessionStore;
+		afterEach(function(done) {
+			if (!sessionStore) return done();
+			sessionStore.close(done);
+		});
 
-		before(function(done) {
+		beforeEach(manager.setUp);
 
+		beforeEach(function(done) {
 			sessionStore = manager.createInstance(done);
 		});
 
-		before(manager.setUp);
-		after(manager.tearDown);
-
 		it('should do nothing', function(done) {
-
 			sessionStore.createDatabaseTable(done);
 		});
 	});
 
 	describe('when \'options.createDatabaseTable\' is set to FALSE', function() {
+
+		var sessionStore;
+		afterEach(function(done) {
+			if (!sessionStore) return done();
+			sessionStore.close(done);
+		});
+
+		beforeEach(manager.setUp);
 
 		it('should not be called when a new sessionStore object is created', function(done) {
 
@@ -77,7 +87,7 @@ describe('createDatabaseTable(cb)', function() {
 				createDatabaseTable: false
 			});
 
-			new MySQLStore(options, function(error) {
+			sessionStore = new MySQLStore(options, function(error) {
 
 				if (called) {
 					return;
@@ -94,10 +104,14 @@ describe('createDatabaseTable(cb)', function() {
 
 	describe('when \'options.createDatabaseTable\' is set to TRUE', function() {
 
+		var sessionStore;
+		afterEach(function(done) {
+			if (!sessionStore) return done();
+			sessionStore.close(done);
+		});
+
 		var options;
-
 		beforeEach(function() {
-
 			options = _.extend({}, manager.config, {
 				createDatabaseTable: true
 			});
@@ -113,7 +127,7 @@ describe('createDatabaseTable(cb)', function() {
 				cb && cb();
 			};
 
-			new MySQLStore(options, function(error) {
+			sessionStore = new MySQLStore(options, function(error) {
 
 				if (error) {
 					return done(error);
@@ -129,12 +143,9 @@ describe('createDatabaseTable(cb)', function() {
 
 		describe('\'options.schema\'', function() {
 
-			beforeEach(manager.tearDown);
-
 			var sessionStore;
 
 			afterEach(function(done) {
-
 				sessionStore.set('some-session-id', { some: 'data' }, done);
 			});
 
@@ -153,23 +164,20 @@ describe('createDatabaseTable(cb)', function() {
 			});
 
 			afterEach(function(done) {
-
 				sessionStore.destroy('some-session-id', done);
 			});
 
 			afterEach(function(done) {
-
 				sessionStore.length(done);
 			});
 
 			afterEach(function(done) {
-
 				sessionStore.clear(done);
 			});
 
-			afterEach(function() {
-
-				sessionStore.close();
+			afterEach(function(done) {
+				if (!sessionStore) return done();
+				sessionStore.close(done);
 			});
 
 			var customSchemas = [
