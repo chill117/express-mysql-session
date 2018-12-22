@@ -8,42 +8,25 @@ var mysql = require('mysql');
 var config = require('./config');
 var fixtures = require('./fixtures');
 
-var connection = mysql.createConnection(config);
-
 var manager = module.exports = {
 
 	config: config,
-	connection: connection,
 	fixtures: fixtures,
 	stores: [],
 
 	setUp: function(cb) {
 
-		async.series({
-			tearDown: manager.tearDown,
-			store: manager.createInstance
-		}, function(error, results) {
-
-			if (error) {
-				return cb(error);
-			}
-
-			var store = results.store;
-			manager.stores.push(store);
-			cb(null, store);
-		});
+		async.seq(manager.tearDown, manager.createInstance)(cb);
 	},
 
 	tearDown: function(cb) {
 
-		async.series([
-			manager.dropDatabaseTables
-		], cb);
+		async.seq(manager.dropDatabaseTables)(cb);
 	},
 
 	dropDatabaseTables: function(cb) {
 
-		connection.query('SHOW TABLES', function(error, rows) {
+		manager.sessionStore.connection.query('SHOW TABLES', function(error, rows) {
 
 			async.each(rows, function(row, next) {
 
@@ -51,30 +34,63 @@ var manager = module.exports = {
 				var sql = 'DROP TABLE IF EXISTS ??';
 				var params = [tableName];
 
-				connection.query(sql, params, next);
+				manager.sessionStore.connection.query(sql, params, next);
 
 			}, cb);
 		});
 	},
 
+	expireSession: function(sessionId, cb) {
+
+		var expiration = sessionStore.options.expiration;
+		var sql = 'UPDATE ?? SET ?? = ? WHERE ?? = ?';
+		var expires = ( new Date( Date.now() - (expiration + 60000) ) ) / 1000;
+		var params = [
+			sessionStore.options.schema.tableName,
+			sessionStore.options.schema.columnNames.expires,
+			expires,
+			sessionStore.options.schema.columnNames.session_id,
+			sessionId
+		];
+		sessionStore.connection.query(sql, params, cb);
+	},
+
+	expireSomeSessions: function(numToExpire, cb) {
+
+		var expiration = sessionStore.options.expiration;
+		var sql = 'UPDATE ?? SET ?? = ? LIMIT ?';
+		var expires = ( new Date( Date.now() - (expiration + 60000) ) ) / 1000;
+		var params = [
+			sessionStore.options.schema.tableName,
+			sessionStore.options.schema.columnNames.expires,
+			expires,
+			numToExpire
+		];
+		sessionStore.connection.query(sql, params, cb);
+	},
+
 	populateSessions: function(cb) {
 
-		async.each(fixtures.sessions, function(session, next) {
+		async.each(fixtures.sessions, manager.populateSession, cb);
+	},
 
-			var session_id = session.session_id;
-			var data = session.data;
+	populateSession: function(session, cb) {
 
-			sessionStore.set(session_id, data, next);
-
-		}, cb);
+		var sessionId = session.session_id;
+		var data = session.data;
+		sessionStore.set(sessionId, data, cb);
 	},
 
 	populateManySessions: function(targetNumSessions, prefix, cb) {
 
-		var numSessions = 0;
-		var batchSize = Math.min(50000, targetNumSessions);
+		if (typeof prefix === 'function') {
+			cb = prefix;
+			prefix = null;
+		}
 
-		var expires = Math.round((new Date).getTime() / 1000);
+		prefix = prefix || '';
+		var numSessions = 0;
+		var expires = Math.round(Date.now() / 1000);
 		var dataStr = JSON.stringify({
 			someText: 'some sample text',
 			someInt: 1001,
@@ -83,26 +99,26 @@ var manager = module.exports = {
 
 		async.whilst(function() { return numSessions < targetNumSessions; }, function(next) {
 
-			var sql = 'INSERT INTO ?? (??, ??, ??) VALUES (?, ?, ?)';
+			var batchSize = Math.min(2000, targetNumSessions - numSessions);
+			var sql = 'INSERT INTO ?? (??, ??, ??) VALUES ';
 			var params = [
 				sessionStore.options.schema.tableName,
 				sessionStore.options.schema.columnNames.session_id,
 				sessionStore.options.schema.columnNames.expires,
 				sessionStore.options.schema.columnNames.data,
-				prefix + '-' + (numSessions),
-				expires,
-				dataStr
 			];
 
-			_.times(batchSize - 1, function(index) {
-				sql += ', (?, ?, ?)';
-				params.push(prefix + '-' + (numSessions + index + 1));
-				params.push(expires);
-				params.push(dataStr);
+			sql += _.chain(new Array(batchSize)).map(function() {
+				return '(?, ?, ?)';
+			}).value().join(', ');
+
+			_.times(batchSize, function(index) {
+				var sessionId = prefix + '-' + (numSessions + index);
+				params = params.concat([sessionId, expires, dataStr]);
 			});
 
 			numSessions += batchSize;
-			connection.query(sql, params, next);
+			manager.sessionStore.connection.query(sql, params, next);
 
 		}, cb);
 	},
@@ -131,38 +147,16 @@ var manager = module.exports = {
 		}
 
 		options = _.defaults(options || {}, config);
+		cb = cb || _.noop;
+		var store = new MySQLStore(options, cb);
+		manager.stores.push(store);
+		return store;
+	},
 
-		return sessionStore = new MySQLStore(options, function(error) {
-
-			if (error) {
-				return cb(error);
-			}
-
-			cb(null, sessionStore);
-		});
-	}
 };
 
 var MySQLStore = manager.MySQLStore = manager.loadConstructor();
-var sessionStore;
-
-after(function(done) {
-	if (!connection) return done();
-	connection.end(function(error) {
-		if (error) return done(error);
-		connection = null;
-		done();
-	});
-});
-
-after(function(done) {
-	if (!sessionStore) return done();
-	sessionStore.close(function(error) {
-		if (error) return done(error);
-		sessionStore = null;
-		done();
-	});
-});
+var sessionStore = manager.sessionStore = manager.createInstance();
 
 after(function(done) {
 	async.each(manager.stores, function(store, next) {

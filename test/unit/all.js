@@ -4,51 +4,57 @@ var _ = require('underscore');
 var expect = require('chai').expect;
 
 var manager = require('../manager');
-var fixtures = manager.fixtures.sessions;
 
 describe('all(cb)', function() {
 
-	var sessionStore;
+	before(manager.setUp);
+	after(manager.tearDown);
 
-	before(function(done) {
+	describe('with no sessions', function() {
 
-		manager.setUp(function(error, store) {
-
-			if (error) {
-				return done(error);
-			}
-
-			sessionStore = store;
-			done();
+		it('should return an empty object', function(done) {
+			manager.sessionStore.all(function(error, sessions) {
+				if (error) return done(error);
+				expect(sessions).to.deep.equal({});
+				done();
+			});
 		});
 	});
 
-	after(manager.tearDown);
-
 	describe('when sessions exist', function() {
 
-		beforeEach(manager.populateSessions);
+		var total = 51;
+		before(function(done) {
+			manager.populateManySessions(total, done);
+		});
 
-		it('should get all sessions', function(done) {
-
-			sessionStore.all(function(error, sessions) {
-
-				try {
-					expect(error).to.equal(null);
-					expect(sessions).to.be.an('object');
-					expect(_.keys(sessions).length).to.equal(fixtures.length);
-					_.each(sessions, function(data, id) {
-						expect(data).to.be.an('object');
-						expect(id).to.be.a('string');
-						var fixture = _.findWhere(fixtures, { session_id: id });
-						expect(fixture).to.not.be.undefined;
-						expect(JSON.stringify(data)).to.equal(JSON.stringify(fixture.data));
-					});
-				} catch (error) {
-					return done(error);
-				}
-
+		it('should return all sessions as an object', function(done) {
+			manager.sessionStore.all(function(error, sessions) {
+				if (error) return done(error);
+				expect(sessions).to.be.an('object');
+				expect(_.keys(sessions)).to.have.length(total);
+				_.each(sessions, function(data, id) {
+					expect(data).to.be.an('object');
+					expect(id).to.be.a('string');
+				});
 				done();
+			});
+		});
+
+		describe('where some are expired', function() {
+
+			var numToExpire = Math.ceil(total / 6);
+			before(function(done) {
+				manager.expireSomeSessions(numToExpire, done);
+			});
+
+			it('should return all sessions as an array (excluding expired sessions)', function(done) {
+				manager.sessionStore.all(function(error, sessions) {
+					if (error) return done(error);
+					expect(sessions).to.be.an('object');
+					expect(_.keys(sessions)).to.have.length(total - numToExpire);
+					done();
+				});
 			});
 		});
 	});

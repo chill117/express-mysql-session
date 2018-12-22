@@ -149,10 +149,11 @@ module.exports = function(session) {
 		debug.log('Getting session:', session_id);
 
 		// LIMIT not needed here because the WHERE clause is searching by the table's primary key.
-		var sql = 'SELECT ?? AS data FROM ?? WHERE ?? = ?';
+		var sql = 'SELECT ?? AS data, ?? as expires FROM ?? WHERE ?? = ?';
 
 		var params = [
 			this.options.schema.columnNames.data,
+			this.options.schema.columnNames.expires,
 			this.options.schema.tableName,
 			this.options.schema.columnNames.session_id,
 			session_id
@@ -166,8 +167,20 @@ module.exports = function(session) {
 				return cb(error, null);
 			}
 
+			var row = rows[0] || null;
+			if (!row) {
+				return cb(null, null);
+			}
+
+			// Check the expires time.
+			var now = Math.round(Date.now() / 1000);
+			if (row.expires < now) {
+				// Session has expired.
+				return cb(null, null);
+			}
+
 			try {
-				var session = rows[0] ? JSON.parse(rows[0].data) : null;
+				var session = JSON.parse(row.data);
 			} catch (error) {
 				debug.error('Failed to parse data for session (' + session_id + ')');
 				debug.error(error);
@@ -310,10 +323,12 @@ module.exports = function(session) {
 
 		debug.log('Getting number of sessions');
 
-		var sql = 'SELECT COUNT(*) FROM ??';
+		var sql = 'SELECT COUNT(*) FROM ?? WHERE ?? >= ?';
 
 		var params = [
-			this.options.schema.tableName
+			this.options.schema.tableName,
+			this.options.schema.columnNames.expires,
+			Math.round(Date.now() / 1000)
 		];
 
 		this.query(sql, params, function(error, rows) {
@@ -334,10 +349,12 @@ module.exports = function(session) {
 
 		debug.log('Getting all sessions');
 
-		var sql = 'SELECT * FROM ??';
+		var sql = 'SELECT * FROM ?? WHERE ?? >= ?';
 
 		var params = [
-			this.options.schema.tableName
+			this.options.schema.tableName,
+			this.options.schema.columnNames.expires,
+			Math.round(Date.now() / 1000)
 		];
 
 		this.query(sql, params, function(error, rows) {

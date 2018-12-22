@@ -8,21 +8,7 @@ var fixtures = manager.fixtures.sessions;
 
 describe('destroy(session_id, cb)', function() {
 
-	var sessionStore;
-
-	before(function(done) {
-
-		manager.setUp(function(error, store) {
-
-			if (error) {
-				return done(error);
-			}
-
-			sessionStore = store;
-			done();
-		});
-	});
-
+	before(manager.setUp);
 	after(manager.tearDown);
 
 	describe('when the session exists', function() {
@@ -32,26 +18,16 @@ describe('destroy(session_id, cb)', function() {
 		it('should delete the session', function(done) {
 
 			async.each(fixtures, function(fixture, nextFixture) {
-
 				var session_id = fixture.session_id;
-
-				sessionStore.destroy(session_id, function(error) {
-
+				manager.sessionStore.destroy(session_id, function(error) {
 					expect(error).to.be.undefined;
-
-					sessionStore.get(session_id, function(error, session) {
-
-						if (error) {
-							return nextFixture(error);
-						}
-
+					manager.sessionStore.get(session_id, function(error, session) {
+						if (error) return nextFixture(error);
 						expect(session).to.equal(null);
 						nextFixture();
 					});
 				});
-
 			}, done);
-
 		});
 	});
 
@@ -62,15 +38,11 @@ describe('destroy(session_id, cb)', function() {
 		it('should do nothing', function(done) {
 
 			async.each(fixtures, function(fixture, nextFixture) {
-
 				var session_id = fixture.session_id;
-
-				sessionStore.destroy(session_id, function(error) {
-
+				manager.sessionStore.destroy(session_id, function(error) {
 					expect(error).to.be.undefined;
 					nextFixture();
 				});
-
 			}, done);
 		});
 	});

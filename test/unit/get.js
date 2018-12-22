@@ -1,70 +1,66 @@
 'use strict';
 
-var async = require('async');
+var _ = require('underscore');
 var expect = require('chai').expect;
 
 var manager = require('../manager');
-var fixtures = manager.fixtures.sessions;
 
 describe('get(session_id, cb)', function() {
 
-	var sessionStore;
-
-	before(function(done) {
-
-		manager.setUp(function(error, store) {
-
-			if (error) {
-				return done(error);
-			}
-
-			sessionStore = store;
-			done();
-		});
-	});
-
+	before(manager.setUp);
 	after(manager.tearDown);
 
 	describe('when a session exists', function() {
 
-		before(manager.populateSessions);
+		var session_id;
+		var data;
+		beforeEach(function(done) {
+			var fixture = _.first(manager.fixtures.sessions);
+			session_id = fixture.session_id;
+			data = fixture.data;
+			manager.populateSession(fixture, done);
+		});
 
-		it('should return its session data', function(done) {
+		describe('and is not expired', function() {
 
-			async.each(fixtures, function(fixture, nextFixture) {
-
-				var session_id = fixture.session_id;
-				var data = fixture.data;
-
-				sessionStore.get(session_id, function(error, session) {
-
-					expect(error).to.equal(null);
+			it('should return its session data', function(done) {
+				manager.sessionStore.get(session_id, function(error, session) {
+					if (error) return done(error);
 					expect(JSON.stringify(session)).to.equal(JSON.stringify(data));
-					nextFixture();
+					done();
 				});
+			});
+		});
 
-			}, done);
+		describe('and is expired', function() {
+
+			beforeEach(function(done) {
+				manager.expireSession(session_id, done);
+			});
+
+			it('should return NULL', function(done) {
+				manager.sessionStore.get(session_id, function(error, session) {
+					if (error) return done(error);
+					expect(session).to.equal(null);
+					done();
+				});
+			});
 		});
 	});
 
 	describe('when a session does not exist', function() {
 
-		before(manager.clearSessions);
+		beforeEach(manager.clearSessions);
 
-		it('should return null', function(done) {
+		it('should return NULL', function(done) {
 
-			async.each(fixtures, function(fixture, nextFixture) {
-
-				var session_id = fixture.session_id;
-
-				sessionStore.get(session_id, function(error, session) {
-
-					expect(error).to.equal(null);
-					expect(session).to.equal(null);
-					nextFixture();
-				});
-
-			}, done);
+			var fixture = _.first(manager.fixtures.sessions);
+			var session_id = fixture.session_id;
+			manager.sessionStore.get(session_id, function(error, session) {
+				if (error) return done(error);
+				expect(session).to.equal(null);
+				done();
+			});
 		});
 	});
 });

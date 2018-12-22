@@ -6,26 +6,11 @@ var manager = require('../manager');
 
 describe('benchmark: touch', function() {
 
-	var sessionStore;
+	before(manager.setUp);
 
-	before(function(done) {
-
-		manager.setUp(function(error, store) {
-
-			if (error) {
-				return done(error);
-			}
-
-			sessionStore = store;
-			done();
-		});
-	});
-
-	var numSessions = 1000000;
+	var numSessions = 50000;
 	var sessionIdPrefix = 'benchmarking-session-id-';
-
 	before(function(done) {
-
 		this.timeout(60000);
 		manager.populateManySessions(numSessions, sessionIdPrefix, done);
 	});
@@ -34,10 +19,10 @@ describe('benchmark: touch', function() {
 
 	it('touch()', function(done) {
 
-		this.timeout(15000);
+		this.timeout(30000);
 
 		var bench = new Benchmark(function(deferred) {
-			sessionStore.touch(sessionIdPrefix + _.random(numSessions), {}/* session object */, function() {
+			manager.sessionStore.touch(sessionIdPrefix + _.random(numSessions), {}/* session object */, function() {
 				deferred.resolve();
 			});
 		}, { defer: true });

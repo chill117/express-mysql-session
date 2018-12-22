@@ -1,55 +1,54 @@
 'use strict';
 
-var async = require('async');
 var expect = require('chai').expect;
 
 var manager = require('../manager');
-var fixtures = manager.fixtures.sessions;
 
 describe('length(cb)', function() {
 
-	var sessionStore;
+	before(manager.setUp);
+	after(manager.tearDown);
 
-	before(function(done) {
+	describe('with no sessions', function() {
 
-		manager.setUp(function(error, store) {
-
-			if (error) {
-				return done(error);
-			}
-
-			sessionStore = store;
-			done();
+		it('should return 0', function(done) {
+			manager.sessionStore.length(function(error, count) {
+				if (error) return done(error);
+				expect(count).to.equal(0);
+				done();
+			});
 		});
 	});
 
-	after(manager.tearDown);
+	describe('with at least some store sessions', function() {
 
-	it('should give an accurate count of the total number of sessions', function(done) {
+		var total = 51;
+		before(function(done) {
+			manager.populateManySessions(total, done);
+		});
 
-		var num_sessions = 0;
+		it('should return an accurate count', function(done) {
+			manager.sessionStore.length(function(error, count) {
+				if (error) return done(error);
+				expect(count).to.equal(total);
+				done();
+			});
+		});
 
-		async.eachSeries(fixtures, function(fixture, nextFixture) {
+		describe('where some are expired', function() {
 
-			var session_id = fixture.session_id;
-			var data = fixture.data;
-
-			sessionStore.set(session_id, data, function(error) {
-
-				if (error) {
-					return nextFixture(error);
-				}
-
-				num_sessions++;
-
-				sessionStore.length(function(error, count) {
-
-					expect(error).to.equal(null);
-					expect(count).to.equal(num_sessions);
-					nextFixture();
-				});
+			var numToExpire = Math.ceil(total / 6);
+			before(function(done) {
+				manager.expireSomeSessions(numToExpire, done);
 			});
 
-		}, done);
+			it('should return an accurate count (excluding expired sessions)', function(done) {
+				manager.sessionStore.length(function(error, count) {
+					if (error) return done(error);
+					expect(count).to.equal(total - numToExpire);
+					done();
+				});
+			});
+		});
 	});
 });

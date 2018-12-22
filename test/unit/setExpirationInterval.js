@@ -6,13 +6,11 @@ var manager = require('../manager');
 
 describe('setExpirationInterval(interval)', function() {
 
+	before(manager.setUp);
+
 	var sessionStore;
 	beforeEach(function(done) {
-		manager.setUp(function(error, store) {
-			if (error) return done(error);
-			sessionStore = store;
-			done();
-		});
+		sessionStore = manager.createInstance(done);
 	});
 
 	after(manager.tearDown);
