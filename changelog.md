@@ -1,6 +1,6 @@
 # Changelog
 
-* TBD:
+* v2.1.0:
   * `get`, `all`, and `length` will now exclude expired sessions. See [#89](https://github.com/chill117/express-mysql-session/issues/89) for more details.
   * Removed grunt; now using npm run tasks.
   * Updated dependencies
