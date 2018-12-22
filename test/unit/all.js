@@ -48,7 +48,7 @@ describe('all(cb)', function() {
 				manager.expireSomeSessions(numToExpire, done);
 			});
 
-			it('should return all sessions as an array (excluding expired sessions)', function(done) {
+			it('should return all sessions as an object (excluding expired sessions)', function(done) {
 				manager.sessionStore.all(function(error, sessions) {
 					if (error) return done(error);
 					expect(sessions).to.be.an('object');
