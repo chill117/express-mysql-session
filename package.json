@@ -22,20 +22,20 @@
   },
   "license": "MIT",
   "dependencies": {
-    "debug": "4.1.0",
+    "debug": "4.1.1",
     "express-session": "1.15.6",
     "mysql": "2.16.0",
     "underscore": "1.9.1"
   },
   "devDependencies": {
-    "async": "2.6.1",
+    "async": "2.6.2",
     "benchmark": "2.1.4",
     "chai": "4.2.0",
-    "cookie-parser": "1.4.3",
+    "cookie-parser": "1.4.4",
     "eslint": "5.15.3",
     "express": "4.16.4",
     "mocha": "6.0.2",
-    "mysql2": "1.6.4"
+    "mysql2": "1.6.5"
   },
   "readmeFilename": "readme.md",
   "bugs": {
