@@ -4,13 +4,13 @@
   "version": "2.1.0",
   "main": "index.js",
   "scripts": {
-    "benchmarks": "mocha test/benchmarks/ --recursive --reporter spec --ui bdd",
-    "lint": "eslint --config .eslintrc.js *.js test/**/*.js",
+    "benchmarks": "./node_modules/.bin/mocha test/benchmarks/ --recursive --reporter spec --ui bdd",
+    "lint": "./node_modules/.bin/eslint --config .eslintrc.js *.js test/**/*.js",
     "prepublish": "npm run test # runs before `npm publish`",
     "pretest": "npm run lint # runs before `npm test`",
     "test": "npm run test:unit && npm run test:integration",
-    "test:integration": "mocha test/integration/ --recursive --reporter spec --ui bdd",
-    "test:unit": "mocha test/unit/ --recursive --reporter spec --ui bdd"
+    "test:integration": "./node_modules/.bin/mocha test/integration/ --recursive --reporter spec --ui bdd",
+    "test:unit": "./node_modules/.bin/mocha test/unit/ --recursive --reporter spec --ui bdd"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,9 @@
     "benchmark": "2.1.4",
     "chai": "4.2.0",
     "cookie-parser": "1.4.3",
+    "eslint": "5.15.3",
     "express": "4.16.4",
+    "mocha": "6.0.2",
     "mysql2": "1.6.4"
   },
   "readmeFilename": "readme.md",
