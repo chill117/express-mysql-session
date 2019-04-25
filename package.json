@@ -3,6 +3,7 @@
   "description": "A MySQL session store for express.js",
   "version": "2.1.1",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "benchmarks": "./node_modules/.bin/mocha test/benchmarks/ --recursive --reporter spec --ui bdd",
     "lint": "./node_modules/.bin/eslint --config .eslintrc.js *.js test/**/*.js",
