@@ -6,7 +6,7 @@
   "scripts": {
     "benchmarks": "./node_modules/.bin/mocha test/benchmarks/ --recursive --reporter spec --ui bdd",
     "lint": "./node_modules/.bin/eslint --config .eslintrc.js *.js test/**/*.js",
-    "prepublish": "npm run test # runs before `npm publish`",
+    "prepare": "npm run test # runs before `npm publish`",
     "pretest": "npm run lint # runs before `npm test`",
     "test": "npm run test:unit && npm run test:integration",
     "test:integration": "./node_modules/.bin/mocha test/integration/ --recursive --reporter spec --ui bdd",
