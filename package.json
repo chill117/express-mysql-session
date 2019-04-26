@@ -34,7 +34,7 @@
     "cookie-parser": "1.4.4",
     "eslint": "5.15.3",
     "express": "4.16.4",
-    "mocha": "6.0.2",
+    "mocha": "6.1.4",
     "mysql2": "1.6.5"
   },
   "readmeFilename": "readme.md",
