@@ -9,7 +9,5 @@ node_js:
 
 before_install:
   - "mysql -e 'drop database if exists session_test; create database session_test;'"
-  - npm install -g mocha
-  - npm install -g eslint
 
 install: npm install
