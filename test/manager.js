@@ -97,7 +97,9 @@ var manager = module.exports = {
 			moreText: 'and more sample text..'
 		});
 
-		async.whilst(function() { return numSessions < targetNumSessions; }, function(next) {
+		async.whilst(function(next) {
+			next(null, numSessions < targetNumSessions);
+		}, function(next) {
 
 			var batchSize = Math.min(2000, targetNumSessions - numSessions);
 			var sql = 'INSERT INTO ?? (??, ??, ??) VALUES ';

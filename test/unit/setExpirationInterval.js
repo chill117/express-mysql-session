@@ -29,7 +29,9 @@ describe('setExpirationInterval(interval)', function() {
 
 			sessionStore.setExpirationInterval(intervalTime);
 
-			async.until(function() { return called; }, function(next) {
+			async.until(function(next) {
+				next(null, !!called);
+			}, function(next) {
 				setTimeout(next, 5);
 			}, done);
 		});
@@ -52,8 +54,8 @@ describe('setExpirationInterval(interval)', function() {
 
 		var startTime = Date.now();
 		setTimeout(function() {
-			async.until(function() {
-				return numCalls >= Math.floor((startTime - Date.now()) / intervalTime);
+			async.until(function(next) {
+				next(null, numCalls >= Math.floor((startTime - Date.now()) / intervalTime));
 			}, function(next) {
 				setTimeout(next, 5);
 			}, done);

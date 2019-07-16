@@ -28,11 +28,11 @@
     "underscore": "1.9.1"
   },
   "devDependencies": {
-    "async": "2.6.2",
+    "async": "3.0.0",
     "benchmark": "2.1.4",
     "chai": "4.2.0",
     "cookie-parser": "1.4.4",
-    "eslint": "5.15.3",
+    "eslint": "6.0.1",
     "express": "4.16.4",
     "mocha": "6.1.4",
     "mysql2": "1.6.5"
