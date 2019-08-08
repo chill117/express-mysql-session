@@ -6,7 +6,6 @@ node_js:
   - "12"
   - "10"
   - "8"
-  - "6"
 
 before_install:
   - "mysql -e 'drop database if exists session_test; create database session_test;'"
