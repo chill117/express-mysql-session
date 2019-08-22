@@ -59,7 +59,7 @@ var manager = module.exports = {
 
 		var expiration = sessionStore.options.expiration;
 		var sql = 'UPDATE ?? SET ?? = ? LIMIT ?';
-		var expires = ( new Date( Date.now() - (expiration + 60000) ) ) / 1000;
+		var expires = (Date.now() - (expiration + 200000)) / 1000;
 		var params = [
 			sessionStore.options.schema.tableName,
 			sessionStore.options.schema.columnNames.expires,
