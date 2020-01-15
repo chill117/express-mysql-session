@@ -1,6 +1,6 @@
 # Changelog
 
-* v2.1.1:
+* v2.1.2:
   * Fix for [issue #97](https://github.com/chill117/express-mysql-session/issues/97). The new default type for the session data field is now `mediumtext`. This will allow up to 16MB of data to be stored per session. Existing session database tables will keep the old behavior which was limited to 64KB of data per session.
 * v2.1.0:
   * `get`, `all`, and `length` will now exclude expired sessions. See [#89](https://github.com/chill117/express-mysql-session/issues/89) for more details.
