@@ -1,5 +1,7 @@
 # Changelog
 
+* v2.1.3:
+  * Update mysql module to "fix Amazon RDS profile for yaSSL MySQL servers with 2019 CA"; see [here](https://github.com/mysqljs/mysql/pull/2292) for more information.
 * v2.1.2:
   * Fix for [issue #97](https://github.com/chill117/express-mysql-session/issues/97). The new default type for the session data field is now `mediumtext`. This will allow up to 16MB of data to be stored per session. Existing session database tables will keep the old behavior which was limited to 64KB of data per session.
 * v2.1.0:
