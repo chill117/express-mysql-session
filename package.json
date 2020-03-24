@@ -21,6 +21,10 @@
     "email": "chill@degreesofzero.com"
   },
   "license": "MIT",
+  "funding": {
+    "type" : "individual",
+    "url" : "https://degreesofzero.com/donate.html"
+  },
   "dependencies": {
     "debug": "4.1.1",
     "express-session": "1.17.0",
