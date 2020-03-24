@@ -4,6 +4,19 @@ A MySQL session store for [express.js](http://expressjs.com/).
 
 [![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session)
 
+* [Installation](#installation)
+* [Important Notes](#important-notes)
+	* [Older Versions](#older-versions)
+	* [Session Table Collation](#session-table-collation)
+* [Usage](#usage)
+	* [Debugging](#debugging)
+* [Contributing](#contributing)
+	* [Configure Local Environment](#configure-local-environment)
+	* [Tests](#tests)
+* [Changelog](#changelog)
+* [License](#license)
+* [Donate](#donate)
+
 
 ## Installation
 
@@ -27,7 +40,7 @@ For users who are still using express-mysql-session `0.x`. Changes have been mad
 This module creates a database table to save session data. This data is stored in a MySQL text field with the [utf8mb4](https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html) collation - added in [MySQL 5.5.3](https://dev.mysql.com/doc/relnotes/mysql/5.5/en/news-5-5-3.html). The reason for this is to fully support the utf8 character set. If you absolutely must use an older version of MySQL, create your sessions table before initializing the `MySQLStore`.
 
 
-## How to Use
+## Usage
 
 Use with your express session middleware, like this:
 ```js
@@ -222,7 +235,7 @@ DB_NAME="session_test"
 ```
 
 
-### Running Tests
+### Tests
 
 To run all tests:
 ```
@@ -233,3 +246,14 @@ npm test
 ## Changelog
 
 See [changelog.md](https://github.com/chill117/express-mysql-session/blob/master/changelog.md)
+
+
+## License
+
+This software is [MIT licensed](https://tldrlegal.com/license/mit-license):
+> A short, permissive software license. Basically, you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.  There are many variations of this license in use.
+
+
+## Donate
+
+This project is free and open-source. If you would like to show your appreciation by making a donation, you can find details about which options are available [here](https://degreesofzero.com/donate.html).
