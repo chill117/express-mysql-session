@@ -1,5 +1,7 @@
 # Changelog
 
+* v2.1.4:
+  * Updated dependencies
 * v2.1.3:
   * Update mysql module to "fix Amazon RDS profile for yaSSL MySQL servers with 2019 CA"; see [here](https://github.com/mysqljs/mysql/pull/2292) for more information.
 * v2.1.2:
