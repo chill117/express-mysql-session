@@ -23,7 +23,7 @@
   "license": "MIT",
   "funding": {
     "type" : "individual",
-    "url" : "https://degreesofzero.com/donate.html"
+    "url" : "https://degreesofzero.com/donate.html?project=express-mysql-session"
   },
   "dependencies": {
     "debug": "4.1.1",

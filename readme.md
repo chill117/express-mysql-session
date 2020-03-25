@@ -15,13 +15,13 @@ A MySQL session store for [express.js](http://expressjs.com/).
 	* [Tests](#tests)
 * [Changelog](#changelog)
 * [License](#license)
-* [Donate](#donate)
+* [Funding](#funding)
 
 
 ## Installation
 
 Add to your application via `npm`:
-```
+```bash
 npm install express-mysql-session --save
 ```
 This will install `express-mysql-session` and add it to your application's `package.json` file.
@@ -207,7 +207,7 @@ git clone https://github.com/chill117/express-mysql-session.git
 #### Step 2: Install Dependencies
 
 Second, you'll need to install the project dependencies as well as the dev dependencies. To do this, simply run the following from the directory you created in step 1:
-```
+```bash
 npm install
 ```
 
@@ -237,8 +237,8 @@ DB_NAME="session_test"
 
 ### Tests
 
-To run all tests:
-```
+This project includes an automated regression test suite. To run the tests:
+```bash
 npm test
 ```
 
@@ -254,6 +254,6 @@ This software is [MIT licensed](https://tldrlegal.com/license/mit-license):
 > A short, permissive software license. Basically, you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.  There are many variations of this license in use.
 
 
-## Donate
+## Funding
 
-This project is free and open-source. If you would like to show your appreciation by making a donation, you can find details about which options are available [here](https://degreesofzero.com/donate.html).
+This project is free and open-source. If you would like to show your appreciation by helping to fund the project's continued development and maintenance, you can find available options [here](https://degreesofzero.com/donate.html?project=express-mysql-session).
