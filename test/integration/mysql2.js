@@ -4,8 +4,9 @@ var expect = require('chai').expect;
 var session = require('express-session');
 var MySQLStore = require('../..')(session);
 var manager = require('../manager');
+var mysql2 = require('mysql2/promise');
 
-describe('node-mysql2-module', function() {
+describe('mysql2', function() {
 
 	// Yes, tear-down only.
 	before(manager.tearDown);
@@ -18,9 +19,7 @@ describe('node-mysql2-module', function() {
 
 	after(manager.tearDown);
 
-	it('support promise', function(done) {
-
-		var mysql2 = require('mysql2/promise');
+	it('sanity check', function(done) {
 		var options = {
 			endConnectionOnClose: true,
 		};
