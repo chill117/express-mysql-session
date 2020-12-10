@@ -1,6 +1,6 @@
 # Changelog
 
-* TBD:
+* v2.1.5:
   * Updated dependencies
 * v2.1.4:
   * Updated dependencies
