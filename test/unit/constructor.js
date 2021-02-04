@@ -169,6 +169,37 @@ describe('constructor', function() {
 			});
 		});
 
+		describe('jsonData', function() {
+
+			it('should default to falsy', function(done) {
+
+				var options = _.extend({}, manager.config);
+
+				sessionStore = new MySQLStore(options);
+				done = _.once(done);
+
+				expect(sessionStore.options.jsonData).to.be.undefined;
+
+				setTimeout(function() {
+					done();
+				}, 30);
+			});
+
+			it('should be true if specified as true in the options', function(done) {
+
+				var options = _.extend({ jsonData: true }, manager.config);
+
+				sessionStore = new MySQLStore(options);
+				done = _.once(done);
+
+				expect(sessionStore.options.jsonData).to.be.true;
+
+				setTimeout(function() {
+					done();
+				}, 30);
+			});
+		});
+
 		describe('schema', function() {
 
 			it('should throw an error when defining unknown column(s)', function() {
