@@ -1,5 +1,7 @@
 # Changelog
 
+* v2.2.0:
+  * Add optional support for json column data storage
 * v2.1.5:
   * Updated dependencies
 * v2.1.4:
