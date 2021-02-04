@@ -1,7 +1,7 @@
 {
   "name": "express-mysql-session",
   "description": "A MySQL session store for express.js",
-  "version": "2.1.5",
+  "version": "2.2.0",
   "main": "index.js",
   "scripts": {
     "benchmarks": "./node_modules/.bin/mocha test/benchmarks/ --recursive --reporter spec --ui bdd",
