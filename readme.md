@@ -123,6 +123,9 @@ var options = {
 	expiration: 86400000,
 	// Whether or not to create the sessions database table, if one does not already exist:
 	createDatabaseTable: true,
+	// Whether or not to create the data column as type JSON. Defaults to false which
+	// creates as medium text.
+	jsonData: false
 	// Number of connections when creating a connection pool:
 	connectionLimit: 1,
 	// Whether or not to end the database connection when the store is closed.

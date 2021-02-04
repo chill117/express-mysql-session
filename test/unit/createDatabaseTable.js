@@ -14,32 +14,62 @@ describe('createDatabaseTable(cb)', function() {
 
 	afterEach(manager.tearDown);
 
-	describe('when the session database table does not yet exist', function() {
+	var testMatrix = [
+		{ jsonData: undefined, columnType: 'mediumtext'},
+		{ jsonData: false, columnType: 'mediumtext' },
+		{ jsonData: true, columnType: 'json'},
+	];
 
-		var sessionStore;
-		afterEach(function(done) {
-			if (!sessionStore) return done();
-			sessionStore.close(done);
-		});
+	_.each(testMatrix, function(context) {
+		describe('when options.jsonData is set to ' + context.jsonData, function() {
 
-		beforeEach(function(done) {
-			sessionStore = manager.createInstance(done);
-		});
+			describe('when the session database table does not yet exist', function() {
 
-		beforeEach(manager.tearDown);
+				var sessionStore;
+				afterEach(function(done) {
+					if (!sessionStore) return done();
+					sessionStore.close(done);
+				});
 
-		it('should create it', function(done) {
+				beforeEach(function(done) {
+					sessionStore = manager.createInstance({ jsonData: context.jsonData }, done);
+				});
 
-			sessionStore.createDatabaseTable(function(error) {
+				beforeEach(manager.tearDown);
 
-				if (error) {
-					return done(error);
-				}
+				it('should create it', function(done) {
 
-				var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions`';
-				var params = [];
+					sessionStore.createDatabaseTable(function(error) {
 
-				sessionStore.connection.query(sql, params, done);
+						if (error) {
+							return done(error);
+						}
+
+						var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions`';
+						var params = [];
+
+						sessionStore.connection.query(sql, params, done);
+					});
+				});
+
+				it('should create the data column with the ' + context.columnType + ' data type', function(done) {
+					sessionStore.createDatabaseTable(function(error) {
+
+						if (error) {
+							return done(error);
+						}
+
+						var sql = 'SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = ? AND column_name = ?';
+						var params = ['sessions', 'data'];
+
+						sessionStore.connection.query(sql, params, function(error, rows) {
+							expect(rows).to.be.an('array');
+							expect(rows).to.have.length(1);
+							expect(rows[0]['data_type']).to.eq(context.columnType);
+							done();
+						});
+					});
+				});
 			});
 		});
 	});

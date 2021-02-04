@@ -3,7 +3,6 @@
 var _ = require('underscore');
 var async = require('async');
 var session = require('express-session');
-var mysql = require('mysql');
 
 var config = require('./config');
 var fixtures = require('./fixtures');

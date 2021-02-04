@@ -110,7 +110,7 @@ module.exports = function(session) {
 		debug.log('Creating sessions database table');
 
 		var fs = require('fs');
-		var schemaFilePath = path.join(__dirname, 'schema.sql');
+		var schemaFilePath = this.options.jsonData ? path.join(__dirname, 'schema-json.sql') : path.join(__dirname, 'schema.sql');
 
 		fs.readFile(schemaFilePath, 'utf-8', function(error, sql) {
 
@@ -180,7 +180,7 @@ module.exports = function(session) {
 			}
 
 			try {
-				var session = JSON.parse(row.data);
+				var session = typeof row.data === "string" ? JSON.parse(row.data) : row.data;
 			} catch (error) {
 				debug.error('Failed to parse data for session (' + session_id + ')');
 				debug.error(error);
