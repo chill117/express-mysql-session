@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `expires` int(11) unsigned NOT NULL,
   `data` mediumtext COLLATE utf8mb4_bin,
   PRIMARY KEY (`session_id`)
-) ENGINE=InnoDB
+) ENGINE=InnoDB;
 CREATE INDEX IDX_session_id ON sessions(session_id);
