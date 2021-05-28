@@ -4,3 +4,4 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `data` mediumtext COLLATE utf8mb4_bin,
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB
+CREATE INDEX IDX_session_id ON sessions(session_id);
