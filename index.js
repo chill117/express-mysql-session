@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('underscore');
-var mysql = require('mysql');
+var mysql = require('mysql2/promise');
 var path = require('path');
 var util = require('util');
 
