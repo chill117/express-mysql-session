@@ -1,5 +1,4 @@
 scripts/
 test/
-.eslintrc.js
+.github/workflows/
 .npmignore
-.travis.yml
