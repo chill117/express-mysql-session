@@ -1,0 +1,42 @@
+name: CI
+env:
+  DB_USER: session_test
+  DB_PASS: session_test
+  DB_NAME: session_test
+on:
+  push:
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [12, 14, 16]
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306
+        env:
+          MYSQL_DATABASE: ${{ env.DB_NAME }}
+          MYSQL_USER: ${{ env.DB_USER }}
+          MYSQL_PASSWORD: ${{ env.DB_PASS }}
+          MYSQL_RANDOM_ROOT_PASSWORD: 1
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    steps:
+      - name: "Checkout ${{ github.ref }} ( ${{ github.sha }} )"
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+        run: npm run test

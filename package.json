@@ -4,13 +4,11 @@
   "version": "2.1.6",
   "main": "index.js",
   "scripts": {
-    "benchmarks": "./node_modules/.bin/mocha test/benchmarks/ --recursive --reporter spec --ui bdd",
+    "benchmarks": "./node_modules/.bin/mocha test/benchmarks/ --recursive --reporter spec --ui bdd --exit",
     "lint": "./node_modules/.bin/eslint --config .eslintrc.js *.js test/**/*.js",
-    "prepare": "npm run test",
-    "pretest": "npm run lint",
     "test": "npm run test:unit && npm run test:integration",
-    "test:integration": "./node_modules/.bin/mocha test/integration/ --recursive --reporter spec --ui bdd",
-    "test:unit": "./node_modules/.bin/mocha test/unit/ --recursive --reporter spec --ui bdd"
+    "test:integration": "./node_modules/.bin/mocha test/integration/ --recursive --reporter spec --ui bdd --exit",
+    "test:unit": "./node_modules/.bin/mocha test/unit/ --recursive --reporter spec --ui bdd --exit"
   },
   "repository": {
     "type": "git",

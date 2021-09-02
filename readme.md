@@ -2,7 +2,7 @@
 
 A MySQL session store for [express.js](http://expressjs.com/).
 
-[![Build Status](https://travis-ci.org/chill117/express-mysql-session.svg?branch=master)](https://travis-ci.org/chill117/express-mysql-session)
+![Build Status](https://github.com/chill117/express-mysql-session/actions/workflows/ci.yml/badge.svg)
 
 * [Installation](#installation)
 * [Important Notes](#important-notes)
