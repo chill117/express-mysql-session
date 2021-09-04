@@ -179,15 +179,18 @@ module.exports = function(session) {
 				return cb(null, null);
 			}
 
-			try {
-				var session = JSON.parse(row.data);
-			} catch (error) {
-				debug.error('Failed to parse data for session (' + session_id + ')');
-				debug.error(error);
-				return cb(error);
+			var data = row.data;
+			if (_.isString(data)) {
+				try {
+					data = JSON.parse(data);
+				} catch (error) {
+					debug.error('Failed to parse data for session (' + session_id + ')');
+					debug.error(error);
+					return cb(error);
+				}
 			}
 
-			cb(null, session);
+			cb(null, data);
 		});
 	};
 
@@ -366,14 +369,18 @@ module.exports = function(session) {
 			}
 
 			var sessions = _.chain(rows).map(function(row) {
-				try {
-					var data = JSON.parse(row.data);
-				} catch (error) {
-					debug.error('Failed to parse data for session (' + row.session_id + ')');
-					debug.error(error);
-					return null;
+				var session_id = row.session_id;
+				var data = row.data;
+				if (_.isString(data)) {
+					try {
+						data = JSON.parse(data);
+					} catch (error) {
+						debug.error('Failed to parse data for session (' + session_id + ')');
+						debug.error(error);
+						return null;
+					}
 				}
-				return [row.session_id, data];
+				return [session_id, data];
 			}).compact().object().value();
 
 			cb && cb(null, sessions);

@@ -9,6 +9,10 @@ A MySQL session store for [express.js](http://expressjs.com/).
 	* [Older Versions](#older-versions)
 	* [Session Table Collation](#session-table-collation)
 * [Usage](#usage)
+	* [With an existing MySQL connection or pool](#with-an-existing-mysql-connection-or-pool)
+	* [Closing the session store](#closing-the-session-store)
+	* [Options](#options)
+		* [Custom database table schema](#custom-database-table-schema)
 	* [Debugging](#debugging)
 * [Contributing](#contributing)
 	* [Configure Local Environment](#configure-local-environment)
@@ -142,10 +146,13 @@ var options = {
 ```
 
 
-#### Configurable sessions table and column names
+#### Custom database table schema
 
-You can override the default sessions database table name and column names via the `schema` option:
+It is possible to use a custom schema for your sessions database table. This can be useful if you want to have extra columns (e.g. "user_id"), indexes, foreign keys, etc. You could also change the type of the "data" column to a smaller or larger text type (e.g. "TINYTEXT", "LONGTEXT", "BLOB") or native "JSON" type.
 
+Set the `createDatabaseTable` option to `FALSE` so that the session store does not automatically create a sessions table.
+
+Use the `schema` option to provide the custom table and column names to the session store.
 ```js
 var session = require('express-session');
 var MySQLStore = require('express-mysql-session')(session);
@@ -156,6 +163,7 @@ var options = {
 	user: 'session_test',
 	password: 'password',
 	database: 'session_test',
+	createDatabaseTable: false,
 	schema: {
 		tableName: 'custom_sessions_table_name',
 		columnNames: {
