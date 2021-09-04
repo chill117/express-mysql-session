@@ -13,6 +13,7 @@ A MySQL session store for [express.js](http://expressjs.com/).
 	* [Closing the session store](#closing-the-session-store)
 	* [Options](#options)
 		* [Custom database table schema](#custom-database-table-schema)
+	* [With mysql2](#with-mysql2)
 	* [Debugging](#debugging)
 * [Contributing](#contributing)
 	* [Configure Local Environment](#configure-local-environment)
@@ -175,6 +176,26 @@ var options = {
 };
 
 var sessionStore = new MySQLStore(options);
+```
+
+### With mysql2
+
+This module is compatible with the [mysql2](https://github.com/sidorares/node-mysql2) module. You will need to create and pass an instance of the mysql2 connection object as follows:
+```js
+var session = require('express-session');
+var mysql2 = require('mysql2/promise');
+var MySQLStore = require('express-mysql-session')(session);
+
+var options = {
+	host: 'localhost',
+	port: 3306,
+	user: 'session_test',
+	password: 'password',
+	database: 'session_test'
+};
+
+var connection = mysql2.createPool(options);
+var sessionStore = new MySQLStore({}, connection);
 ```
 
 
