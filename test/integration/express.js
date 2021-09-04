@@ -1,7 +1,6 @@
 'use strict';
 
 var _ = require('underscore');
-var cookieParser = require('cookie-parser');
 var expect = require('chai').expect;
 var express = require('express');
 var http = require('http');
@@ -204,7 +203,6 @@ function createAppServer(options, done) {
 
 	var app = express();
 
-	app.use(cookieParser());
 	app.use(session(options.session));
 
 	app.server = app.listen(options.port, options.host, function() {
