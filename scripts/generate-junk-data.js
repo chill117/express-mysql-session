@@ -7,7 +7,7 @@ var generateJunkData = function(approximateSize) {
 			Buffer.from(randomData, 'utf8')
 		]);
 	}
-    return buffer.toString('utf8');
+	return buffer.toString('utf8');
 };
 
 var generateRandomData = function(size) {
