@@ -71,6 +71,8 @@ module.exports = function(session) {
 		connectionLimit: 1,
 		// Whether or not to end the database connection when the store is closed:
 		endConnectionOnClose: true,
+		// Make touch() a noop to cut down on db writes.
+		disableTouch: false,
 		charset: 'utf8mb4_bin',
 		schema: {
 			tableName: 'sessions',
@@ -250,6 +252,11 @@ module.exports = function(session) {
 	};
 
 	MySQLStore.prototype.touch = function(session_id, data, cb) {
+
+		if (this.options.disableTouch) {
+			debug.log('Skipping touch for session:', session_id);
+			return cb && cb();
+		}
 
 		debug.log('Touching session:', session_id);
 
