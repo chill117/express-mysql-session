@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "debug": "4.3.2",
-    "express-session": "1.17.2",
-    "mysql": "2.18.1",
+    "express-session": "1.17.3",
+    "mysql2": "2.3.3",
     "underscore": "1.13.1"
   },
   "devDependencies": {
