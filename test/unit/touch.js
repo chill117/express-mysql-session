@@ -1,76 +1,95 @@
-'use strict';
+const assert = require('assert');
+const manager = require('../manager');
+const fixtures = manager.fixtures.sessions;
 
-var async = require('async');
-var expect = require('chai').expect;
-
-var manager = require('../manager');
-var fixtures = manager.fixtures.sessions;
-
-describe('touch(session_id, data, cb)', function() {
+describe('touch(session_id, data[, callback])', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
+
+	it('callback', function(done) {
+		const { session_id, data } = fixtures[0];
+		manager.sessionStore.touch(session_id, data, done);
+	});
 
 	describe('when the session does not exist', function() {
 
 		after(manager.clearSessions);
 
-		it('should not create new session', function(done) {
-
-			async.each(fixtures, function(fixture, nextFixture) {
-				var session_id = fixture.session_id;
-				var data = fixture.data;
-				manager.sessionStore.touch(session_id, data, function(error) {
-					expect(error).to.be.undefined;
-					manager.sessionStore.get(session_id, function(error, session) {
-						if (error) return nextFixture(error);
-						expect(error).to.equal(null);
-						expect(session).to.equal(null);
-						nextFixture();
+		it('should not create new session', function() {
+			return Promise.all(fixtures.map(fixture => {
+				const { session_id, data } = fixture;
+				return manager.sessionStore.touch(session_id, data).then(() => {
+					return manager.sessionStore.get(session_id).then(session => {
+						assert.strictEqual(session, null);
 					});
 				});
-			}, done);
+			}));
 		});
 	});
 
 	describe('when the session exists', function() {
 
-		var oldExpiresValue = Math.round((Date.now() / 1000)) - 10;
+		const oldExpiresValue = Math.round((Date.now() / 1000)) - 10;
 
-		before(function(done) {
-			manager.populateSessions(function() {
-				var sql = 'UPDATE `sessions` SET `expires` = ?';
-				var params = [oldExpiresValue];
-				manager.sessionStore.connection.query(sql, params, done);
+		before(function() {
+			return manager.populateSessions().then(() => {
+				const sql = 'UPDATE `sessions` SET `expires` = ?';
+				const params = [ oldExpiresValue ];
+				return manager.sessionStore.connection.query(sql, params);
 			});
 		});
 
-		it('"expires" field should be updated, other fields should not be updated', function(done) {
-
-			async.each(fixtures, function(fixture, nextFixture) {
-
-				var session_id = fixture.session_id;
-
-				manager.sessionStore.touch(session_id, fixture.data, function(error) {
-
-					expect(error).to.be.undefined;
-
-					var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions` WHERE `session_id` = ?';
-
-					var params = [
-						fixture.session_id
-					];
-
-					manager.sessionStore.connection.query(sql, params, function(error, data) {
-						var touchedSession = data[0];
-						expect(touchedSession.session_id).to.equal(fixture.session_id);
-						expect(touchedSession.data).to.equal(JSON.stringify(fixture.data));
-						expect(touchedSession.expires).to.above(oldExpiresValue);
-						nextFixture();
+		it('"expires" field should be updated, other fields should not be updated', function() {
+			return Promise.all(fixtures.map(fixture => {
+				const { session_id, data } = fixture;
+				return manager.sessionStore.touch(session_id, data).then(() => {
+					const sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions` WHERE `session_id` = ?';
+					const params = [ session_id ];
+					return manager.sessionStore.connection.query(sql, params).then(result => {
+						const [ rows ] = result;
+						const session = rows[0] || null;
+						assert.ok(session);
+						assert.strictEqual(session.session_id, session_id);
+						assert.deepStrictEqual(JSON.parse(session.data), data);
+						assert.ok(session.expires > oldExpiresValue);
 					});
 				});
+			}));
+		});
+	});
 
-			}, done);
+	describe('disableTouch: true', function() {
+
+		let sessionStore;
+		before(function() {
+			sessionStore = manager.createInstance({
+				disableTouch: true,
+			});
+			return sessionStore.onReady();
+		});
+
+		const oldExpiresValue = Math.round((Date.now() / 1000)) - 280;
+		const { session_id, data } = fixtures[0];
+		before(function() {
+			return sessionStore.set(session_id, data).then(() => {
+				const sql = 'UPDATE `sessions` SET `expires` = ?';
+				const params = [ oldExpiresValue ];
+				return sessionStore.connection.query(sql, params);
+			});
+		})
+
+		it('should do nothing', function() {
+			return sessionStore.touch(session_id, data).then(() => {
+				const sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions` WHERE `session_id` = ?';
+				const params = [ session_id ];
+				return sessionStore.connection.query(sql, params).then(result => {
+					const [ rows ] = result;
+					const session = rows[0] || null;
+					assert.ok(session);
+					assert.strictEqual(session.expires, oldExpiresValue);
+				});
+			});
 		});
 	});
 });

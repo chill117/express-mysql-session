@@ -1,26 +1,23 @@
-'use strict';
+const assert = require('assert');
+const manager = require('../manager');
 
-var expect = require('chai').expect;
-
-var manager = require('../manager');
-
-describe('clear(cb)', function() {
+describe('clear([callback])', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
+
+	it('callback', function(done) {
+		manager.sessionStore.clear(done);
+	});
 
 	describe('when sessions exist', function() {
 
 		beforeEach(manager.populateSessions);
 
-		it('should delete all existing sessions', function(done) {
-
-			manager.sessionStore.clear(function(error) {
-				expect(error).to.be.undefined;
-				manager.sessionStore.length(function(error, count) {
-					expect(error).to.equal(null);
-					expect(count).to.equal(0);
-					done();
+		it('should delete all existing sessions', function() {
+			return manager.sessionStore.clear().then(() => {
+				return manager.sessionStore.length().then(count => {
+					assert.strictEqual(count, 0);
 				});
 			});
 		});

@@ -1,25 +1,22 @@
-'use strict';
-
-var _ = require('underscore');
-var expect = require('chai').expect;
-
-var manager = require('../../manager');
+const assert = require('assert');
+const manager = require('../../manager');
 
 describe('JSON data column', function() {
 
 	// Yes, tear-down only.
 	before(manager.tearDown);
 
-	var sessionStore;
-	before(function(done) {
+	let sessionStore;
+	before(function() {
 		sessionStore = manager.createInstance({
 			createDatabaseTable: false,
 			jsonData: true,
-		}, done);
+		});
+		return sessionStore.onReady();
 	});
 
-	before(function(done) {
-		var sql = [
+	before(function() {
+		const sql = [
 			'CREATE TABLE IF NOT EXISTS `sessions` (',
 			'  `session_id` varchar(128) COLLATE utf8mb4_bin NOT NULL,',
 			'  `expires` int(11) unsigned NOT NULL,',
@@ -27,47 +24,39 @@ describe('JSON data column', function() {
 			'  PRIMARY KEY (`session_id`)',
 			') ENGINE=InnoDB',
 		].join('\n');
-		sessionStore.connection.query(sql, done);
+		return sessionStore.connection.query(sql);
 	});
 
-	var session_id;
-	var data;
-	before(function(done) {
-		var fixture = _.first(manager.fixtures.sessions);
+	let session_id;
+	let data;
+	before(function() {
+		const fixture = manager.fixtures.sessions[0] || null;
 		session_id = fixture.session_id;
 		data = fixture.data;
-		sessionStore.set(session_id, data, done);
+		return sessionStore.set(session_id, data);
 	});
 
-	after(function(done) {
-		if (!sessionStore) return done();
-		sessionStore.close(done);
+	after(function() {
+		if (sessionStore) return sessionStore.close();
 	});
 
-	it('get', function(done) {
-		sessionStore.get(session_id, function(error, session) {
-			if (error) return done(error);
-			expect(session).to.deep.equal(data);
-			done();
+	it('get', function() {
+		return sessionStore.get(session_id).then(session => {
+			assert.deepStrictEqual(session, data);
 		});
 	});
 
-	it('set', function(done) {
-		sessionStore.set(session_id, data, function(error) {
-			if (error) return done(error);
-			sessionStore.get(session_id, function(error, session) {
-				if (error) return done(error);
-				expect(session).to.deep.equal(data);
-				done();
+	it('set', function() {
+		return sessionStore.set(session_id, data).then(() => {
+			return sessionStore.get(session_id).then(session => {
+				assert.deepStrictEqual(session, data);
 			});
 		});
 	});
 
-	it('all', function(done) {
-		sessionStore.all(function(error, sessions) {
-			if (error) return done(error);
-			expect(sessions[session_id]).to.deep.equal(data);
-			done();
+	it('all', function() {
+		return sessionStore.all().then(sessions => {
+			assert.deepStrictEqual(sessions[session_id], data);
 		});
 	});
 });

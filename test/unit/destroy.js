@@ -1,33 +1,30 @@
-'use strict';
+const assert = require('assert');
+const manager = require('../manager');
+const fixtures = manager.fixtures.sessions;
 
-var async = require('async');
-var expect = require('chai').expect;
-
-var manager = require('../manager');
-var fixtures = manager.fixtures.sessions;
-
-describe('destroy(session_id, cb)', function() {
+describe('destroy(session_id[, callback])', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
+
+	it('callback', function(done) {
+		const { session_id } = fixtures[0];
+		manager.sessionStore.destroy(session_id, done);
+	});
 
 	describe('when the session exists', function() {
 
 		before(manager.populateSessions);
 
-		it('should delete the session', function(done) {
-
-			async.each(fixtures, function(fixture, nextFixture) {
-				var session_id = fixture.session_id;
-				manager.sessionStore.destroy(session_id, function(error) {
-					expect(error).to.be.undefined;
-					manager.sessionStore.get(session_id, function(error, session) {
-						if (error) return nextFixture(error);
-						expect(session).to.equal(null);
-						nextFixture();
+		it('should delete the session', function() {
+			return Promise.all(fixtures.map(fixture => {
+				const { session_id } = fixture;
+				return manager.sessionStore.destroy(session_id).then(() => {
+					return manager.sessionStore.get(session_id).then(session => {
+						assert.strictEqual(session, null);
 					});
 				});
-			}, done);
+			}));
 		});
 	});
 
@@ -35,15 +32,11 @@ describe('destroy(session_id, cb)', function() {
 
 		before(manager.clearSessions);
 
-		it('should do nothing', function(done) {
-
-			async.each(fixtures, function(fixture, nextFixture) {
-				var session_id = fixture.session_id;
-				manager.sessionStore.destroy(session_id, function(error) {
-					expect(error).to.be.undefined;
-					nextFixture();
-				});
-			}, done);
+		it('should do nothing', function() {
+			return Promise.all(fixtures.map(fixture => {
+				const { session_id } = fixture;
+				return manager.sessionStore.destroy(session_id);
+			}));
 		});
 	});
 });

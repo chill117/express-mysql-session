@@ -1,59 +1,59 @@
-'use strict';
+const assert = require('assert');
+const manager = require('../manager');
 
-var _ = require('underscore');
-var expect = require('chai').expect;
-
-var manager = require('../manager');
-
-describe('all(cb)', function() {
+describe('all([callback])', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
 
+	it('callback', function(done) {
+		manager.sessionStore.all((error, sessions) => {
+			if (error) return done(error);
+			try { assert.deepStrictEqual(sessions, {}); } catch (error) {
+				return done(error);
+			}
+			done();
+		});
+	});
+
 	describe('with no sessions', function() {
 
-		it('should return an empty object', function(done) {
-			manager.sessionStore.all(function(error, sessions) {
-				if (error) return done(error);
-				expect(sessions).to.deep.equal({});
-				done();
+		it('should return an empty object', function() {
+			return manager.sessionStore.all().then(sessions => {
+				assert.deepStrictEqual(sessions, {});
 			});
 		});
 	});
 
 	describe('when sessions exist', function() {
 
-		var total = 51;
-		before(function(done) {
-			manager.populateManySessions(total, done);
+		const total = 33;
+		before(function() {
+			return manager.populateManySessions(total);
 		});
 
-		it('should return all sessions as an object', function(done) {
-			manager.sessionStore.all(function(error, sessions) {
-				if (error) return done(error);
-				expect(sessions).to.be.an('object');
-				expect(_.keys(sessions)).to.have.length(total);
-				_.each(sessions, function(data, id) {
-					expect(data).to.be.an('object');
-					expect(id).to.be.a('string');
+		it('should return all sessions as an object', function() {
+			return manager.sessionStore.all().then(sessions => {
+				assert.strictEqual(typeof sessions, 'object');
+				assert.strictEqual(Object.keys(sessions).length, total);
+				Object.entries(sessions).forEach(function([id, data], index) {
+					assert.strictEqual(typeof data, 'object');
+					assert.strictEqual(typeof id, 'string');
 				});
-				done();
 			});
 		});
 
 		describe('where some are expired', function() {
 
-			var numToExpire = Math.ceil(total / 6);
-			before(function(done) {
-				manager.expireSomeSessions(numToExpire, done);
+			const numToExpire = Math.ceil(total / 6);
+			before(function() {
+				return manager.expireSomeSessions(numToExpire);
 			});
 
-			it('should return all sessions as an object (excluding expired sessions)', function(done) {
-				manager.sessionStore.all(function(error, sessions) {
-					if (error) return done(error);
-					expect(sessions).to.be.an('object');
-					expect(_.keys(sessions)).to.have.length(total - numToExpire);
-					done();
+			it('should return all sessions as an object (excluding expired sessions)', function() {
+				return manager.sessionStore.all().then(sessions => {
+					assert.strictEqual(typeof sessions, 'object');
+					assert.strictEqual(Object.keys(sessions).length, total - numToExpire);
 				});
 			});
 		});

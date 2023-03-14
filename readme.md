@@ -1,8 +1,8 @@
 # express-mysql-session
 
-A MySQL session store for [express.js](http://expressjs.com/).
+A MySQL session store for [express.js](http://expressjs.com/). Compatible with [express-session](https://github.com/expressjs/session).
 
-![Build Status](https://github.com/chill117/express-mysql-session/actions/workflows/ci.yml/badge.svg)
+![Build Status](https://github.com/chill117/express-mysql-session/actions/workflows/tests.yml/badge.svg)
 
 * [Installation](#installation)
 * [Important Notes](#important-notes)
@@ -13,14 +13,12 @@ A MySQL session store for [express.js](http://expressjs.com/).
 	* [Closing the session store](#closing-the-session-store)
 	* [Options](#options)
 		* [Custom database table schema](#custom-database-table-schema)
-	* [With mysql2](#with-mysql2)
 	* [Debugging](#debugging)
 * [Contributing](#contributing)
 	* [Configure Local Environment](#configure-local-environment)
 	* [Tests](#tests)
 * [Changelog](#changelog)
 * [License](#license)
-* [Funding](#funding)
 
 
 ## Installation
@@ -36,10 +34,6 @@ This will install `express-mysql-session` and add it to your application's `pack
 
 Potential gotchas and other important information goes here.
 
-### Older Versions
-
-For users who are still using express-mysql-session `0.x`. Changes have been made to the constructor, which are backwards compatible, but you could run into troubles if using an older version of this module with the latest documentation. You can find the documentation for the older version [here](https://github.com/chill117/express-mysql-session/tree/9fbcf51416a00a7a525c1e6e431033125a2945b0).
-
 ### Session Table Collation
 
 This module creates a database table to save session data. This data is stored in a MySQL text field with the [utf8mb4](https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html) collation - added in [MySQL 5.5.3](https://dev.mysql.com/doc/relnotes/mysql/5.5/en/news-5-5-3.html). The reason for this is to fully support the utf8 character set. If you absolutely must use an older version of MySQL, create your sessions table before initializing the `MySQLStore`.
@@ -49,12 +43,12 @@ This module creates a database table to save session data. This data is stored i
 
 Use with your express session middleware, like this:
 ```js
-var express = require('express');
-var app = module.exports = express();
-var session = require('express-session');
-var MySQLStore = require('express-mysql-session')(session);
+const express = require('express');
+const app = module.exports = express();
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
-var options = {
+const options = {
 	host: 'localhost',
 	port: 3306,
 	user: 'session_test',
@@ -62,7 +56,7 @@ var options = {
 	database: 'session_test'
 };
 
-var sessionStore = new MySQLStore(options);
+const sessionStore = new MySQLStore(options);
 
 app.use(session({
 	key: 'session_cookie_name',
@@ -71,21 +65,29 @@ app.use(session({
 	resave: false,
 	saveUninitialized: false
 }));
-```
 
-The session store will internally create a `mysql` [connection pool](https://github.com/mysqljs/mysql#pooling-connections) which handles the (re)connection to the database. By default, the pool consists of 1 connection, but you can override this using the `connectionLimit` option. There are additional [pool options](https://github.com/mysqljs/mysql#pool-options) you can provide, which will be passed to the constructor of the `mysql` connection pool.
+// Optionally use onReady() to get a promise that resolves when store is ready.
+sessionStore.onReady().then(() => {
+	// MySQL session store ready for use.
+	console.log('MySQLStore ready');
+}).catch(error => {
+	// Something went wrong.
+	console.error(error);
+});
+```
+The session store will internally create a mysql2 [connection pool](https://github.com/sidorares/node-mysql2#using-connection-pools).
 
 The sessions database table should be automatically created, when using default options. If for whatever reason the table is not created, you can find the schema [here](https://github.com/chill117/express-mysql-session/blob/master/schema.sql).
 
-### With an existing MySQL connection or pool
+### Use an existing MySQL connection or pool
 
 To pass in an existing MySQL database connection or pool, you would do something like this:
 ```js
-var mysql = require('mysql');
-var session = require('express-session');
-var MySQLStore = require('express-mysql-session')(session);
+const mysql = require('mysql2/promise');
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
-var options = {
+const options = {
     host: 'localhost',
     port: 3306,
     user: 'db_user',
@@ -93,15 +95,21 @@ var options = {
     database: 'db_name'
 };
 
-var connection = mysql.createConnection(options); // or mysql.createPool(options);
-var sessionStore = new MySQLStore({}/* session store options */, connection);
+const connection = mysql.createConnection(options); // or mysql.createPool(options);
+const sessionStore = new MySQLStore({}/* session store options */, connection);
 ```
 
 ### Closing the session store
 
 To cleanly close the session store:
 ```js
-sessionStore.close();
+sessionStore.close().then(() => {
+	// Successfuly closed the MySQL session store.
+	console.log('MySQLStore closed');
+}).catch(error => {
+	// Something went wrong.
+	console.error(error);
+});
 ```
 
 
@@ -109,7 +117,7 @@ sessionStore.close();
 
 Here is a list of all available options:
 ```js
-var options = {
+const options = {
 	// Host name for database connection:
 	host: 'localhost',
 	// Port number for database connection:
@@ -128,12 +136,12 @@ var options = {
 	expiration: 86400000,
 	// Whether or not to create the sessions database table, if one does not already exist:
 	createDatabaseTable: true,
-	// Number of connections when creating a connection pool:
-	connectionLimit: 1,
 	// Whether or not to end the database connection when the store is closed.
 	// The default value of this option depends on whether or not a connection was passed to the constructor.
 	// If a connection object is passed to the constructor, the default value for this option is false.
 	endConnectionOnClose: true,
+	// Whether or not to disable touch:
+	disableTouch: false,
 	charset: 'utf8mb4_bin',
 	schema: {
 		tableName: 'sessions',
@@ -145,6 +153,8 @@ var options = {
 	}
 };
 ```
+Additionally, the following options will be passed thru to the [mysql2 module's](https://github.com/sidorares/node-mysql2) createPool method:
+* `waitForConnections`, `connectionLimit`, `maxIdle`, `idleTimeout`, `queueLimit`
 
 
 #### Custom database table schema
@@ -155,10 +165,10 @@ Set the `createDatabaseTable` option to `FALSE` so that the session store does n
 
 Use the `schema` option to provide the custom table and column names to the session store.
 ```js
-var session = require('express-session');
-var MySQLStore = require('express-mysql-session')(session);
+const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
-var options = {
+const options = {
 	host: 'localhost',
 	port: 3306,
 	user: 'session_test',
@@ -175,27 +185,7 @@ var options = {
 	}
 };
 
-var sessionStore = new MySQLStore(options);
-```
-
-### With mysql2
-
-This module is compatible with the [mysql2](https://github.com/sidorares/node-mysql2) module. You will need to create and pass an instance of the mysql2 connection object as follows:
-```js
-var session = require('express-session');
-var mysql2 = require('mysql2/promise');
-var MySQLStore = require('express-mysql-session')(session);
-
-var options = {
-	host: 'localhost',
-	port: 3306,
-	user: 'session_test',
-	password: 'password',
-	database: 'session_test'
-};
-
-var connection = mysql2.createPool(options);
-var sessionStore = new MySQLStore({}, connection);
+const sessionStore = new MySQLStore(options);
 ```
 
 
@@ -263,6 +253,16 @@ DB_PASS="password"
 DB_NAME="session_test"
 ```
 
+Alternatively, use docker to run a temporary instance of MySQL database:
+```bash
+sudo docker run -it --rm \
+	-e MYSQL_RANDOM_ROOT_PASSWORD=yes \
+	-e MYSQL_DATABASE=session_test \
+	-e MYSQL_USER=session_test \
+	-e MYSQL_PASSWORD=password \
+	-p 3306:3306 mysql:5.7
+```
+
 
 ### Tests
 
@@ -281,8 +281,3 @@ See [changelog.md](https://github.com/chill117/express-mysql-session/blob/master
 
 This software is [MIT licensed](https://tldrlegal.com/license/mit-license):
 > A short, permissive software license. Basically, you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.  There are many variations of this license in use.
-
-
-## Funding
-
-This project is free and open-source. If you would like to show your appreciation by helping to fund the project's continued development and maintenance, you can find available options [here](https://degreesofzero.com/donate.html?project=express-mysql-session).

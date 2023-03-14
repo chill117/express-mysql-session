@@ -1,19 +1,14 @@
-'use strict';
-
-var _ = require('underscore');
-var expect = require('chai').expect;
-var express = require('express');
-var http = require('http');
-
-var session = require('express-session');
-var manager = require('../manager');
+const assert = require('assert');
+const crypto = require('crypto');
+const express = require('express');
+const http = require('http');
+const session = require('express-session');
+const manager = require('../manager');
+const querystring = require('querystring');
 
 describe('Express Integration', function() {
 
-	before(manager.setUp);
-	after(manager.tearDown);
-
-	var configurations = [
+	[
 		{
 			description: '"resave" = FALSE',
 			options: {
@@ -32,189 +27,167 @@ describe('Express Integration', function() {
 					}
 				}
 			}
-		}
-	];
+		},
+	].forEach((configuration, index) => {
 
-	_.each(configurations, function(configuration) {
+		const hostname = 'localhost';
+		const port = 3000 + index;
 
 		describe(configuration.description, function() {
 
-			var sessionStore;
-			before(function(done) {
-				sessionStore = manager.createInstance(done);
+			let sessionStore;
+			before(function() {
+				sessionStore = manager.createInstance();
+				return sessionStore.onReady();
 			});
 
-			var app;
+			let app;
 			before(function(done) {
-				var options = _.extend({}, configuration.options, {
+				let options = Object.assign({}, configuration.options, {
+					host: hostname,
+					port,
 					store: sessionStore,
 				});
-				app = createAppServer(options, done);
+				options.session = Object.assign({}, {
+					key: `express.sid-${index}`,
+					secret: 'some_secret',
+					resave: false,
+					saveUninitialized: true,
+				}, options.session || {});
+				app = express();
+				app.use(session(options.session));
+				app.server = app.listen(options.port, options.host, function() {
+					done();
+				});
+				let sockets = {};
+				let socketIncrement = 0;
+				app.server.on('connection', socket => {
+					const socketId = ++socketIncrement;
+					sockets[socketId] = socket;
+					socket.once('close', () => {
+						delete sockets[socketId];
+					});
+				});
+				const closeServer = app.server.close;
+				app.server.close = function() {
+					Object.values(sockets).forEach(socket => socket.destroy());
+					closeServer.apply(this, arguments);
+				};
+				app.get('*', function(req, res) {
+					const { bytes } = req.query;
+					const sendResponse = function(error) {
+						if (error) {
+							res.status(500).json({ error: error.message });
+						} else {
+							res.status(200).json({ status: 'OK', session: req.session });
+						}
+					};
+					if (bytes) {
+						req.session.bytes = bytes;
+						req.session.save(sendResponse);
+					} else {
+						sendResponse();
+					}
+				});
+				app.options = options;
 			});
 
 			after(function() {
-				app.server.close();
+				app && app.server && app.server.close();
 			});
 
-			after(function(done) {
-				sessionStore.close(done);
+			after(function() {
+				if (sessionStore) return sessionStore.close();
 			});
 
-			describe('Sessions for a single client', function() {
-
-				it('should persist between requests', function(done) {
-
-					var req = http.get({
-
-						hostname: app.options.host,
-						port: app.options.port,
-						path: '/test'
-
-					}, function(res) {
-
-						expect(res.statusCode).to.equal(200);
-						expect(res.headers['set-cookie']).to.be.an('array');
-
-						var cookieJar = res.headers['set-cookie'];
-						var sessionCookie = getSessionCookie(cookieJar, app.options.session.key);
-
-						expect(sessionCookie).to.not.equal(false);
-
-						var req2 = http.get({
-
-							hostname: app.options.host,
-							port: app.options.port,
-							path: '/test',
-							headers: {
-								'Cookie': cookieJar
+			[
+				{
+					description: 'with cookie - should persist session between requests',
+					cookie: true,
+				},
+				{
+					description: 'without cookie - should not persist session between requests',
+					cookie: false,
+				},
+			].forEach(test => {
+				it(test.description, function() {
+					const bytes = crypto.randomBytes(16).toString('hex');
+					return doGet({ bytes }).then(result => {
+						const [ response, body ] = result;
+						assert.strictEqual(response.statusCode, 200);
+						assert.strictEqual(body.status, 'OK');
+						assert.strictEqual(body.session.bytes, bytes);
+						assert.ok(Array.isArray(response.headers['set-cookie']));
+						const cookieJar = response.headers['set-cookie'];
+						const sessionCookie = getSessionCookie(cookieJar, app.options.session.key);
+						assert.notStrictEqual(sessionCookie, false);
+						let headers = {};
+						if (test.cookie) {
+							headers['Cookie'] = cookieJar;
+						}
+						return doGet({}, headers).then(result2 => {
+							const [ response2, body2 ] = result2;
+							assert.strictEqual(response2.statusCode, 200);
+							assert.strictEqual(body2.status, 'OK');
+							if (test.cookie) {
+								assert.strictEqual(typeof response2.headers['set-cookie'], 'undefined');
+								assert.strictEqual(body2.session.bytes, bytes);
+							} else {
+								assert.notStrictEqual(typeof response2.headers['set-cookie'], 'undefined');
+								assert.strictEqual(typeof body2.session.bytes, 'undefined');
 							}
-
-						}, function(res2) {
-
-							expect(res2.statusCode).to.equal(200);
-							expect(res2.headers['set-cookie']).to.be.undefined;
-
-							done();
 						});
-
-						req2.on('error', function(e) {
-
-							done(new Error('Problem with request: ' + e.message));
-						});
-					});
-
-					req.on('error', function(e) {
-
-						done(new Error('Problem with request: ' + e.message));
-					});
-				});
-			});
-
-			describe('Sessions for different clients', function() {
-
-				it('should not persist between requests', function(done) {
-
-					var req = http.get({
-
-						hostname: app.options.host,
-						port: app.options.port,
-						path: '/test'
-
-					}, function(res) {
-
-						expect(res.statusCode).to.equal(200);
-						expect(res.headers['set-cookie']).to.be.an('array');
-
-						var cookieJar = res.headers['set-cookie'];
-						var sessionCookie = getSessionCookie(cookieJar, app.options.session.key);
-
-						expect(sessionCookie).to.not.equal(false);
-
-						var req2 = http.get({
-
-							hostname: app.options.host,
-							port: app.options.port,
-							path: '/test'
-
-							// Don't pass the cookie jar this time.
-
-						}, function(res2) {
-
-							expect(res2.statusCode).to.equal(200);
-							expect(res2.headers['set-cookie']).to.not.be.undefined;
-
-							done();
-						});
-
-						req2.on('error', function(e) {
-
-							done(new Error('Problem with request: ' + e.message));
-						});
-					});
-
-					req.on('error', function(e) {
-
-						done(new Error('Problem with request: ' + e.message));
 					});
 				});
 			});
 		});
+
+		function doGet(params, headers) {
+			return new Promise((resolve, reject) => {
+				try {
+					params = params || {};
+					headers = headers || {};
+					let options = {
+						method: 'GET',
+						hostname,
+						port,
+						path: '/?' + querystring.stringify(params),
+						headers,
+					};
+					const req = http.request(options, response => {
+						let body = '';
+						response.on('data', buffer => body += buffer.toString());
+						response.on('end', () => {
+							if (response.headers['content-type'].substr(0, 'application/json'.length) === 'application/json') {
+								try { body = JSON.parse(body); } catch (error) {
+									return reject(error);
+								}
+							}
+							resolve([ response, body ]);
+						});
+					});
+					req.once('error', reject);
+					req.end();
+				} catch (error) {
+					return reject(error);
+				}
+			});
+		}
 	});
 });
 
 function getSessionCookie(cookies, cookieName) {
-
-	var sessionCookie = false;
-
-	for (var i = 0; i < cookies.length; i++) {
-
-		var parts = cookies[i].split(';');
-
-		for (var n = 0; n < parts.length; n++) {
+	const sessionCookie = false;
+	for (let i = 0; i < cookies.length; i++) {
+		const parts = cookies[i].split(';');
+		for (let n = 0; n < parts.length; n++) {
 			parts[n] = parts[n].split('=');
 			parts[n][0] = unescape(parts[n][0].trim().toLowerCase());
 		}
-
-		var name = parts[0][0];
-
-		if (name == cookieName) {
+		const name = parts[0][0];
+		if (name === cookieName) {
 			return cookies[i];
 		}
 	}
-
 	return sessionCookie;
-}
-
-var appServerPort = 3000;
-
-function createAppServer(options, done) {
-
-	options = _.defaults(options || {}, {
-		host: 'localhost',
-		port: appServerPort++
-	});
-
-	options.session = _.defaults(options.session || {}, {
-		key: _.uniqueId('express.sid-'),
-		secret: 'some_secret',
-		resave: false,
-		saveUninitialized: true
-	});
-
-	var app = express();
-
-	app.use(session(options.session));
-
-	app.server = app.listen(options.port, options.host, function() {
-		done();
-	});
-
-	app.get('/test', function(req, res) {
-
-		res.status(200).json('hi!');
-	});
-
-	app.options = options;
-
-	return app;
 }

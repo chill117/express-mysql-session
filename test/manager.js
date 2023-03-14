@@ -1,170 +1,149 @@
-'use strict';
+const assert = require('assert');
+const crypto = require('crypto');
+const session = require('express-session');
+const config = require('./config');
+const fixtures = require('./fixtures');
 
-var _ = require('underscore');
-var async = require('async');
-var session = require('express-session');
+const MySQLStore = require('..')(session);
+let sessionStore;
 
-var config = require('./config');
-var fixtures = require('./fixtures');
+let manager = module.exports = {
 
-var manager = module.exports = {
-
-	config: config,
-	fixtures: fixtures,
+	config,
+	fixtures,
+	MySQLStore,
 	stores: [],
 
-	setUp: function(cb) {
-
-		async.seq(manager.tearDown, manager.createInstance)(cb);
-	},
-
-	tearDown: function(cb) {
-
-		async.seq(manager.dropDatabaseTables)(cb);
-	},
-
-	dropDatabaseTables: function(cb) {
-
-		manager.sessionStore.connection.query('SHOW TABLES', function(error, rows) {
-
-			async.each(rows, function(row, next) {
-
-				var tableName = row['Tables_in_' + config.database];
-				var sql = 'DROP TABLE IF EXISTS ??';
-				var params = [tableName];
-
-				manager.sessionStore.connection.query(sql, params, next);
-
-			}, cb);
+	setUp: function() {
+		return manager.tearDown().then(() => {
+			sessionStore = manager.sessionStore = manager.createInstance();
+			return sessionStore.onReady();
 		});
 	},
 
-	expireSession: function(sessionId, cb) {
-
-		var expiration = sessionStore.options.expiration;
-		var sql = 'UPDATE ?? SET ?? = ? WHERE ?? = ?';
-		var expires = ( new Date( Date.now() - (expiration + 60000) ) ) / 1000;
-		var params = [
-			sessionStore.options.schema.tableName,
-			sessionStore.options.schema.columnNames.expires,
-			expires,
-			sessionStore.options.schema.columnNames.session_id,
-			sessionId
-		];
-		sessionStore.connection.query(sql, params, cb);
-	},
-
-	expireSomeSessions: function(numToExpire, cb) {
-
-		var expiration = sessionStore.options.expiration;
-		var sql = 'UPDATE ?? SET ?? = ? LIMIT ?';
-		var expires = (Date.now() - (expiration + 200000)) / 1000;
-		var params = [
-			sessionStore.options.schema.tableName,
-			sessionStore.options.schema.columnNames.expires,
-			expires,
-			numToExpire
-		];
-		sessionStore.connection.query(sql, params, cb);
-	},
-
-	populateSessions: function(cb) {
-
-		async.each(fixtures.sessions, manager.populateSession, cb);
-	},
-
-	populateSession: function(session, cb) {
-
-		var sessionId = session.session_id;
-		var data = session.data;
-		sessionStore.set(sessionId, data, cb);
-	},
-
-	populateManySessions: function(targetNumSessions, prefix, cb) {
-
-		if (typeof prefix === 'function') {
-			cb = prefix;
-			prefix = null;
-		}
-
-		prefix = prefix || '';
-		var numSessions = 0;
-		var expires = Math.round(Date.now() / 1000);
-		var dataStr = JSON.stringify({
-			someText: 'some sample text',
-			someInt: 1001,
-			moreText: 'and more sample text..'
+	tearDown: function() {
+		return Promise.resolve().then(() => {
+			if (!manager.sessionStore) {
+				sessionStore = manager.sessionStore = manager.createInstance();
+				return sessionStore.onReady();
+			}
+		}).then(() => {
+			return manager.dropDatabaseTables();
 		});
+	},
 
-		async.whilst(function(next) {
-			next(null, numSessions < targetNumSessions);
-		}, function(next) {
+	dropDatabaseTables: function() {
+		return manager.sessionStore.connection.query('SHOW TABLES').then(rows => {
+			return Promise.all(rows[0].map(row => {
+				const tableName = row[`Tables_in_${config.database}`];
+				assert.ok(tableName);
+				const sql = 'DROP TABLE IF EXISTS ??';
+				const params = [ tableName ];
+				return manager.sessionStore.connection.query(sql, params);
+			}));
+		});
+	},
 
-			var batchSize = Math.min(2000, targetNumSessions - numSessions);
-			var sql = 'INSERT INTO ?? (??, ??, ??) VALUES ';
-			var params = [
+	expireSession: function(sessionId) {
+		return Promise.resolve().then(() => {
+			const expiration = sessionStore.options.expiration;
+			const sql = 'UPDATE ?? SET ?? = ? WHERE ?? = ?';
+			const expires = ( new Date( Date.now() - (expiration + 60000) ) ) / 1000;
+			const params = [
 				sessionStore.options.schema.tableName,
-				sessionStore.options.schema.columnNames.session_id,
 				sessionStore.options.schema.columnNames.expires,
-				sessionStore.options.schema.columnNames.data,
+				expires,
+				sessionStore.options.schema.columnNames.session_id,
+				sessionId,
 			];
+			return sessionStore.connection.query(sql, params);
+		});
+	},
 
-			sql += _.chain(new Array(batchSize)).map(function() {
-				return '(?, ?, ?)';
-			}).value().join(', ');
+	expireSomeSessions: function(numToExpire) {
+		return Promise.resolve().then(() => {
+			const expiration = sessionStore.options.expiration;
+			const sql = 'UPDATE ?? SET ?? = ? LIMIT ?';
+			const expires = Math.round((Date.now() - (expiration + 300000)) / 1000);
+			const params = [
+				sessionStore.options.schema.tableName,
+				sessionStore.options.schema.columnNames.expires,
+				expires,
+				numToExpire,
+			];
+			return sessionStore.connection.query(sql, params);
+		});
+	},
 
-			_.times(batchSize, function(index) {
-				var sessionId = prefix + '-' + (numSessions + index);
-				params = params.concat([sessionId, expires, dataStr]);
+	populateSessions: function() {
+		return Promise.all(fixtures.sessions.map(session => {
+			return manager.populateSession(session);
+		}));
+	},
+
+	populateSession: function(session) {
+		return Promise.resolve().then(() => {
+			const { session_id, data } = session;
+			return sessionStore.set(session_id, data);
+		});
+	},
+
+	populateManySessions: function(targetNumSessions, prefix) {
+		return Promise.resolve().then(() => {
+			targetNumSessions = targetNumSessions || 0;
+			prefix = prefix || crypto.randomBytes(20).toString('hex');
+			assert.ok(targetNumSessions > 0, 'Invalid argument ("targetNumSessions"): Must be greater than 0');
+			const expires = Math.round(Date.now() / 1000);
+			const dataStr = JSON.stringify({
+				someText: 'some sample text',
+				someInt: 1001,
+				moreText: 'and more sample text..',
 			});
-
-			numSessions += batchSize;
-			manager.sessionStore.connection.query(sql, params, next);
-
-		}, cb);
+			const maxBatchSize = 500;
+			const numLoops = Math.ceil(targetNumSessions / maxBatchSize);
+			return MySQLStore.promiseAllSeries(Array.from(new Array(numLoops), (_,x) => x).map(batchIndex => {
+				return function() {
+					return Promise.resolve().then(() => {
+						const numSessions = batchIndex * maxBatchSize;
+						const batchSize = Math.min(maxBatchSize, targetNumSessions - numSessions);
+						let sql = 'INSERT INTO ?? (??, ??, ??) VALUES ';
+						let params = [
+							sessionStore.options.schema.tableName,
+							sessionStore.options.schema.columnNames.session_id,
+							sessionStore.options.schema.columnNames.expires,
+							sessionStore.options.schema.columnNames.data,
+						];
+						sql += Array.from(new Array(batchSize)).map(() => {
+							return '(?, ?, ?)';
+						}).join(', ');
+						Array.from(new Array(batchSize), (_,x) => x).forEach(itemIndex => {
+							const sessionId = prefix + '-' + (numSessions + (itemIndex++));
+							params = params.concat([sessionId, expires, dataStr]);
+						});
+						return manager.sessionStore.connection.query(sql, params);
+					});
+				};
+			}));
+		});
 	},
 
-	clearSessions: function(cb) {
-
-		sessionStore.clear(cb);
+	clearSessions: function() {
+		return sessionStore.clear();
 	},
 
-	loadConstructor: function(forceReload) {
-
-		forceReload = forceReload === true;
-
-		if (forceReload && require.cache[require.resolve('..')]) {
-			delete require.cache[require.resolve('..')];
-		}
-
-		return MySQLStore = manager.MySQLStore = require('..')(session);
-	},
-
-	createInstance: function(options, cb) {
-
-		if (typeof options === 'function') {
-			cb = options;
-			options = null;
-		}
-
-		options = _.defaults(options || {}, config);
-		cb = cb || _.noop;
-		var store = new MySQLStore(options, cb);
+	createInstance: function(options, connection) {
+		options = Object.assign({}, config, options || {});
+		const store = new MySQLStore(options, connection);
 		manager.stores.push(store);
 		return store;
 	},
 
 };
 
-var MySQLStore = manager.MySQLStore = manager.loadConstructor();
-var sessionStore = manager.sessionStore = manager.createInstance();
-
-after(function(done) {
-	async.each(manager.stores, function(store, next) {
-		store.close(next);
-	}, function(error) {
-		if (error) return done(error);
+after(function() {
+	return Promise.all(manager.stores.map((store, index) => {
+		return store.close();
+	})).then(() => {
 		manager.stores = [];
-		done();
 	});
 });

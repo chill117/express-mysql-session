@@ -1,5 +1,15 @@
 # Changelog
 
+* v3.0.0:
+  * Added "disableTouch" option.
+  * Switched MySQL client dependency from mysql to mysql2 module.
+  * General clean-up, including removal of several dependencies.
+  * express-session module no longer included as a direct dependency.
+  * Upgraded remaining dependencies to latest versions.
+  * _Breaking API changes_:
+    * Old constructor usage from "0.x" version no longer supported - e.g. must now pass session module - `require('express-mysql-session')(session)`
+    * Constructor no longer takes a callback. Use `sessionStore.onReady()` to get a promise which will resolve when the store is ready or reject on error.
+    * See readme for latest usage details.
 * v2.1.8:
   * Updated dependencies
 * v2.1.7:

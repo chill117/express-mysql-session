@@ -1,267 +1,163 @@
-'use strict';
+const assert = require('assert');
+const manager = require('../manager');
+const { MySQLStore } = manager;
 
-var _ = require('underscore');
-var expect = require('chai').expect;
+describe('createDatabaseTable()', function() {
 
-var manager = require('../manager');
-var MySQLStore = manager.MySQLStore;
-
-describe('createDatabaseTable(cb)', function() {
-
+	const original_createDatabaseTable = MySQLStore.prototype.createDatabaseTable;
 	afterEach(function() {
-		MySQLStore = manager.loadConstructor(true);
+		MySQLStore.prototype.createDatabaseTable = original_createDatabaseTable;
 	});
 
 	afterEach(manager.tearDown);
 
 	describe('when the session database table does not yet exist', function() {
 
-		var sessionStore;
-		afterEach(function(done) {
-			if (!sessionStore) return done();
-			sessionStore.close(done);
-		});
-
-		beforeEach(function(done) {
-			sessionStore = manager.createInstance(done);
-		});
-
 		beforeEach(manager.tearDown);
 
-		it('should create it', function(done) {
+		let sessionStore;
+		beforeEach(function() {
+			sessionStore = manager.createInstance({
+				createDatabaseTable: false,
+			});
+			return sessionStore.onReady();
+		});
 
-			sessionStore.createDatabaseTable(function(error) {
-
-				if (error) {
-					return done(error);
-				}
-
-				var sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions`';
-				var params = [];
-
-				sessionStore.connection.query(sql, params, done);
+		it('should create it', function() {
+			return sessionStore.createDatabaseTable().then(() => {
+				const sql = 'SELECT `session_id`, `data`, `expires` FROM `sessions`';
+				const params = [];
+				return sessionStore.connection.query(sql, params);
 			});
 		});
 	});
 
 	describe('when the session database table already exists', function() {
 
-		var sessionStore;
-		afterEach(function(done) {
-			if (!sessionStore) return done();
-			sessionStore.close(done);
-		});
-
 		beforeEach(manager.setUp);
 
-		beforeEach(function(done) {
-			sessionStore = manager.createInstance(done);
-		});
-
-		it('should do nothing', function(done) {
-			sessionStore.createDatabaseTable(done);
+		it('should do nothing', function() {
+			return manager.sessionStore.createDatabaseTable();
 		});
 	});
 
 	describe('when \'options.createDatabaseTable\' is set to FALSE', function() {
 
-		var sessionStore;
-		afterEach(function(done) {
-			if (!sessionStore) return done();
-			sessionStore.close(done);
-		});
-
+		let sessionStore;
 		beforeEach(manager.setUp);
 
-		it('should not be called when a new sessionStore object is created', function(done) {
-
-			var called = false;
-
+		it('should not be called when a new sessionStore object is created', function() {
 			MySQLStore.prototype.createDatabaseTable = function() {
-
-				called = true;
-				done(new Error('createDatabaseTable method should not have been called'));
+				return Promise.reject(new Error('createDatabaseTable method should not have been called'));
 			};
-
-			var options = _.extend({}, manager.config, {
-				createDatabaseTable: false
+			sessionStore = manager.createInstance({
+				createDatabaseTable: false,
 			});
-
-			sessionStore = new MySQLStore(options, function(error) {
-
-				if (called) {
-					return;
-				}
-
-				if (error) {
-					return done(error);
-				}
-
-				done();
-			});
+			return sessionStore.onReady();
 		});
 	});
 
 	describe('when \'options.createDatabaseTable\' is set to TRUE', function() {
 
-		var sessionStore;
-		afterEach(function(done) {
-			if (!sessionStore) return done();
-			sessionStore.close(done);
-		});
-
-		var options;
+		let sessionStore;
+		let options;
 		beforeEach(function() {
-			options = _.extend({}, manager.config, {
-				createDatabaseTable: true
-			});
+			options = {
+				createDatabaseTable: true,
+			};
 		});
 
-		it('should be called when a new sessionStore object is created', function(done) {
-
-			var called = false;
-
-			MySQLStore.prototype.createDatabaseTable = function(cb) {
-
+		it('should be called when a new sessionStore object is created', function() {
+			let called = false;
+			MySQLStore.prototype.createDatabaseTable = function() {
 				called = true;
-				cb && cb();
+				return Promise.resolve();
 			};
-
-			sessionStore = new MySQLStore(options, function(error) {
-
-				if (error) {
-					return done(error);
-				}
-
-				if (!called) {
-					return done(new Error('createDatabaseTable method should have been called'));
-				}
-
-				done();
+			sessionStore = manager.createInstance(options);
+			return sessionStore.onReady().then(() => {
+				assert.strictEqual(called, true);
 			});
 		});
 
 		describe('\'options.schema\'', function() {
 
-			var sessionStore;
-
-			afterEach(function(done) {
-				sessionStore.set('some-session-id', { some: 'data' }, done);
+			let sessionStore;
+			afterEach(function() {
+				return sessionStore.set('some-session-id', { some: 'data' });
 			});
 
-			afterEach(function(done) {
-
-				var session_id = 'some-session-id';
-
-				sessionStore.set(session_id, { some: 'data' }, function(error) {
-
-					if (error) {
-						return done(error);
-					}
-
-					sessionStore.get(session_id, done);
+			afterEach(function() {
+				const session_id = 'some-session-id';
+				return sessionStore.set(session_id, { some: 'data' }).then(() => {
+					return sessionStore.get(session_id);
 				});
 			});
 
-			afterEach(function(done) {
-				sessionStore.destroy('some-session-id', done);
+			afterEach(function() {
+				return sessionStore.destroy('some-session-id');
 			});
 
-			afterEach(function(done) {
-				sessionStore.length(done);
+			afterEach(function() {
+				return sessionStore.length();
 			});
 
-			afterEach(function(done) {
-				sessionStore.clear(done);
+			afterEach(function() {
+				return sessionStore.clear();
 			});
 
-			afterEach(function(done) {
-				if (!sessionStore) return done();
-				sessionStore.close(done);
-			});
+			const defaultSchema = {
+				tableName: 'sessions',
+				columnNames: {
+					session_id: 'session_id',
+					expires: 'expires',
+					data: 'data',
+				},
+			};
 
-			var customSchemas = [
+			[
 				{
 					tableName: 'testSessionTable',
 					columnNames: {
 						session_id: 'testColumnSessionId',
 						expires: 'testColumnExpires',
-						data: 'testColumnData'
-					}
+						data: 'testColumnData',
+					},
 				},
 				{
 					tableName: 'testSessionTable',
 					columnNames: {
-						session_id: 'testColumnSessionId'
-					}
+						session_id: 'testColumnSessionId',
+					},
 				},
 				{
-					tableName: 'testSessionTable'
+					tableName: 'testSessionTable',
 				},
 				{
 					columnNames: {
-						session_id: 'testColumnSessionId'
-					}
-				}
-			];
-
-			var defaultSchema = {
-				tableName: 'sessions',
-				columnNames: {
-					session_id: 'session_id',
-					expires: 'expires',
-					data: 'data'
-				}
-			};
-
-			_.each(customSchemas, function(customSchema) {
-
-				it(JSON.stringify(customSchema), function(done) {
-
-					var storeOptions = _.extend({}, options, {
-						schema: customSchema
+						session_id: 'testColumnSessionId',
+					},
+				},
+			].forEach(customSchema => {
+				it(JSON.stringify(customSchema), function() {
+					const storeOptions = Object.assign({}, options, {
+						schema: customSchema,
 					});
-
-					var expectedSchema = _.defaults(customSchema, defaultSchema);
-
-					expectedSchema.columnNames = _.defaults(expectedSchema.columnNames, defaultSchema.columnNames);
-
-					sessionStore = new MySQLStore(storeOptions, function(error) {
-
-						if (error) {
-							return done(error);
-						}
-
-						var sql = 'SHOW COLUMNS FROM ??';
-						var params = [expectedSchema.tableName];
-
-						sessionStore.connection.query(sql, params, function(error, rows) {
-
-							if (error) {
-								return done(error);
-							}
-
-							try {
-
-								expect(rows).to.be.an('array');
-								expect(rows).to.have.length(_.size(expectedSchema.columnNames));
-
-								var columnExists = _.object(_.map(rows, function(row) {
-									return [row.Field, true];
-								}));
-
-								_.each(expectedSchema.columnNames, function(columnName) {
-
-									if (!columnExists[columnName]) {
-										throw new Error('Missing column: "' + columnName + '"');
-									}
-								});
-
-							} catch (error) {
-								return done(error);
-							}
-
-							done();
+					const expectedSchema = Object.assign({}, defaultSchema, customSchema);
+					expectedSchema.columnNames = Object.assign({}, defaultSchema.columnNames, expectedSchema.columnNames);
+					sessionStore = manager.createInstance(storeOptions);
+					return sessionStore.onReady().then(() => {
+						const sql = 'SHOW COLUMNS FROM ??';
+						const params = [ expectedSchema.tableName ];
+						return sessionStore.connection.query(sql, params).then(rows => {
+							assert.ok(Array.isArray(rows[0]));
+							assert.strictEqual(rows[0].length, Object.keys(expectedSchema.columnNames).length);
+							let columnExists = {};
+							rows[0].forEach(row => {
+								columnExists[row.Field] = true;
+							});
+							Object.values(expectedSchema.columnNames).forEach(columnName => {
+								assert.ok(columnExists[columnName], `Missing column: "${columnName}"`);
+							});
 						});
 					});
 				});

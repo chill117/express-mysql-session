@@ -1,6 +1,6 @@
-var generateJunkData = function(approximateSize) {
-	var randomData = generateRandomData(Math.min(approximateSize, 4096));
-	var buffer = Buffer.from('', 'utf8');
+const generateJunkData = function(approximateSize) {
+	const randomData = generateRandomData(Math.min(approximateSize, 4096));
+	let buffer = Buffer.from('', 'utf8');
 	while (buffer.byteLength < approximateSize) {
 		buffer = Buffer.concat([
 			buffer,
@@ -10,14 +10,14 @@ var generateJunkData = function(approximateSize) {
 	return buffer.toString('utf8');
 };
 
-var generateRandomData = function(size) {
-	var chars = (function() {
-		var lower = 'abcdefghijklmnopqrstuvwxyz';
-		var upper = lower.toUpperCase();
-		var numbers = '1234567890';
+const generateRandomData = function(size) {
+	const chars = (function() {
+		const lower = 'abcdefghijklmnopqrstuvwxyz';
+		const upper = lower.toUpperCase();
+		const numbers = '1234567890';
 		return lower.split('').concat(upper.split(''), numbers.split(''));
 	})();
-	var buffer = Buffer.from('', 'utf8');
+	let buffer = Buffer.from('', 'utf8');
 	while (buffer.byteLength < size) {
 		buffer = Buffer.concat([
 			buffer,

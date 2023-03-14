@@ -1,64 +1,40 @@
-'use strict';
-
-var async = require('async');
-
-var manager = require('../manager');
+const assert = require('assert');
+const manager = require('../manager');
 
 describe('setExpirationInterval(interval)', function() {
 
 	before(manager.setUp);
 
-	var sessionStore;
-	beforeEach(function(done) {
-		sessionStore = manager.createInstance(done);
+	let sessionStore;
+	beforeEach(function() {
+		sessionStore = manager.createInstance();
+		return sessionStore.onReady();
 	});
 
 	after(manager.tearDown);
 
-	describe('constructor option: "createDatabaseTable"', function() {
-
-		it('should be called when FALSE', function(done) {
-
-			var intervalTime = 20;
-			var called = false;
-
-			// Override the clearExpiredSessions method.
-			sessionStore.clearExpiredSessions = function() {
-				called = true;
-			};
-
-			sessionStore.setExpirationInterval(intervalTime);
-
-			async.until(function(next) {
-				next(null, !!called);
-			}, function(next) {
-				setTimeout(next, 5);
-			}, done);
-		});
-	});
-
-	it('should correctly set the check expiration interval time', function(done) {
-
-		var numCalls = 0;
-		var intervalTime = 14;
-
+	it('should correctly set the check expiration interval time', function() {
+		let numActual = 0;
+		const intervalTime = 30;
 		// Override the clearExpiredSessions method.
 		sessionStore.clearExpiredSessions = function() {
-			numCalls++;
+			numActual++;
+			return Promise.resolve();
 		};
-
-		sessionStore.setExpirationInterval(intervalTime);
-
-		// Timeouts will never execute before the time given.
-		// But they are not 100% guaranteed to execute exactly when you would expect.
-
-		var startTime = Date.now();
-		setTimeout(function() {
-			async.until(function(next) {
-				next(null, numCalls >= Math.floor((startTime - Date.now()) / intervalTime));
-			}, function(next) {
-				setTimeout(next, 5);
-			}, done);
-		}, intervalTime * 3);
+		return new Promise((resolve, reject) => {
+			// Timeouts will never execute before the time given.
+			// But they are not 100% guaranteed to execute exactly when you would expect.
+			const startTime = Date.now();
+			sessionStore.setExpirationInterval(intervalTime);
+			setTimeout(function() {
+				const numExpected = Math.floor((Date.now() - startTime) / intervalTime);
+				try {
+					assert.ok(numActual >= numExpected - 1);
+				} catch (error) {
+					return reject(error);
+				}
+				resolve();
+			}, intervalTime * 3.5);
+		});
 	});
 });

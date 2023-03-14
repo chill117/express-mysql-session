@@ -1,48 +1,53 @@
-'use strict';
+const assert = require('assert');
+const manager = require('../manager');
+const fixtures = manager.fixtures.sessions;
 
-var _ = require('underscore');
-var expect = require('chai').expect;
-
-var manager = require('../manager');
-
-describe('get(session_id, cb)', function() {
+describe('get(session_id[, callback])', function() {
 
 	before(manager.setUp);
 	after(manager.tearDown);
 
+	it('callback', function(done) {
+		const { session_id } = fixtures[0];
+		manager.sessionStore.get(session_id, (error, session) => {
+			if (error) return done(error);
+			try { assert.strictEqual(error, null); } catch (error) {
+				return done(error);
+			}
+			done();
+		});
+	});
+
 	describe('when a session exists', function() {
 
-		var session_id;
-		var data;
-		beforeEach(function(done) {
-			var fixture = _.first(manager.fixtures.sessions);
+		let session_id;
+		let data;
+		beforeEach(function() {
+			const fixture = fixtures[0] || null;
+			assert.ok(fixture);
 			session_id = fixture.session_id;
 			data = fixture.data;
-			manager.populateSession(fixture, done);
+			return manager.populateSession(fixture);
 		});
 
 		describe('and is not expired', function() {
 
-			it('should return its session data', function(done) {
-				manager.sessionStore.get(session_id, function(error, session) {
-					if (error) return done(error);
-					expect(JSON.stringify(session)).to.equal(JSON.stringify(data));
-					done();
+			it('should return its session data', function() {
+				return manager.sessionStore.get(session_id).then(session => {
+					assert.deepStrictEqual(session, data);
 				});
 			});
 		});
 
 		describe('and is expired', function() {
 
-			beforeEach(function(done) {
-				manager.expireSession(session_id, done);
+			beforeEach(function() {
+				return manager.expireSession(session_id);
 			});
 
-			it('should return NULL', function(done) {
-				manager.sessionStore.get(session_id, function(error, session) {
-					if (error) return done(error);
-					expect(session).to.equal(null);
-					done();
+			it('should return NULL', function() {
+				return manager.sessionStore.get(session_id).then(session => {
+					assert.strictEqual(session, null);
 				});
 			});
 		});
@@ -52,14 +57,12 @@ describe('get(session_id, cb)', function() {
 
 		beforeEach(manager.clearSessions);
 
-		it('should return NULL', function(done) {
-
-			var fixture = _.first(manager.fixtures.sessions);
-			var session_id = fixture.session_id;
-			manager.sessionStore.get(session_id, function(error, session) {
-				if (error) return done(error);
-				expect(session).to.equal(null);
-				done();
+		it('should return NULL', function() {
+			const fixture = fixtures[1] || null;
+			assert.ok(fixture);
+			const { session_id } = fixture;
+			return manager.sessionStore.get(session_id).then(session => {
+				assert.strictEqual(session, null);
 			});
 		});
 	});
