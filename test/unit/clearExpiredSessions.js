@@ -2,7 +2,7 @@ const assert = require('assert');
 const manager = require('../manager');
 const fixtures = manager.fixtures.sessions;
 
-describe('clearExpiredSessions(cb)', function() {
+describe('clearExpiredSessions()', function() {
 
 	before(manager.setUp);
 	before(manager.populateSessions);

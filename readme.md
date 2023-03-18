@@ -6,10 +6,9 @@ A MySQL session store for [express.js](http://expressjs.com/). Compatible with [
 
 * [Installation](#installation)
 * [Important Notes](#important-notes)
-	* [Older Versions](#older-versions)
 	* [Session Table Collation](#session-table-collation)
 * [Usage](#usage)
-	* [With an existing MySQL connection or pool](#with-an-existing-mysql-connection-or-pool)
+	* [Use an existing MySQL connection or pool](#use-an-existing-mysql-connection-or-pool)
 	* [Closing the session store](#closing-the-session-store)
 	* [Options](#options)
 		* [Custom database table schema](#custom-database-table-schema)
@@ -178,7 +177,7 @@ const options = {
 	schema: {
 		tableName: 'custom_sessions_table_name',
 		columnNames: {
-			session_id: 'custom_session_id',
+			session_id: 'custom_session_id_column_name',
 			expires: 'custom_expires_column_name',
 			data: 'custom_data_column_name'
 		}
@@ -191,13 +190,11 @@ const sessionStore = new MySQLStore(options);
 
 ### Debugging
 
-`express-mysql-session` uses the [debug module](https://github.com/visionmedia/debug) to output debug messages to the console. To output all debug messages, run your node app with the `DEBUG` environment variable:
+`express-mysql-session` uses the [debug module](https://github.com/debug-js/debug) to output debug messages to the console. To output all debug messages, run your node app with the `DEBUG` environment variable:
 ```
 DEBUG=express-mysql-session* node your-app.js
 ```
 This will output log messages as well as error messages from `express-mysql-session`.
-
-If you also might need MySQL-related debug and error messages, see [debugging node-mysql](https://github.com/mysqljs/mysql#debugging-and-reporting-problems).
 
 
 ## Contributing
@@ -227,7 +224,7 @@ git clone https://github.com/chill117/express-mysql-session.git
 
 Second, you'll need to install the project dependencies as well as the dev dependencies. To do this, simply run the following from the directory you created in step 1:
 ```bash
-npm install
+npm ci
 ```
 
 #### Step 3: Set Up the Test Database

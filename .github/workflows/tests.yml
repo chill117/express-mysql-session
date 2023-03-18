@@ -1,4 +1,4 @@
-name: CI
+name: tests
 env:
   DB_USER: session_test
   DB_PASS: session_test
@@ -6,7 +6,7 @@ env:
 on:
   push:
 jobs:
-  ci:
+  tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
