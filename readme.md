@@ -7,6 +7,7 @@ A MySQL session store for [express.js](http://expressjs.com/). Compatible with [
 * [Installation](#installation)
 * [Important Notes](#important-notes)
 	* [Session Table Collation](#session-table-collation)
+	* [MariaDB Compatibility](#mariadb-compatibility)
 * [Usage](#usage)
 	* [Use an existing MySQL connection or pool](#use-an-existing-mysql-connection-or-pool)
 	* [Closing the session store](#closing-the-session-store)
@@ -36,6 +37,11 @@ Potential gotchas and other important information goes here.
 ### Session Table Collation
 
 This module creates a database table to save session data. This data is stored in a MySQL text field with the [utf8mb4](https://dev.mysql.com/doc/refman/5.5/en/charset-unicode-utf8mb4.html) collation - added in [MySQL 5.5.3](https://dev.mysql.com/doc/relnotes/mysql/5.5/en/news-5-5-3.html). The reason for this is to fully support the utf8 character set. If you absolutely must use an older version of MySQL, create your sessions table before initializing the `MySQLStore`.
+
+
+### MariaDB Compatibility
+
+This module will work with MariaDB, but you must follow the usage examples in this readme found [here](#usage) and [here](#use-an-existing-mysql-connection-or-pool). The [mariadb module](https://github.com/mariadb-corporation/mariadb-connector-nodejs) is __not__ supported - please use the [mysql2 module](https://github.com/sidorares/node-mysql2) instead to create a connection or pool to your MariaDB instance.
 
 
 ## Usage
