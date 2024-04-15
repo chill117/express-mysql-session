@@ -1,5 +1,7 @@
 # Changelog
 
+* v3.0.1:
+  * Updated dependencies
 * v3.0.0:
   * Added "disableTouch" option.
   * Switched MySQL client dependency from mysql to mysql2 module.
