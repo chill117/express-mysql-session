@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "debug": "4.3.4",
-    "mysql2": "3.9.7"
+    "mysql2": "3.10.2"
   },
   "devDependencies": {
     "express": "4.19.2",
