@@ -84,6 +84,18 @@ The session store will internally create a mysql2 [connection pool](https://gith
 
 The sessions database table should be automatically created, when using default options. If for whatever reason the table is not created, you can find the schema [here](https://github.com/chill117/express-mysql-session/blob/master/schema.sql).
 
+
+### Using ES6?
+
+When using ES6 modules, you can't immediately invoke a function in an import statement like with CommonJS's `require`. Instead you can import `express-mysql-session` and then create an instance of the MySQLStore by invoking the imported module with `session`.
+```javascript
+import session from 'express-session';
+import MySQLSession from 'express-mysql-session';
+
+const MySQLStore = MySQLSession(session);
+// Use MySQLStore with your session configuration as normal etc...
+```
+
 ### Use an existing MySQL connection or pool
 
 To pass in an existing MySQL database connection or pool, you would do something like this:
